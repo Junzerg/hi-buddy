@@ -1,6 +1,6 @@
 .root {
-  flex: 1 0 100%;
-  min-width: 0;
+  flex: 1;
+  min-width: max-content;
   display: flex;
   align-items: center;
   gap: 4px;

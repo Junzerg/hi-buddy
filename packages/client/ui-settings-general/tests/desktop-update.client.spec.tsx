@@ -153,15 +153,21 @@ it('shows fallback progress and error details when the shell omits optional fiel
   } finally { f.view.unmount(); f.status.resolve({ phase: 'idle' }) }
 })
 
-it.each(['checking', 'verifying', 'installing'] as const)('shows only the version during %s in both locales', async (phase) => {
+it.each([
+  ['checking', '检查中', '正在检查更新…', 'Check', 'Checking for updates…'],
+  ['verifying', '校验中', '正在校验更新文件…', 'Verify', 'Verifying update files…'],
+  ['installing', '重启中', '正在准备重启…', 'Restart', 'Preparing to restart…'],
+] as const)('keeps %s compact and exposes the full status and version in both locales', async (phase, shortZh, fullZh, shortEn, fullEn) => {
   const f = fixture()
   try {
     await f.emit({ phase, version: '0.1.7-alpha.2' })
+    expect(screen.getByRole('button').textContent).toBe(shortZh)
     fireEvent.focus(screen.getByRole('button'))
-    expect((await screen.findByRole('tooltip')).textContent).toBe('0.1.7-alpha.2')
+    expect((await screen.findByRole('tooltip')).textContent).toBe(`${fullZh}\n0.1.7-alpha.2`)
     f.view.rerender(<f.Indicator dictionary={en} />)
+    expect(screen.getByRole('button').textContent).toBe(shortEn)
     fireEvent.focus(screen.getByRole('button'))
-    expect((await screen.findByRole('tooltip')).textContent).toBe('0.1.7-alpha.2')
+    expect((await screen.findByRole('tooltip')).textContent).toBe(`${fullEn}\n0.1.7-alpha.2`)
   } finally { f.view.unmount(); f.status.resolve({ phase: 'idle' }) }
 })
 

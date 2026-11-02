@@ -10,7 +10,7 @@ const BUSY_PHASES: ReadonlySet<DesktopUpdatePresentation['phase']> = new Set([
   'checking', 'downloading', 'verifying', 'installing',
 ])
 
-function updateCopy(state: DesktopUpdatePresentation, t: SettingsTranslate): { label: string; detail: string } {
+function updateCopy(state: DesktopUpdatePresentation, t: SettingsTranslate): { label: string; compact: string; detail: string } {
   const labels: Readonly<Record<DesktopUpdatePresentation['phase'], string>> = {
     idle: '',
     checking: t('desktop.update.checking'),
@@ -22,8 +22,20 @@ function updateCopy(state: DesktopUpdatePresentation, t: SettingsTranslate): { l
     error: t('desktop.update.retry'),
   }
   const label = labels[state.phase]
+  const compact: Readonly<Record<DesktopUpdatePresentation['phase'], string>> = {
+    idle: '',
+    available: labels.available,
+    downloading: labels.downloading,
+    checking: t('desktop.update.short.checking'),
+    verifying: t('desktop.update.short.verifying'),
+    installing: t('desktop.update.short.installing'),
+    ready: t('desktop.update.short.ready'),
+    error: t('desktop.update.short.retry'),
+  }
+  const summary = { label, compact: compact[state.phase] }
   if (state.phase === 'checking' || state.phase === 'verifying' || state.phase === 'installing') {
-    return { label, detail: state.version ?? label }
+    return { ...summary, detail: state.version === undefined ? label
+      : t('desktop.update.stateDetail', { label, version: state.version }) }
   }
   if (state.phase === 'error') {
     const failures: Readonly<Record<DesktopUpdateFailureKind, string>> = {
@@ -38,12 +50,12 @@ function updateCopy(state: DesktopUpdatePresentation, t: SettingsTranslate): { l
       'tasks-unavailable': t('desktop.update.tasksUnavailable'),
       'fullscreen-timeout': t('desktop.update.fullscreenTimeout'),
     }
-    return { label, detail: failures[state.failure ?? 'install'] }
+    return { ...summary, detail: failures[state.failure ?? 'install'] }
   }
   if (state.phase === 'downloading' && state.version !== undefined) {
-    return { label, detail: t('desktop.update.downloadDetail', { percent: state.percent ?? 0, version: state.version }) }
+    return { ...summary, detail: t('desktop.update.downloadDetail', { percent: state.percent ?? 0, version: state.version }) }
   }
-  return { label, detail: state.version === undefined
+  return { ...summary, detail: state.version === undefined
     ? label
     : t('desktop.update.versionDetail', { label, version: state.version }) }
 }
@@ -63,8 +75,9 @@ export function DesktopUpdateIndicator({ wide, hidden, t, view, onOpen }: {
   const { presentation: state, failed, opening } = view
   if (!wide || hidden || (!failed && (state === undefined || state.phase === 'idle'))) return null
   const retryLabel = t('desktop.update.retry')
-  const copy = state === undefined ? { label: retryLabel, detail: retryLabel } : updateCopy(state, t)
+  const copy = state === undefined ? { label: retryLabel, compact: t('desktop.update.short.retry'), detail: retryLabel } : updateCopy(state, t)
   const label = failed ? retryLabel : copy.label
+  const compact = failed ? t('desktop.update.short.retry') : copy.compact
   const error = failed || state?.phase === 'error'
   const busy = opening || (state !== undefined && BUSY_PHASES.has(state.phase))
   return <Tooltip label={failed ? retryLabel : copy.detail} side="top">
@@ -74,7 +87,7 @@ export function DesktopUpdateIndicator({ wide, hidden, t, view, onOpen }: {
         {error ? <span className={css.errorDot} />
           : busy ? <IconLoadingOutlineRegular className={css.spinner} size={14} /> : <IconDownloadOutlineRegular size={14} />}
       </span>
-      <span>{label}</span>
+      <span>{compact}</span>
     </button>
   </Tooltip>
 }
