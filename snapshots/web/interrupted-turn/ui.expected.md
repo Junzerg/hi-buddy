@@ -1,16 +1,27 @@
 - banner:
+  - button "Search"
+  - text: Use the read tool twice
+  - button "Task overview"
+  - button "Expand sidebar"
+- banner:
   - navigation "Session hierarchy": Use the read tool twice
   - button "More actions"
-  - button "Open right sidebar"
   - tablist:
     - tab "Chat" [selected]
     - tab "Trajectory"
-  - button "More conversation views"
 - text: "Use the read tool twice in one assistant message: read a.txt and b.txt. Then reply with the single word DONE and stop. {{clock}}"
 - button "Copy"
 - status: Stopped
 - button "Stopped" [disabled] [expanded]
-- button "Read files"
+- button "Thinking"
+- button "Read a.txt":
+  - text: Read
+  - button "a.txt"
+- button "Read b.txt":
+  - text: Read
+  - button "b.txt"
+- button "Thinking"
+- text: Lingxi {{clock}}
 - paragraph: DONE
 - status: Task stoppedThe Lingxi Office process exited before this turn finished (for example, it was killed, crashed, or timed out while shutting down), so the turn was closed when Lingxi Office restarted. Unfinished tool calls have unknown outcomes.
 - button "Copy"
@@ -18,6 +29,6 @@
 - text: Available only on the last message of a completed turn {{clock}}
 - textbox "Continue with more detail, or @ add context, / skills and commands"
 - button "Add files or run commands"
+- button "Send message" [disabled]
 - 'button "Access mode, current: Workspace Write"': Workspace Write
 - button "Select model, current DeepSeek-V4-Flash": DeepSeek-V4-Flash
-- button "Send message" [disabled]

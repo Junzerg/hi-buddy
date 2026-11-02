@@ -14,7 +14,7 @@ import { afterAll, beforeAll, describe, expect, it, onTestFailed, onTestFinished
 import { join } from 'node:path'
 import {
   SCAFFOLD_DEFAULTS_BUNDLE, assertFixtureInventory, captureStableAria, compareOrRefreshGolden,
-  launchWebScaffold, watchConsole, webSnapshotMode, type WebScaffold,
+  launchWebScaffold, watchConsole, webSnapshotMode, type WebScaffold, type LaunchOptions,
 } from './scaffold.ts'
 import {
   ZH_BROWSER_LOCALE, connectFreshWorkspaceZh, openSettings, PLUGIN_TOGGLE_SETTLE_MS, saveFailureShot,
@@ -33,6 +33,22 @@ const MODE = webSnapshotMode()
 /** The profile manifest's bundles as the scaffold initializes them. */
 const SCAFFOLD_BUNDLES = ['@deepseek-ai/dsh-base', '@deepseek-ai/dsh-web-app', SCAFFOLD_DEFAULTS_BUNDLE]
 
+/** Test-only navigation keeps the shipped sidebar entry hidden. */
+async function launchPluginScaffold(options: LaunchOptions = {}): Promise<WebScaffold> {
+  const scaffold = await launchWebScaffold({
+    ...options,
+    extraInstallAnchors: [...(options.extraInstallAnchors ?? []),
+      fileURLToPath(new URL('./fixtures/plugins/fixture-plugin-navigation/package.json', import.meta.url))],
+  })
+  try {
+    await scaffold.ctx.loader.create({ name: '@fixture/plugin-navigation' })
+    return scaffold
+  } catch (error) {
+    await scaffold.close()
+    throw error
+  }
+}
+
 describe('web e2e: plugin manager', () => {
   let scaffold: WebScaffold
   let browser: Browser
@@ -41,7 +57,7 @@ describe('web e2e: plugin manager', () => {
 
   beforeAll(async () => {
     const browserEnvironment = { ...process.env }
-    scaffold = await launchWebScaffold({
+    scaffold = await launchPluginScaffold({
       extraOverlayPath: fileURLToPath(new URL('./pin-browse-picker.overlay.yml', import.meta.url)),
       profile: { packages: [{ dir: join(FIXTURE_PLUGINS, 'fixture-bundle') }], bundles: ['@fixture/missing-bundle'] },
     })
@@ -50,6 +66,8 @@ describe('web e2e: plugin manager', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
+    expect(await page.getByRole('navigation', { name: '全局面板' })
+      .getByRole('button', { name: '插件', exact: true }).count()).toBe(0)
   }, 120_000)
 
   afterAll(async () => {
@@ -82,10 +100,10 @@ describe('web e2e: plugin manager', () => {
     await expect.poll(() => dialog.count()).toBe(0)
   }
 
-  /** Select the sidebar's Plugins entry and wait for the management page in the main column. */
+  /** Open the real panel through the test fixture's public navigation control. */
   async function openPluginsPanel() {
     await closeSettings()
-    await page.getByRole('navigation', { name: '全局面板' }).getByRole('button', { name: '插件', exact: true }).click()
+    await page.locator('[data-plugin-panel-test-entry]').click()
     const panel = page.locator('[data-plugin-panel]')
     await panel.waitFor({ timeout: 10_000 })
     while (await panel.getByRole('button', { name: /^返回/ }).count() > 0) {
@@ -105,7 +123,7 @@ describe('web e2e: plugin manager', () => {
     // A dedicated scaffold keeps the measured header deterministic: an install
     // task left by an earlier test swaps the toolbar's add control for the
     // view-installation button, which moves the wrap threshold.
-    const headerScaffold = await launchWebScaffold()
+    const headerScaffold = await launchPluginScaffold()
     try {
       // Pin the extremes; at intermediate widths, the rendered font and locale
       // determine whether the two intrinsic items fit beside each other. Narrow
@@ -252,7 +270,7 @@ describe('web e2e: plugin manager', () => {
   })
 
   it('uses icon actions before shrinking tabs and wraps only when both still cannot fit', async () => {
-    const compactScaffold = await launchWebScaffold({
+    const compactScaffold = await launchPluginScaffold({
       profile: { packages: [], bundles: ['@deepseek-ai/dsh-experimental-plugin-market-bundle'] },
     })
     const context = await browser.newContext({ viewport: { width: 1280, height: 480 }, locale: 'en-US', reducedMotion: 'reduce' })
@@ -430,7 +448,7 @@ describe('web e2e: plugin manager', () => {
         const consoleWatch = watchConsole(probe)
         await probe.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
         await probe.waitForSelector('[class*="frame"]', { timeout: 30_000 })
-        await probe.getByRole('navigation', { name: '全局面板' }).getByRole('button', { name: '插件', exact: true }).click()
+        await probe.locator('[data-plugin-panel-test-entry]').click()
         await expect.poll(() => spy.mock.calls.length, { timeout: 10_000 }).toBeGreaterThan(0)
         const panel = probe.locator('[data-plugin-panel]')
         const skeleton = panel.locator('[data-plugin-loading]')
@@ -549,7 +567,7 @@ describe('web e2e: plugin manager', () => {
       onTestFailed(() => saveFailureShot(probe, 'web-e2e-plugin-manager-refresh'))
       await probe.clock.install()
       await probe.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
-      await probe.getByRole('navigation', { name: '全局面板' }).getByRole('button', { name: '插件', exact: true }).click()
+      await probe.locator('[data-plugin-panel-test-entry]').click()
       const panel = probe.locator('[data-plugin-panel]')
       const refresh = panel.getByRole('button', { name: '刷新', exact: true })
       const add = panel.getByRole('button', { name: '添加插件', exact: true })
@@ -834,7 +852,7 @@ describe('web e2e: plugin manager', () => {
     expect(focusRing.outlineStyle).toBe('solid')
     expect(focusRing.outlineWidth).toBeGreaterThan(0)
     // Profile bundles stay in Installed; configuration pages and offered bundles have their own groups.
-    expect(await panel.locator('[data-plugin-group="bundles"] [data-plugin-package]').count()).toBe(2)
+    expect(await panel.locator('[data-plugin-group="bundles"] [data-plugin-package]').evaluateAll(elements => elements.map(element => element.getAttribute('data-plugin-package')).sort())).toEqual(['@fixture/bundle', SCAFFOLD_DEFAULTS_BUNDLE].sort())
     expect(await panel.locator('[data-plugin-group="basic"] [data-plugin-item]').count()).toBe(4)
     expect(await panel.locator('[data-plugin-package="@deepseek-ai/dsh-experimental-inspector"]').count()).toBe(0)
     expect(await panel.getByRole('switch', { name: '启用 语音输入', exact: true }).getAttribute('aria-checked')).toBe('false')
@@ -876,7 +894,7 @@ describe('web e2e: plugin manager', () => {
     ])
     expect(await panel.locator('[data-plugin-group="bundles"]').count()).toBe(0)
     await panel.getByRole('button', { name: '返回插件', exact: true }).click()
-    expect(await panel.locator('[data-plugin-group="bundles"] [data-plugin-package]').count()).toBe(2)
+    expect(await panel.locator('[data-plugin-group="bundles"] [data-plugin-package]').evaluateAll(elements => elements.map(element => element.getAttribute('data-plugin-package')).sort())).toEqual(['@fixture/bundle', SCAFFOLD_DEFAULTS_BUNDLE].sort())
     // A bundle that is off still shows the rows its patch declares, without switches.
     await panel.getByRole('button', { name: '查看 @fixture/bundle' }).click()
     await panel.locator('[data-plugin-row]', { hasText: 'fixture-row' }).waitFor({ timeout: 10_000 })
@@ -1221,7 +1239,7 @@ describe('web e2e: plugin manager', () => {
       onTestFailed(() => saveFailureShot(probe, 'web-e2e-plugin-manager-ime-enter'))
       await probe.clock.install()
       await probe.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
-      await probe.getByRole('navigation', { name: '全局面板' }).getByRole('button', { name: '插件', exact: true }).click()
+      await probe.locator('[data-plugin-panel-test-entry]').click()
       const panel = probe.locator('[data-plugin-panel]')
       await panel.getByRole('button', { name: '查看 @fixture/bundle', exact: true }).waitFor({ timeout: 20_000 })
       const trace: string[] = ['Synthetic browser KeyboardEvents, not an OS input-method test.']
@@ -1447,7 +1465,7 @@ describe('web e2e: plugin manager', () => {
 
 describe('web e2e: startup-applied plugin management', () => {
   it('saves a bundle selection that waits for the next start and keeps its rows read-only', async () => {
-    const scaffold = await launchWebScaffold({
+    const scaffold = await launchPluginScaffold({
       extraOverlayPath: fileURLToPath(new URL('./pin-browse-picker.overlay.yml', import.meta.url)),
       profile: { hmr: false, packages: [{ dir: join(FIXTURE_PLUGINS, 'fixture-bundle') }] },
     })
@@ -1458,7 +1476,7 @@ describe('web e2e: startup-applied plugin management', () => {
       const tripwire = watchConsole(page)
       onTestFailed(() => saveFailureShot(page, 'web-e2e-plugin-manager-live'))
       await page.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
-      await page.getByRole('navigation', { name: '全局面板' }).getByRole('button', { name: '插件', exact: true }).click()
+      await page.locator('[data-plugin-panel-test-entry]').click()
       const panel = page.locator('[data-plugin-panel]')
       const toggle = panel.getByRole('switch', { name: '启用 @fixture/bundle' })
       await toggle.waitFor({ timeout: 20_000 })
