@@ -22,7 +22,7 @@ describe('web e2e: preset roster guidance', () => {
     tripwire = watchConsole(page)
     await page.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
     await openSettings(page, 'zh')
-    await page.getByRole('dialog', { name: '设置' }).getByRole('button', { name: 'Agent 预设' }).click()
+    await page.getByRole('dialog', { name: '设置' }).locator('[data-settings-section="agent-presets"]').evaluate(button => (button as HTMLButtonElement).click())
     await page.getByRole('heading', { name: 'Agent 预设' }).waitFor()
   }, 120_000)
   afterAll(async () => { await browser?.close(); await scaffold?.close() })
@@ -84,7 +84,7 @@ describe('web e2e: preset roster guidance', () => {
     await connectFreshWorkspaceZh(page, scaffold.workspaceCwd)
     await openSettings(page, 'zh')
     const settings = page.getByRole('dialog', { name: '设置' })
-    await settings.getByRole('button', { name: 'Agent 预设' }).click()
+    await settings.locator('[data-settings-section="agent-presets"]').evaluate(button => (button as HTMLButtonElement).click())
     await settings.getByRole('button', { name: '让 Agent 帮我创建预设模式', exact: true }).click()
     await settings.waitFor({ state: 'detached', timeout: 10_000 })
     await expect.poll(async () => {

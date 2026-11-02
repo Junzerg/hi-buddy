@@ -82,6 +82,7 @@ function SettingsPanel({ rows, renderSlot, activeId, onSelect, onClose }: PanelP
               <button
                 key={row.id}
                 type="button"
+                data-settings-section={row.id}
                 className={clsx(css.navCell, row.id === active && css.active)}
                 aria-current={row.id === active ? 'true' : undefined}
                 data-modal-autofocus={row.id === active ? '' : undefined}

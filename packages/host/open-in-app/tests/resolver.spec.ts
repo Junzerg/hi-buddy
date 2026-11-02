@@ -664,9 +664,27 @@ describe('launchDetachedApp', () => {
       .rejects.toMatchObject({ code: 'ENOENT' })
   })
 
+  it.each(['ELECTRON_RUN_AS_NODE', 'electron_run_as_node'])('does not pass inherited %s to external applications', async (name) => {
+    const root = await tempRoot()
+    const witness = join(root, 'env.json')
+    vi.stubEnv(name, '1')
+    try {
+      await launchDetachedApp(node, [
+        '-e',
+        'require("node:fs").writeFileSync(process.argv[1], JSON.stringify('
+        + 'Object.keys(process.env).filter(name => name.toUpperCase() === "ELECTRON_RUN_AS_NODE")))',
+        witness,
+      ], { watchMs: TIMEOUT_MS })
+    } finally {
+      vi.unstubAllEnvs()
+    }
+    expect(JSON.parse(await readFile(witness, 'utf8'))).toEqual([])
+  })
+
   it('hands the child a credential-scrubbed environment with explicit adapter entries', async () => {
     const root = await tempRoot()
     const witness = join(root, 'env.json')
+    vi.stubEnv('ELECTRON_RUN_AS_NODE', 'inherited')
     process.env.OPEN_IN_APP_SPEC_API_KEY = 'leak'
     process.env.OPEN_IN_APP_SPEC_PLAIN = 'visible'
     try {
@@ -680,6 +698,7 @@ describe('launchDetachedApp', () => {
     } finally {
       delete process.env.OPEN_IN_APP_SPEC_API_KEY
       delete process.env.OPEN_IN_APP_SPEC_PLAIN
+      vi.unstubAllEnvs()
     }
     expect(JSON.parse(await readFile(witness, 'utf8'))).toEqual([null, 'overridden', '1'])
   })

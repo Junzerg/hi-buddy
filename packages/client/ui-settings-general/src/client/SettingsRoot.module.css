@@ -36,6 +36,10 @@
   line-height: 22px;
 }
 
+.navCell[data-settings-section='agent-presets'] {
+  display: none;
+}
+
 @media (hover: hover) {
   .trigger:hover {
     background: var(--dsw-alias-interactive-bg-hover);

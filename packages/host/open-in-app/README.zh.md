@@ -9,7 +9,7 @@ kind: "package-reference"
 
 ## 概述
 
-将 `dsh-host-open-in-app` 与其[浏览器配套包](../../client/ui-open-in-app/README.zh.md)一起使用，让用户能在已安装的编辑器、Git GUI、终端或文件管理器中打开 workspace 目录。本包提供固定的应用目录，并只显示主机能够验证的条目；新安装的应用在重启后出现，而检测到启动器缺失时会移除对应条目。请求须通过部署的浏览器认证与主机来源信任检查。检测与启动命令使用可配置的期限，且不会把继承的凭据传给启动的应用。
+将 `dsh-host-open-in-app` 与其[浏览器配套包](../../client/ui-open-in-app/README.zh.md)一起使用，让用户能在已安装的编辑器、Git GUI、终端或文件管理器中打开 workspace 目录。本包提供固定的应用目录，并只显示主机能够验证的条目；新安装的应用在重启后出现，而检测到启动器缺失时会移除对应条目。请求须通过部署的浏览器认证与主机来源信任检查。检测与启动命令使用可配置的期限，且不会把继承的凭据传给启动的应用。外部应用不继承 Desktop Host 的 `ELECTRON_RUN_AS_NODE`；GitHub Desktop 等适配器仍可为自身 CLI 显式设置此变量。
 
 ## 目录
 

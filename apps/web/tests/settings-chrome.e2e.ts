@@ -106,8 +106,6 @@ describe('web e2e: settings modal and General preferences', () => {
     const lastSection = dialog.getByRole('navigation').getByRole('button').last()
     await lastSection.focus()
     await page.keyboard.press('Tab')
-    expect(await dialog.getByRole('button', { name: '打开配置文件' }).evaluate(el => el === document.activeElement)).toBe(true)
-    await page.keyboard.press('Tab')
     expect(await dialog.getByRole('button', { name: '关闭', exact: true }).evaluate(el => el === document.activeElement)).toBe(true)
     // General is active by default; Permission, Language and Appearance are functional.
     expect(await dialog.getByRole('button', { name: '通用设置' }).getAttribute('aria-current')).toBe('true')
@@ -118,8 +116,12 @@ describe('web e2e: settings modal and General preferences', () => {
       .getByRole('button', { name: '详细', exact: true }).waitFor({ timeout: 10_000 })
     expect(await readFile(join(scaffold.harnessHome, 'profiles', 'scaffold', 'cordis.patch.yml'), 'utf8'))
       .not.toContain('transcriptView:')
-    const openDocument = dialog.getByRole('button', { name: '打开配置文件' })
-    await openDocument.waitFor({ timeout: 10_000 })
+    const openDocument = dialog.locator('button').filter({ hasText: '打开配置文件' })
+    await openDocument.waitFor({ state: 'attached', timeout: 10_000 })
+    expect(await openDocument.isVisible()).toBe(false)
+    const presetEntry = dialog.locator('[data-settings-section="agent-presets"]')
+    await presetEntry.waitFor({ state: 'attached', timeout: 10_000 })
+    expect(await presetEntry.isVisible()).toBe(false)
     let openRequests = 0
     await page.route('**/api/settings/openSettingsDocument', async (route) => {
       const envelope = route.request().postDataJSON() as {
@@ -139,7 +141,8 @@ describe('web e2e: settings modal and General preferences', () => {
       })
     })
     try {
-      await openDocument.click()
+      // The entry is hidden; a DOM click verifies its retained handler and RPC.
+      await openDocument.evaluate(button => (button as HTMLButtonElement).click())
       await expect.poll(() => openRequests, { timeout: 5_000 }).toBe(1)
       await expect.poll(() => openDocument.isEnabled(), { timeout: 5_000 }).toBe(true)
     } finally {
@@ -1025,7 +1028,10 @@ describe('web e2e: settings modal and General preferences', () => {
       await dialog.waitFor({ timeout: 10_000 })
       await dialog.getByRole('button', { name: 'English' }).waitFor({ timeout: 10_000 })
       // A locale-owned nav label proves the dictionaries resolved to en.
-      await dialog.getByRole('button', { name: 'Agent presets' }).waitFor({ timeout: 10_000 })
+      const presetEntry = dialog.locator('[data-settings-section="agent-presets"]')
+      await presetEntry.waitFor({ state: 'attached', timeout: 10_000 })
+      expect(await presetEntry.textContent()).toBe('Agent presets')
+      expect(await presetEntry.isVisible()).toBe(false)
       // The markup already ships `en`, so this alone cannot prove the sync ran
       // — the zh scenario above is the discriminating half. Asserted here too
       // so a future change that resolves en but writes the wrong tag is caught.

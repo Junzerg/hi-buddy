@@ -1,5 +1,6 @@
 .action {
-  display: flex;
+  /* Keep the native-open action mounted while hiding its application entry. */
+  display: none;
   min-width: 0;
   align-items: center;
   gap: 8px;
