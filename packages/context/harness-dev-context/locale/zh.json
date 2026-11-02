@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Harness 开发上下文",
-    "description": "向模型提供 Harness 源码目录与 Web 地址，不因此改变系统提示词。"
+    "title": "灵犀办公开发上下文",
+    "description": "向模型提供灵犀办公源码目录与 Web 地址，不因此改变系统提示词。"
   }
 }

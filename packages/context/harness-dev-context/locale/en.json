@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Harness development context",
-    "description": "Give the model the Harness source directory and Web URL without changing its system prompt."
+    "title": "Lingxi Office development context",
+    "description": "Give the model the Lingxi Office source directory and Web URL without changing its system prompt."
   }
 }

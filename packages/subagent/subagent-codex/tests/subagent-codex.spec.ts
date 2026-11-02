@@ -738,7 +738,7 @@ describe('CodexAppServerWire', () => {
     expect(initialize.params).toEqual({
       clientInfo: {
         name: 'deepseek-harness',
-        title: 'DeepSeek Harness',
+        title: 'Lingxi Office',
         version: '0.0.1',
       },
       capabilities: {

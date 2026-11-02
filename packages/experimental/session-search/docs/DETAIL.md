@@ -11,7 +11,7 @@ Ask about earlier work, such as "How did we fix the pool leak last week?", and t
 
 - Agents see only sessions whose working directory is exactly the same path as the current one; a symlinked path counts as different.
 - Agents can read earlier sessions but cannot change them.
-- The search index is built on the first search and kept in memory. It is built again after DSH restarts or after the plugin is turned off and on.
+- The search index is built on the first search and kept in memory. It is built again after Lingxi Office restarts or after the plugin is turned off and on.
 - The search tools and their instructions are added to every model request, so they use some tokens even when the agent does not search.
 - Turning the plugin on or off changes the agent's tools from its next request, also in open sessions; that request cannot reuse cached input.
 - The search box in the sidebar works the same with or without this plugin.

@@ -65,7 +65,7 @@ describe('installer preparation preserves application dependencies', () => {
       expect(appInfo.companyName).toBe('HaierCash')
       expect(appInfo.copyright).toBe(`Copyright © ${new Date().getFullYear()} Lingxi Office`)
       if (platform === 'win32') {
-        expect(expandMacro(config.nsis.uninstallDisplayName, null, appInfo, {}, false)).toBe('LingXi Office')
+        expect(expandMacro(config.nsis.uninstallDisplayName, null, appInfo, {}, false)).toBe('Lingxi Office')
         expect(config.nsis.installerLanguages).toEqual(readInstallerLocales().map(locale => locale.id))
       }
       const aboutIcon = config.extraResources.find(resource => resource.to === 'icon.png')

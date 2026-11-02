@@ -30,13 +30,14 @@ describe.skipIf(MODE === 'record')('web e2e: turn interrupted by a DSH stop', ()
   let tripwire: ReturnType<typeof watchConsole>
 
   beforeAll(async () => {
+    const browserEnvironment = { ...process.env }
     const recorded = await readFile(FIXTURE, 'utf8')
     expect(fixtureUserPrompts(recorded)).toEqual([PROMPT])
     expect(recorded.trimEnd().endsWith(COMPLETED_END)).toBe(true)
     const fixture = `${recorded.trimEnd().slice(0, -COMPLETED_END.length)}${INTERRUPTED_END}\n`
     scaffold = await launchWebScaffold({})
     await seedSession(scaffold, fixture, SEED_ID, undefined, { createdAt: WEB_FIXTURE_TIME })
-    browser = await chromium.launch()
+    browser = await chromium.launch({ env: browserEnvironment })
     page = await newEnglishPage(browser)
     await page.clock.setFixedTime(WEB_FIXTURE_TIME)
     tripwire = watchConsole(page)
@@ -60,7 +61,7 @@ describe.skipIf(MODE === 'record')('web e2e: turn interrupted by a DSH stop', ()
     onTestFailed(() => saveFailureShot(page, 'web-e2e-interrupted-turn'))
     const notice = page.getByRole('status').filter({ hasText: 'Task stopped' })
     await notice.waitFor({ timeout: 15_000 })
-    expect(await notice.textContent()).toContain('The DSH process exited before this turn finished')
+    expect(await notice.textContent()).toContain('The Lingxi Office process exited before this turn finished')
     expect(await notice.textContent()).not.toContain('INTERRUPTED')
     expect(await page.locator('[data-turn-process="1"]').textContent()).toBe('Stopped')
 

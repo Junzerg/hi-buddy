@@ -10,7 +10,7 @@ Ask for work on a new branch, and the agent moves to a separate folder for it. Y
 
 ## Good to know
 
-- The checkout is created at `.agents/worktrees/<name>` in your current checkout. When DSH creates that folder, it adds a `.gitignore` so Git ignores it.
-- Only committed files are checked out: uncommitted and ignored files such as `node_modules` are not copied, submodules are not initialized, and dependencies are not installed. DSH does not fetch from the remote, and Git LFS files stay as pointers.
+- The checkout is created at `.agents/worktrees/<name>` in your current checkout. When Lingxi Office creates that folder, it adds a `.gitignore` so Git ignores it.
+- Only committed files are checked out: uncommitted and ignored files such as `node_modules` are not copied, submodules are not initialized, and dependencies are not installed. Lingxi Office does not fetch from the remote, and Git LFS files stay as pointers.
 - The call fails if the branch or folder exists, or if the access mode does not allow writing the folder and the repository's Git data. A failed call can leave a partial checkout; the error shows its path.
 - Turning this plugin off keeps the checkouts and branches it created; remove them with Git.

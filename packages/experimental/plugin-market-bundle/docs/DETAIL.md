@@ -1,6 +1,6 @@
 ![The Discover tab listing plugins from an added plugin index](preview.svg)
 
-A plugin index is a file at a URL that lists plugins. Add the URL, and its plugins appear in **Discover**, where you can browse and install them. DSH comes with no index; you choose which indexes to add.
+A plugin index is a file at a URL that lists plugins. Add the URL, and its plugins appear in **Discover**, where you can browse and install them. Lingxi Office comes with no index; you choose which indexes to add.
 
 ## How to use
 
@@ -10,7 +10,7 @@ A plugin index is a file at a URL that lists plugins. Add the URL, and its plugi
 
 ## Good to know
 
-- DSH contacts an index only after you add it.
+- Lingxi Office contacts an index only after you add it.
 - Plugins in an index come from third parties and run with your permissions. Add only indexes you trust.
 - To update a plugin installed from npm, use **Update** in its **Versions** section under **Installed**; installing another npm version from the index fails until you uninstall it. A plugin installed from Git has no **Versions** section; to change its version, uninstall it and install it again from the index.
 - Plugin details come from public npm file services (jsDelivr, unpkg, npmmirror) or the plugin's Git repository, with your Git credentials for private ones. Icons load directly from the addresses in the index, so those servers see your IP address.

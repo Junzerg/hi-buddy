@@ -30,7 +30,7 @@ export const en = {
   missingFontsDescription: 'These fonts are unavailable for this preview. Text and layout may differ from the original document.',
   missingFontsCount: 'Fonts: {count}',
   closeDetails: 'Close font details',
-  unavailable: 'Office previews are unavailable. Enable the document preview service on the computer running LingXi Office.',
+  unavailable: 'Office previews are unavailable. Enable the document preview service on the computer running Lingxi Office.',
   invalid: 'This Office file cannot be previewed. It may be damaged, password protected, or have the wrong extension.',
   tooLarge: 'The Office file or converted PDF exceeds the preview size limit. Reduce the file size or adjust the preview configuration.',
   failed: 'Office conversion did not produce a usable PDF. Check the file and try again.',

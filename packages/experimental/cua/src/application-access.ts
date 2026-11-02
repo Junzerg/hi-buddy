@@ -148,7 +148,7 @@ export class ApplicationAccess {
         try {
           result = await questions.ask({ agent, signal, questions: [{ id: 'cua-app-access',
             question: `Allow computer use to launch if needed, read, capture, and control ${identity.name}?`,
-            detail: 'Session access lasts until DSH restarts or computer use is disabled.',
+            detail: 'Session access lasts until Lingxi Office restarts or computer use is disabled.',
             options, intent: {
               kind: 'approval', approve: 'Allow for this session', reject: 'Deny',
               ...(identity.persistable && this.options.save ? { always: 'Always allow' } : {}),

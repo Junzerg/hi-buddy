@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "DSH",
-    "description": "Provide the official powered-by-DSH badge skill."
+    "title": "Attribution badge skill",
+    "description": "Provide an attribution badge skill for documents, pull requests, and other outputs."
   }
 }

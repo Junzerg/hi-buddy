@@ -61,7 +61,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
                   <span
                     class="localBuildTitle"
                   >
-                    LingXi Office Local Build
+                    Lingxi Office Local Build
                   </span>
                 </span>
               </div>
@@ -641,7 +641,7 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
                   <span
                     class="localBuildTitle"
                   >
-                    LingXi Office Local Build
+                    Lingxi Office Local Build
                   </span>
                 </span>
               </div>

@@ -36,7 +36,7 @@ export type SidebarKey = keyof typeof zh
 
 /** English dictionary, checked complete against the zh key set. */
 export const en = {
-  'brand.name': 'LingXi Office',
+  'brand.name': 'Lingxi Office',
   'session.new': 'New task',
   'session.new.label': 'New task',
   'topbar.search': 'Search',

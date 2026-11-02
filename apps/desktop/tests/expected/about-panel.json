@@ -1,11 +1,11 @@
 {
   "darwin:en-US": {
     "menu": [
-      { "label": "About LingXi Office", "role": "about" },
+      { "label": "About Lingxi Office", "role": "about" },
       { "type": "separator" }
     ],
     "options": {
-      "applicationName": "LingXi Office",
+      "applicationName": "Lingxi Office",
       "applicationVersion": "1.0.0",
       "version": "",
       "copyright": "",
@@ -40,11 +40,11 @@
   },
   "win32:en-US": {
     "menu": [
-      { "label": "About LingXi Office" },
+      { "label": "About Lingxi Office" },
       { "type": "separator" }
     ],
     "options": {
-      "applicationName": "LingXi Office",
+      "applicationName": "Lingxi Office",
       "applicationVersion": "1.0.0",
       "version": "",
       "copyright": "",

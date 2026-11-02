@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-session-title-llm",
-  "description": "Shared LLM generation policy for DeepSeek Harness session-title providers",
+  "description": "Shared LLM generation policy for Lingxi Office session-title providers",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

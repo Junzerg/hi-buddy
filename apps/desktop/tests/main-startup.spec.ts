@@ -579,7 +579,7 @@ describe('desktop main startup', () => {
     await vi.advanceTimersByTimeAsync(0)
     const zh = locale === 'zh-CN'
     expect(harness.dialog.showMessageBox).toHaveBeenLastCalledWith(expect.objectContaining({
-      type: 'info', title: zh ? '关于 灵犀办公' : 'About LingXi Office', message: zh ? '灵犀办公' : 'LingXi Office',
+      type: 'info', title: zh ? '关于 灵犀办公' : 'About Lingxi Office', message: zh ? '灵犀办公' : 'Lingxi Office',
       detail: zh ? '版本 V1.0.0' : 'Version V1.0.0', buttons: [zh ? '确定' : 'OK'], cancelId: 0,
     }))
     // A dialog that cannot open is logged, not surfaced as an unhandled rejection.

@@ -63,8 +63,8 @@ describe('official browser-brand plugin', () => {
   })
 
   it('renders the official name independently from both requested mark sizes', () => {
-    const name = render(<OfficialBrandName t={() => 'LingXi Office'} />)
-    expect(name.container.textContent).toBe('LingXi Office')
+    const name = render(<OfficialBrandName t={() => 'Lingxi Office'} />)
+    expect(name.container.textContent).toBe('Lingxi Office')
     name.rerender(<OfficialBrandName t={() => '灵犀办公'} />)
     expect(name.container.textContent).toBe('灵犀办公')
     name.unmount()

@@ -43,8 +43,8 @@ it('shows the application icon with its name as the tooltip and an Open / Quit m
   const f = setup()
   expect(native.createFromPath).toHaveBeenCalledWith('C:/app/resources/tray.ico')
   expect(f.native.image).toEqual({ path: 'C:/app/resources/tray.ico' })
-  expect(f.native.setToolTip).toHaveBeenCalledWith('LingXi Office')
-  expect(labels(native.menus[0]!)).toEqual(['Open LingXi Office', 'separator', 'Quit LingXi Office'])
+  expect(f.native.setToolTip).toHaveBeenCalledWith('Lingxi Office')
+  expect(labels(native.menus[0]!)).toEqual(['Open Lingxi Office', 'separator', 'Quit Lingxi Office'])
   expect(f.native.setContextMenu).toHaveBeenCalledWith({ template: native.menus[0] })
 })
 

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-tool-cordis",
-  "description": "Read-only runtime API inspection for Harness plugin development",
+  "description": "Read-only runtime API inspection for Lingxi Office plugin development",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

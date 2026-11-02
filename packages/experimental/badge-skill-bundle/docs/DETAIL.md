@@ -1,1 +1,1 @@
-![DSH badge skill feature preview](preview.svg)
+![Attribution badge skill feature preview](preview.svg)

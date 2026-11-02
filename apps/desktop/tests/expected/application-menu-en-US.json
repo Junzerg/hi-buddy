@@ -4,7 +4,7 @@
   },
   {
     "role": "hide",
-    "label": "Hide LingXi Office"
+    "label": "Hide Lingxi Office"
   },
   {
     "role": "hideOthers",
@@ -16,6 +16,6 @@
   },
   {
     "role": "quit",
-    "label": "Quit LingXi Office"
+    "label": "Quit Lingxi Office"
   }
 ]

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-goal",
-  "description": "Event-sourced same-session goal state and lifecycle service for the DeepSeek Harness",
+  "description": "Event-sourced same-session goal state and lifecycle service for Lingxi Office",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

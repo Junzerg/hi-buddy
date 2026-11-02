@@ -179,7 +179,7 @@ describe('SidebarRoot shell', () => {
         options?.fallback ?? null) as SidebarRootComponentProps['renderSlot']}
     />)
 
-    expect(screen.getByText('LingXi Office Local Build')).toBeTruthy()
+    expect(screen.getByText('Lingxi Office Local Build')).toBeTruthy()
     expect(screen.getByText('1.2.3-rc.4').getAttribute('title')).toBe('1.2.3-rc.4-0123456-dirty')
     expect(container.querySelectorAll('svg[viewBox="70 235 1110 780"] path')).toHaveLength(6)
   })
@@ -203,7 +203,7 @@ describe('SidebarRoot shell', () => {
         options?.fallback ?? null) as SidebarRootComponentProps['renderSlot']}
     />)
 
-    expect(screen.getByText('LingXi Office Local Build')).toBeTruthy()
+    expect(screen.getByText('Lingxi Office Local Build')).toBeTruthy()
     expect(screen.getByText(environment.DSH_CLIENT_VERSION).getAttribute('title')).toBe(expected)
   })
 
@@ -233,11 +233,11 @@ describe('SidebarRoot shell', () => {
     vi.useFakeTimers()
 
     const copiedToasts = () => screen.queryAllByRole('alert').map(toast => toast.textContent)
-    await act(async () => { fireEvent.click(screen.getByText('LingXi Office Local Build')) })
+    await act(async () => { fireEvent.click(screen.getByText('Lingxi Office Local Build')) })
     expect(writeText).toHaveBeenLastCalledWith('1.2.3-abcdef0')
     expect(copiedToasts()).toEqual(['Version copied'])
     // The brand itself keeps its title and version.
-    expect(screen.getByText('LingXi Office Local Build')).toBeTruthy()
+    expect(screen.getByText('Lingxi Office Local Build')).toBeTruthy()
     expect(screen.getByText('1.2.3').getAttribute('title')).toBe('1.2.3-abcdef0')
     act(() => { vi.advanceTimersByTime(4000) })
     expect(copiedToasts()).toEqual([])
@@ -249,7 +249,7 @@ describe('SidebarRoot shell', () => {
     // The fallback mark copies too, and its click still reaches document.
     const documentClick = vi.fn()
     document.addEventListener('click', documentClick)
-    const mark = screen.getByText('LingXi Office Local Build').closest('[aria-hidden]')!.querySelector('svg')!
+    const mark = screen.getByText('Lingxi Office Local Build').closest('[aria-hidden]')!.querySelector('svg')!
     await act(async () => { fireEvent.click(mark) })
     document.removeEventListener('click', documentClick)
     expect(documentClick).toHaveBeenCalledOnce()
@@ -281,7 +281,7 @@ describe('SidebarRoot shell', () => {
         options?.fallback ?? null) as SidebarRootComponentProps['renderSlot']}
     />)
 
-    expect(screen.getByText('LingXi Office Local Build')).toBeTruthy()
+    expect(screen.getByText('Lingxi Office Local Build')).toBeTruthy()
   })
 
   it('keeps the workspace and footer seats expanded', () => {

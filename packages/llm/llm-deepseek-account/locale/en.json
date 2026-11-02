@@ -1,5 +1,6 @@
 {
   "meta": {
-    "title": "llm-deepseek-account"
+    "title": "Company account model access",
+    "description": "Connect to model services with the signed-in company account."
   }
 }

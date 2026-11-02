@@ -54,10 +54,10 @@ describe('DocumentTitle', () => {
   it('uses the localized product title supplied by the frame', () => {
     const { sessionId, sessions, props } = titleSources()
     sessions.update((state) => { state.byId[sessionId]!.title = 'First title' })
-    const mounted = render(<DocumentTitle {...props} productTitle="LXO Local Build" />)
-    expect(document.title).toBe('First title — LXO Local Build')
+    const mounted = render(<DocumentTitle {...props} productTitle="Lingxi Office Local Build" />)
+    expect(document.title).toBe('First title — Lingxi Office Local Build')
     mounted.unmount()
-    expect(document.title).toBe('LXO Local Build')
+    expect(document.title).toBe('Lingxi Office Local Build')
   })
 
   it('keeps the product title across global panels and restores the latest Session title on return', () => {

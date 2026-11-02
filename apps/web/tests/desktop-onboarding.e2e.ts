@@ -20,6 +20,7 @@ const EXPECTED = fileURLToPath(new URL('./expected/desktop-onboarding', import.m
 const NS = 'ui-settings-account'
 const INITIAL = { version: 1, step: 'welcome', purpose: null, process: null, completion: null, usage: 'compact', developerTools: false }
 const ACCOUNT_ASSET = /\/plugins\/@deepseek-ai\/dsh-client-ui-settings-account\/assets\/onboarding-[a-z-]+-[0-9a-f]{12}\.(?:svg|webp)$/
+const browserEnvironment = { ...process.env }
 
 describe.skipIf(MODE === 'record')('web e2e: App-only desktop onboarding', () => {
   let root: string
@@ -88,7 +89,7 @@ describe.skipIf(MODE === 'record')('web e2e: App-only desktop onboarding', () =>
     await scaffold.ctx.credentials.modifyRecord(credentialKey('deepseek-account-platform', 'default'), async () => ({
       kind: 'grant', payload: { version: 1, issuer: origin, token: 'onboarding-fixture-token' },
     }))
-    browser = await chromium.launch()
+    browser = await chromium.launch({ env: browserEnvironment })
   })
 
   afterEach(async () => {
@@ -211,6 +212,21 @@ describe.skipIf(MODE === 'record')('web e2e: App-only desktop onboarding', () =>
     }
     await page.setViewportSize({ width: 1280, height: 840 })
   }
+
+  it.each([
+    ['zh-CN', '灵犀办公'], ['en-US', 'Lingxi Office'],
+  ])('shows the localized product name in %s onboarding', async (language, name) => {
+    page = await desktopPage(language)
+    onTestFailed(() => saveFailureShot(page, `product-branding-${language}-failure`))
+    await page.goto(scaffold.authenticatedUrl, { waitUntil: 'load' })
+    const onboarding = page.locator('[data-desktop-onboarding]')
+    await onboarding.getByRole('heading', { level: 1 }).filter({ hasText: name }).waitFor()
+    const copy = await onboarding.textContent()
+    expect(copy).toContain(name)
+    expect(copy).not.toMatch(/deep\s*seek|harness|\bDSH\b/i)
+    expect(copy).not.toContain('LingXi Office')
+    await page.close()
+  })
 
   it('keeps Web unchanged and resumes Desktop progress without exposing credit', async () => {
     const web = await browser.newPage({ viewport: { width: 1280, height: 840 }, locale: ZH_BROWSER_LOCALE })

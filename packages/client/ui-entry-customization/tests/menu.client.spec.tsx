@@ -212,12 +212,12 @@ describe('More menu registrations', () => {
   })
 
   it.each([
-    ['en', 'sidebar.panellist.actions', 'Create a DSH plugin with a left sidebar entry.'],
-    ['en', 'conversation.session.header.views.actions', 'Create a DSH conversation view plugin.'],
-    ['en', 'sidebar.right.tab.guide.actions', 'Create a DSH plugin with a right sidebar entry.'],
-    ['zh', 'sidebar.panellist.actions', '创建一个带左侧栏入口的 DSH 插件。'],
-    ['zh', 'conversation.session.header.views.actions', '创建一个 DSH 会话视图插件。'],
-    ['zh', 'sidebar.right.tab.guide.actions', '创建一个带右侧栏入口的 DSH 插件。'],
+    ['en', 'sidebar.panellist.actions', 'Create a Lingxi Office plugin with a left sidebar entry.'],
+    ['en', 'conversation.session.header.views.actions', 'Create a Lingxi Office conversation view plugin.'],
+    ['en', 'sidebar.right.tab.guide.actions', 'Create a Lingxi Office plugin with a right sidebar entry.'],
+    ['zh', 'sidebar.panellist.actions', '创建一个带左侧栏入口的灵犀办公插件。'],
+    ['zh', 'conversation.session.header.views.actions', '创建一个灵犀办公会话视图插件。'],
+    ['zh', 'sidebar.right.tab.guide.actions', '创建一个带右侧栏入口的灵犀办公插件。'],
   ] as const)('starts an unsent %s Creator draft from %s', async (language, seat, prompt) => {
     const b = await bench(language)
     fireEvent.click(within(b.view.getByRole('menu', { name: seat }))

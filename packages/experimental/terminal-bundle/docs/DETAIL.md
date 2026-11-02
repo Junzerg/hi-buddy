@@ -13,5 +13,5 @@ This plugin gives the agent terminal tools that keep a persistent background and
 - A terminal starts in the session's current folder and runs under its access mode. While a terminal is open, you cannot switch to an access mode with different file access; have the agent close its terminals first.
 - Output the agent reads is added to the conversation and uses tokens; each result is capped at 256 KB by default.
 - Full-screen terminal programs are not supported.
-- Terminals stop when DSH restarts or this plugin is turned off. Keep results that must last in files.
+- Terminals stop when Lingxi Office restarts or this plugin is turned off. Keep results that must last in files.
 - Turning this plugin on or off changes the tools of open sessions. Their next request cannot reuse the prompt cache, so it is slower and costs more once.

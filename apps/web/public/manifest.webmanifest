@@ -1,6 +1,6 @@
 {
   "name": "Lingxi Office",
-  "short_name": "LXO",
+  "short_name": "Lingxi Office",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

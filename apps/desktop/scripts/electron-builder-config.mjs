@@ -112,7 +112,7 @@ export function createElectronBuilderConfig(
   return {
     appId,
     electronLanguages: ['en', 'zh-CN'],
-    protocols: [{ name: 'LingXi Office', schemes: ['dsh'] }],
+    protocols: [{ name: 'Lingxi Office', schemes: ['dsh'] }],
     extraMetadata: {
       dshDesktopAppId: appId,
       dshDesktopUpdateChannel: update?.channel ?? 'nightly',
@@ -172,8 +172,8 @@ export function createElectronBuilderConfig(
       // macOS matches the application locale against this bundle, not Electron Framework resources.
       extendInfo: {
         CFBundleLocalizations: ['en', 'zh_CN'],
-        CFBundleDisplayName: 'LingXi Office',
-        NSMicrophoneUsageDescription: 'LingXi Office uses your microphone to transcribe speech into message drafts.',
+        CFBundleDisplayName: 'Lingxi Office',
+        NSMicrophoneUsageDescription: 'Lingxi Office uses your microphone to transcribe speech into message drafts.',
       },
       // Ad-hoc signing keeps the modified Electron executable runnable without a Developer ID.
       identity: unsigned ? '-' : macOSSigning?.signingIdentity,
@@ -264,8 +264,8 @@ export function createElectronBuilderConfig(
       target: ['AppImage'],
     },
     nsis: {
-      shortcutName: 'LingXi Office',
-      uninstallDisplayName: 'LingXi Office',
+      shortcutName: 'Lingxi Office',
+      uninstallDisplayName: 'Lingxi Office',
       installerSidebar: join(buildPaths.root, 'installer-ui', 'uninstaller-sidebar.bmp'),
       uninstallerSidebar: join(buildPaths.root, 'installer-ui', 'uninstaller-sidebar.bmp'),
       include: fileURLToPath(new URL('./installer.nsh', import.meta.url)),

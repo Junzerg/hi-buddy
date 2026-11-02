@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-web-search-exa",
-  "description": "Exa-backed search provider for the DeepSeek Harness web capability seam (ctx.web)",
+  "description": "Exa-backed search provider for the Lingxi Office web capability seam (ctx.web)",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"
