@@ -15,6 +15,7 @@ Base procedure: [packaging README](README.zh.md) §内网更新. This reference 
 - Local staging `apps/desktop/.desktop-build/intranet-site/` is the accumulating source of truth for `versions/releases.json`. Extend it with `node apps/desktop/scripts/prepare-intranet-site.mjs <unsigned-artifacts> <site-dir>` (appends + sorts, refuses duplicate versions). Never truncate history; for installers not on this machine, take `bytes` from the live server's `releases.json`.
 
 - The container-internal distribution root is `/srv/lingxi-office`; Nginx `root` and Dockerfile `COPY` targets live in `apps/desktop/config/`. Keep client-visible URL paths `/updates/` and `/versions/` unchanged.
+- Every shipped build gets a lightweight git tag `release/<version>` on the exact commit it was built from (the artifact manifest's `dshBuildCommit` names it; `dshBuildDirty` must be false), pushed to origin. Tags, never release branches — a release is a point in history and the feed never downgrades. Existing upstream tags use the `dsh-v*` namespace; `release/*` stays fork-local. Backfilled 2026-11-02: `release/0.2.1-rc.3.20261102.1` → `7beb38d4c9`.
 
 ### Publish checklist
 
