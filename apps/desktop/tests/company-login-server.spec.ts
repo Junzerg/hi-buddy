@@ -27,14 +27,16 @@ const callback = { code: 'fixture-code', redirectUri: 'http://127.0.0.1:18743/oa
 it('obtains the personal key from server-verified email without returning application secrets or IAM tokens', async () => {
   const upstream = vi.fn<typeof fetch>()
     .mockResolvedValueOnce(Response.json({ access_token: 'private-iam-token' }))
-    .mockResolvedValueOnce(Response.json({ email: 'employee@example.test', sub: '18000001' }))
+    .mockResolvedValueOnce(Response.json({ ret: 0, email: 'employee@example.test', sub: '18000001', name: '张宁',
+      orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/', telephone: 'private-phone', card: 'private-card' }))
     .mockResolvedValueOnce(Response.json({ success: true, status: { code: 20000 }, msg: null, extraInfo: {},
       data: { username: 'lingxi-office_employee', apiKey: 'personal-key', newlyCreated: false, authorizedModels: ['fixture-model'] } }))
   vi.stubGlobal('fetch', upstream)
   const response = await send(await endpoint(), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(callback) })
   expect(response.status).toBe(200)
   expect(response.headers.get('cache-control')).toBe('no-store')
-  expect(await response.json()).toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test' })
+  expect(await response.json()).toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test',
+    name: '张宁', orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/' })
   const tokenBody = upstream.mock.calls[0]?.[1]?.body
   expect(upstream.mock.calls[0]?.[0]).toEqual(new URL('http://iam-stg.haiercash.work/sso/oauth2/token'))
   expect(upstream.mock.calls[1]?.[0]).toEqual(new URL('http://iam-stg.haiercash.work/sso/oauth2/userInfo'))

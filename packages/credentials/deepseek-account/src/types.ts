@@ -48,6 +48,8 @@ export interface AccountProfile {
   readonly id: AccountUserId | null
   readonly name: string | null
   readonly contact: string | null
+  /** Company department hierarchy, excluding the company root and including the current organization. */
+  readonly department?: string | null
   /** Profile image URL supplied by Platform, absent when no picture is configured. */
   readonly avatarUrl?: string | null
 }

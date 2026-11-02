@@ -471,6 +471,41 @@ it('keeps the profile picture in settings and uses the login initial in the side
   expect(operations.avatarFailed).toHaveBeenCalledWith(avatar)
 })
 
+it.each([
+  { name: '张宁', initial: '张', copy: zh },
+  { name: 'Ada Lovelace', initial: 'A', copy: en },
+])('shows the name and complete department above the account actions: $name', async ({ name, initial, copy }) => {
+  const { AccountMenu } = await import('../src/client/AccountMenu.tsx')
+  const operations = operationsOf({ status: 'credential-stored', attempt: null }, {
+    profile: { status: 'ready', value: { id: null, name, contact: 'employee@example.test',
+      department: '金融科技中心 / 架构平台 / AI工程' } },
+  })
+  let snapshot = operations.hooks.account.getSnapshot()
+  const element = <AccountMenu {...launcherSlots} {...({} as GlobalStandardProps)} {...operations} settingsOpen={false}
+    useAccount={selector => selector(snapshot)} useTheme={selector => selector(operations.hooks.theme.getSnapshot())}
+    wide openSettings={() => {}} openOnboarding={() => {}} t={key => copy[key as AccountKey]} />
+  const view = render(element)
+  const trigger = screen.getByRole('button', { name: copy.menu })
+  expect(trigger.textContent).toBe(initial)
+  fireEvent.click(trigger)
+  const menu = screen.getByRole('menu')
+  expect(within(menu).getByText(name)).toBeTruthy()
+  expect(within(menu).getByText(initial)).toBeTruthy()
+  expect(within(menu).getByText('金融科技中心 / 架构平台 / AI工程')).toBeTruthy()
+  expect(within(menu).getAllByRole('separator')).toHaveLength(1)
+  expect(within(menu).getAllByRole('menuitem').map(item => item.textContent))
+    .toEqual([copy.settings, copy.contactUs, copy.signOut])
+  fireEvent.keyDown(within(menu).getByRole('menuitem', { name: copy.settings }), { key: 'Escape' })
+  expect(screen.queryByRole('menu')).toBeNull()
+  expect(document.activeElement).toBe(trigger)
+  snapshot = { ...snapshot, view: { ...snapshot.view!, status: 'signed-out' }, details: undefined }
+  view.rerender(<>{element}</>)
+  fireEvent.click(trigger)
+  expect(within(screen.getByRole('menu')).queryByText(name)).toBeNull()
+  expect(screen.queryByRole('separator')).toBeNull()
+  expect(screen.getByRole('menuitem', { name: copy.signIn })).toBeTruthy()
+})
+
 it.each(['loading', 'failed'] as const)('shows fallback until the shared avatar is ready (%s)', async (status) => {
   const { AccountAvatar } = await import('../src/client/AccountAvatar.tsx')
   const avatarFailed = vi.fn()

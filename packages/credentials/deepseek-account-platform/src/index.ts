@@ -12,7 +12,7 @@ import { credentialKey, credentialRef } from '@deepseek-ai/dsh-credentials'
 import type {} from '@deepseek-ai/dsh-llm'
 import type {} from '@deepseek-ai/dsh-settings'
 import type {} from '@deepseek-ai/dsh-agent-default-model'
-import { COMPANY_PROVIDER, COMPANY_KEY_REF, companyAuthorizeUrl, exchangeCompanyLogin } from './company.ts'
+import { COMPANY_PROVIDER, COMPANY_KEY_REF, companyAccountProfile, companyAuthorizeUrl, exchangeCompanyLogin } from './company.ts'
 import type { AuthorizationSession } from '@deepseek-ai/dsh-authorization'
 import { profile, readAccountDetail, readUnnotifiedBonuses, sendBonusNotified } from './details.ts'
 import { revokeAccount, type LogoutRetryPolicy } from './logout.ts'
@@ -20,7 +20,10 @@ import { AccountUnauthorizedError, PlatformAuthError, platformHeaders, platformO
 
 const KEY = credentialKey('deepseek-account-platform', 'default')
 const DEVICE = credentialKey('deepseek-account-platform', 'device')
-const grant = z.object({ version: z.literal(1), token: z.string().min(1), issuer: z.url() })
+const grant = z.object({ version: z.literal(1), token: z.string().min(1), issuer: z.url(),
+  companyProfile: z.object({ id: z.null(), name: z.string().nullable(), contact: z.string().nullable(),
+    department: z.string().nullable().default(null) }).optional(),
+})
 const device = z.object({ id: z.uuid() })
 
 /** Deployment-specific platform and request deadlines. */
@@ -219,6 +222,7 @@ export class PlatformAccount extends DeepSeekAccount {
     if (this.companyLogin) {
       const stored = await this.readCurrentGrant(this.detailsLifetime)
       if (stored === null) return null
+      if (stored.companyProfile !== undefined) return { status: 'ready', value: stored.companyProfile }
       const initial = this.attempt?.initialProfile
       return initial?.token === stored.token ? initial.value : this.lastProfile?.token === stored.token ? this.lastProfile.profile : null
     }
@@ -674,11 +678,12 @@ export class PlatformAccount extends DeepSeekAccount {
         signal.throwIfAborted()
         this.update(attempt, { phase: 'committing' })
         clearTimeout(timer)
+        const companyProfile = companyAccountProfile(identity)
         await this.queueCompanyKey(identity.apiKey, () => session.commit({
-          kind: 'grant', payload: { version: 1, token: identity.apiKey, issuer: this.origin },
+          kind: 'grant', payload: { version: 1, token: identity.apiKey, issuer: this.origin, companyProfile },
         }))
-        attempt.initialProfile = { token: identity.apiKey, value: { status: 'ready', value: { id: null, name: identity.account, contact: identity.email } } }
-        this.cacheProfile(identity.apiKey, { status: 'ready', value: { id: null, name: identity.account, contact: identity.email } })
+        attempt.initialProfile = { token: identity.apiKey, value: { status: 'ready', value: companyProfile } }
+        this.cacheProfile(identity.apiKey, { status: 'ready', value: companyProfile })
         if (attempt.loginSource === 'desktop') attempt.completionUrl = 'dsh://open'
         return
       }

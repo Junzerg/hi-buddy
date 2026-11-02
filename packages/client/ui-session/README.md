@@ -10,16 +10,20 @@ English | [中文](README.zh.md)
 
 Use this package to expose Session catalog, retain information, and unified UI status through standard Slot hooks. It materializes per-`SessionBinding` hooks and props, while `SessionProvider` can inherit an outer binding or bind an explicit `SessionReference`. It owns process-local pending-interaction policy and device-local completion acknowledgements without owning Controller transport, history, or references.
 
-Running status comes from Host list baselines or status events. Subagent catalog rows and retained subagent fallback rows do not establish running status; main view references still acknowledge completions. Completion unread state and the last observed running state are saved in local browser storage. Reloads and restarts restore unread tasks, and opening a task saves its acknowledgement. The first catalog does not mark historical idle tasks unread; a saved running task that is idle on the next baseline does become unread. Starting another run clears the prior reminder. Deleted tasks are removed after a ready catalog arrives. Unavailable or invalid local storage falls back to in-memory status and logs the storage failure.
-
 ## Table of Contents
 
+- [Completion notifications](#completion-notifications)
 - [Access Hooks](#access-hooks)
 - [Model Experience](#model-experience)
 - [Known Limitations and Deferred Work](#known-limitations-and-deferred-work)
 - [Dev Note](#dev-note)
 
 -----
+
+<a id="completion-notifications"></a>
+## Completion notifications
+
+Running status comes from Host list baselines or status events. Subagent catalog rows and retained subagent fallback rows do not establish running status; main view references still acknowledge completions. Completion unread state and the last observed running state are saved in local browser storage. Reloads and restarts restore unread tasks, and opening a task saves its acknowledgement. The first catalog does not mark historical idle tasks unread; a saved running task that is idle on the next baseline does become unread. Starting another run clears the prior reminder. Deleted tasks are removed after a ready catalog arrives. Unavailable or invalid local storage falls back to in-memory status and logs the storage failure.
 
 <a id="access-hooks"></a>
 ## Access Hooks

@@ -9,7 +9,7 @@ import WebServer from '@deepseek-ai/dsh-host-webserver'
 import { LocalCredentialProvider } from '@deepseek-ai/dsh-credentials-local'
 import { credentialKey, credentialRef } from '@deepseek-ai/dsh-credentials'
 import { PlatformAccount } from '../src/index.ts'
-import { companyAuthorizeUrl, exchangeCompanyIdentity, exchangeCompanyLogin, COMPANY_KEY_REF, COMPANY_KEY_URL } from '../src/company.ts'
+import { companyAccountProfile, companyAuthorizeUrl, exchangeCompanyIdentity, exchangeCompanyLogin, COMPANY_KEY_REF, COMPANY_KEY_URL } from '../src/company.ts'
 
 const cleanups: Array<() => Promise<unknown>> = []
 afterEach(async () => {
@@ -54,6 +54,35 @@ it('requests the verified email account in lingxi-office and accepts its system-
   expect(JSON.parse(body)).toEqual({ account: 'Employee.Name', authSecret: 'fixture-auth-secret', system: 'lingxi-office' })
 })
 
+it.each([
+  { orgPathName: '/示例公司/金融科技中心/架构平台/', orgName: 'AI工程', expected: '金融科技中心 / 架构平台 / AI工程' },
+  { orgPathName: ' /示例公司//金融科技中心/架构平台/ ', orgName: ' AI工程 ', expected: '金融科技中心 / 架构平台 / AI工程' },
+  { orgPathName: '/示例公司/', orgName: 'AI工程', expected: 'AI工程' },
+  { orgPathName: '', orgName: 'AI工程', expected: 'AI工程' },
+])('combines IAM parent organizations with the current organization: $orgPathName', ({ orgPathName, orgName, expected }) => {
+  expect(companyAccountProfile({ apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test',
+    name: ' 张宁 ', orgName, orgPathName })).toEqual({
+    id: null, name: '张宁', contact: 'employee@example.test', department: expected,
+  })
+})
+
+it('retains the email-account fallback for a login server without display fields', () => {
+  expect(companyAccountProfile({ apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test' }))
+    .toEqual({ id: null, name: 'employee', contact: 'employee@example.test' })
+})
+
+it('accepts only the three company display fields from the login server', async () => {
+  vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json({
+    apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', name: '张宁',
+    orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/', telephone: 'private-phone', card: 'private-card',
+  })))
+  expect(await exchangeCompanyLogin('http://127.0.0.1/company-login/exchange', 'http://127.0.0.1:18743/oauth/callback',
+    'code', new AbortController().signal)).toEqual({
+    apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', name: '张宁',
+    orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/',
+  })
+})
+
 it.each([undefined, '', 'employee', '@company.test', 'employee@', 'a@b@c', ' employee@company.test'])
 ('rejects absent or malformed email without substituting employee numbers: %j', async (email) => {
   const send = vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json({ access_token: 'token' }))
@@ -90,10 +119,11 @@ async function keyFixture() {
     api: 'openai-completions', baseURL: 'http://ai-gateway.haierxj.cn/v1', apiKeyEnv: COMPANY_KEY_REF,
   } } } }], update } as never)
   ctx.provide('agentDefaultModel', { currentSelection: () => selection, saveSelection: save } as never)
-  await ctx.plugin(PlatformAccount, { companyLogin: true, platformOrigin: 'https://iam-stg.haierxj.com',
+  const accountConfig = { companyLogin: true, platformOrigin: 'https://iam-stg.haierxj.com',
     inferenceOrigin: 'http://ai-gateway.haierxj.cn',
-    companyLoginEndpoint: 'http://172.28.236.3:18765/company-login/exchange' })
-  return { ctx, discover, update, save }
+    companyLoginEndpoint: 'http://172.28.236.3:18765/company-login/exchange' }
+  const accountFiber = await ctx.plugin(PlatformAccount, accountConfig)
+  return { ctx, discover, update, save, accountFiber, accountConfig }
 }
 
 it('completes manual keys through the provider and preserves an available default', async () => {
@@ -146,17 +176,18 @@ it('waits for admitted key synchronization before clearing company access on sig
   expect((await f.ctx.deepseekAccount.getState()).status).toBe('signed-out')
 })
 
-it('opens a fresh IAM attempt and resynchronizes models after sign-out', async () => {
+it('restores company display data after provider restart and clears it before the next login', async () => {
   const f = await keyFixture()
   const send = globalThis.fetch
   vi.stubGlobal('fetch', (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
     const url = input instanceof Request ? input.url : typeof input === 'string' ? input : input.href
     if (url === 'http://172.28.236.3:18765/company-login/exchange') {
-      return Promise.resolve(Response.json({ apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test' }))
+      return Promise.resolve(Response.json({ apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test',
+        name: '张宁', orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/' }))
     }
     return send(input, init)
   })
-  const account = f.ctx.deepseekAccount
+  let account = f.ctx.deepseekAccount
   const client = { version: 'test', locale: 'en', timezoneOffsetSeconds: 0 }
   const callbackOrigin = f.ctx.webServer.getOrigin()
   const lifetime = new AbortController()
@@ -179,7 +210,18 @@ it('opens a fresh IAM attempt and resynchronizes models after sign-out', async (
     callback.search = new URLSearchParams({ code: 'fixture-code', state: previousState! }).toString()
     expect((await fetch(callback, { redirect: 'manual' })).status).toBe(302)
     expect((await wait('succeeded')).status).toBe('credential-stored')
+    const profile = { status: 'ready', value: { id: null, name: '张宁', contact: 'employee@example.test',
+      department: '金融科技中心 / 架构平台 / AI工程' } }
+    expect(await account.getProfile(client)).toEqual(profile)
+    if (index === 0) {
+      await f.accountFiber.dispose()
+      await f.ctx.plugin(PlatformAccount, f.accountConfig)
+      account = f.ctx.deepseekAccount
+      expect(await account.getProfile(client)).toEqual(profile)
+      expect((await account.getState()).attempt).toBeNull()
+    }
     await account.signOut(client)
+    expect(await account.getProfile(client)).toBeNull()
     expect(await f.ctx.credentials.resolve(credentialRef(COMPANY_KEY_REF))).toBeUndefined()
   }
   expect(f.discover).toHaveBeenCalledTimes(2)

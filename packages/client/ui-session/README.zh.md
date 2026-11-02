@@ -10,16 +10,20 @@ kind: "package-reference"
 
 使用本包可通过标准 Slot 钩子公开 Session catalog、retain 信息与统一 UI 状态。它按 `SessionBinding` 物化钩子和 prop，而 `SessionProvider` 可以继承外围 binding 或绑定显式 `SessionReference`。它拥有进程本地的 pending-interaction 策略与设备本地的完成确认状态，但不拥有 Controller transport、历史或 reference。
 
-运行状态来自 Host 列表基线或状态事件。Subagent 目录行和已保留子会话的 fallback 行不会建立运行状态；主视图引用仍会确认完成提醒。 完成未读状态与最后观察到的运行状态保存在浏览器本地存储中。刷新或重启后恢复未读任务，打开任务时保存已读确认。首次 catalog 不会把历史空闲任务标成未读；保存时仍在运行、下次基线中已空闲的任务会产生未读提醒。再次运行时清除上次提醒，catalog 就绪后移除已删除任务的记录。本地存储不可用或数据无效时回退为内存状态，并记录存储错误。
-
 ## 目录
 
+- [完成通知](#completion-notifications)
 - [访问 Hook](#access-hooks)
 - [模型体验](#model-experience)
 - [已知限制与暂缓事项](#known-limitations-and-deferred-work)
 - [开发备注](#dev-note)
 
 -----
+
+<a id="completion-notifications"></a>
+## 完成通知
+
+运行状态来自 Host 列表基线或状态事件。Subagent 目录行和已保留子会话的 fallback 行不会建立运行状态；主视图引用仍会确认完成提醒。完成未读状态与最后观察到的运行状态保存在浏览器本地存储中。刷新或重启后恢复未读任务，打开任务时保存已读确认。首次 catalog 不会把历史空闲任务标成未读；保存时仍在运行、下次基线中已空闲的任务会产生未读提醒。再次运行时清除上次提醒，catalog 就绪后移除已删除任务的记录。本地存储不可用或数据无效时回退为内存状态，并记录存储错误。
 
 <a id="access-hooks"></a>
 ## 访问 Hook

@@ -34,9 +34,24 @@ export class CompletionNotifications {
     }
   }
 
+  /**
+   * Read one task's saved completion state.
+   * @param id - task identity.
+   * @returns its saved status, or undefined before observation.
+   */
   get(id: SessionId): CompletionRecord | undefined { return this.records.get(id) }
+  /**
+   * Enumerate the tasks retained by this window.
+   * @returns identities in the saved completion records.
+   */
   ids(): IterableIterator<SessionId> { return this.records.keys() }
 
+  /**
+   * Record an observed task state for the next flush.
+   * @param id - observed task.
+   * @param running - current run state.
+   * @param unread - unacknowledged completion.
+   */
   set(id: SessionId, running: boolean, unread: boolean): void {
     const previous = this.records.get(id)
     if (previous?.running === running && previous.unread === unread) return
@@ -44,6 +59,10 @@ export class CompletionNotifications {
     this.dirty = true
   }
 
+  /**
+   * Remove deleted tasks after the catalog settles.
+   * @param present - identities in the ready catalog.
+   */
   retain(present: ReadonlySet<SessionId>): void {
     for (const id of this.records.keys()) {
       if (present.has(id)) continue

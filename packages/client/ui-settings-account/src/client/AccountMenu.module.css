@@ -31,6 +31,30 @@
 .trigger > span { display: inline-flex; align-items: center; justify-content: center; }
 .trigger[data-signed-out='true'] { background: transparent; color: var(--dsw-alias-label-secondary); }
 
+.profileMenu[role='menu'] { width: 260px; max-width: calc(100vw - 16px); }
+
+.profile { display: flex; align-items: center; gap: 10px; padding: 9px 11px; }
+
+.profileAvatar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--dsw-specific-sidebar-avatar-fill);
+  color: var(--dsw-specific-sidebar-accent-ink);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.profileText { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.profileName { color: var(--dsw-alias-label-primary); font-size: 13px; font-weight: 500; line-height: 20px; }
+.department { color: var(--dsw-alias-label-secondary); font-size: 12px; line-height: 18px; }
+
 .footerActions { margin-left: auto; display: flex; align-items: center; gap: 4px; }
 
 .iconButton {

@@ -1,7 +1,7 @@
 /** Sidebar account launcher and locally authoritative sign-out action. */
 import { useEffect, useRef, useState } from 'react'
 import {
-  Toast, Menu, Tooltip, IconPaperPlaneOutlineMedium, IconPaperPlaneOutlineRegular,
+  Toast, Menu, MenuItemButton, Tooltip, IconPaperPlaneOutlineMedium, IconPaperPlaneOutlineRegular,
   IconSettingsOutlineMedium, IconSettingsOutlineRegular, IconUserOutlineMedium,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { InjectFace, PropsLocale, PropsRuntime, PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
@@ -46,6 +46,7 @@ export function AccountMenu({
     ? profile.value.name ?? profile.value.contact ?? t('signedIn') : t('signedIn')
   const loginName = profile?.status === 'ready' ? profile.value.name?.trim() || profile.value.contact?.trim() : undefined
   const initial = Array.from(loginName ?? '')[0]
+  const department = profile?.status === 'ready' ? profile.value.department?.trim() : undefined
   const [open, setOpen] = useState(false)
   const trigger = useRef<HTMLButtonElement>(null)
   const [busy, setBusy] = useState(false)
@@ -71,27 +72,33 @@ export function AccountMenu({
       notices={account.notices}
       anchor={anchor} title={t('bonusNoticeTitle')} closeLabel={t('close')}
       onShown={bonusNoticeShown} onDismiss={bonusNoticeDismissed} />}
-    <Menu open={open} side="top" portal autoFocus className={css.anchor} listClassName={signedIn ? undefined : css.signedOutMenu}
+    <Menu open={open} side="top" portal autoFocus className={css.anchor} listClassName={signedIn ? css.profileMenu : css.signedOutMenu}
       anchor={<Tooltip label={signedIn ? label ?? t('signedIn') : t('signIn')} side="top" disabled={open}>
         <button ref={trigger} type="button" className={css.trigger} data-signed-out={!signedIn} aria-label={t('menu')}
           aria-haspopup="menu" aria-expanded={open} onClick={() => { setOpen(value => !value) }}>
           <span aria-hidden="true">{signedIn && initial !== undefined ? initial : <IconUserOutlineMedium size={16} />}</span>
         </button>
-      </Tooltip>}
-      items={[
-        { id: 'settings', label: t('settings'), icon: <IconSettingsOutlineMedium size={16} />,
-          ...(settingsShortcut === undefined ? {} : { shortcut: settingsShortcut }) },
-        { id: 'contact', label: t('contactUs'), icon: <IconPaperPlaneOutlineMedium size={16} /> },
-        ...(signedIn ? [{ id: 'signout', label: t('signOut'), icon: <LogoutIcon />, disabled: busy }]
-          : [{ id: 'signin', label: t('signIn'), icon: <IconUserOutlineMedium size={16} /> }]),
-      ]}
-      onClose={() => { setOpen(false) }}
-      onSelect={(id) => {
-        if (id === 'settings') { setOpen(false); trigger.current?.focus(); openSettings() }
-        else if (id === 'contact') openFeedback()
-        else if (id === 'signin') beginSignIn()
-        else void requestSignOut()
-      }} />
+      </Tooltip>} onClose={() => { setOpen(false) }}>
+      {signedIn && <div className={css.profile}>
+        <span className={css.profileAvatar} aria-hidden="true">{initial ?? <IconUserOutlineMedium size={16} />}</span>
+        <div className={css.profileText}>
+          <div className={css.profileName}>{label ?? t('signedIn')}</div>
+          {department && <div className={css.department}>{department}</div>}
+        </div>
+      </div>}
+      <MenuItemButton separatorBefore={signedIn} icon={<IconSettingsOutlineMedium size={16} />}
+        shortcut={settingsShortcut} onSelect={() => { setOpen(false); trigger.current?.focus(); openSettings() }}>
+        {t('settings')}
+      </MenuItemButton>
+      <MenuItemButton icon={<IconPaperPlaneOutlineMedium size={16} />} onSelect={openFeedback}>
+        {t('contactUs')}
+      </MenuItemButton>
+      {signedIn ? <MenuItemButton icon={<LogoutIcon />} disabled={busy} onSelect={() => { void requestSignOut() }}>
+        {t('signOut')}
+      </MenuItemButton> : <MenuItemButton icon={<IconUserOutlineMedium size={16} />} onSelect={beginSignIn}>
+        {t('signIn')}
+      </MenuItemButton>}
+    </Menu>
     {wide && <div className={css.footerActions}>
       {renderSlot('settings.launcher.notifications', {}, { fallback: <Tooltip label={t('notifications')} side="top">
         <button type="button" className={css.iconButton} aria-label={t('notifications')}>

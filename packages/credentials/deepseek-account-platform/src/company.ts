@@ -1,5 +1,38 @@
 /** Company OAuth and personal gateway-key protocol, using the account provider's existing attempt lifetime. */
 import { PlatformAuthError } from './protocol.ts'
+import type { AccountProfile } from '@deepseek-ai/dsh-deepseek-account/types'
+
+/** Verified display fields returned beside the personal gateway key. */
+interface CompanyIdentity {
+  apiKey: string
+  account: string
+  email: string
+  name?: string
+  orgName?: string
+  orgPathName?: string
+}
+
+function displayFields(value: Record<string, unknown>): Pick<CompanyIdentity, 'name' | 'orgName' | 'orgPathName'> {
+  return {
+    ...(typeof value.name === 'string' ? { name: value.name } : {}),
+    ...(typeof value.orgName === 'string' ? { orgName: value.orgName } : {}),
+    ...(typeof value.orgPathName === 'string' ? { orgPathName: value.orgPathName } : {}),
+  }
+}
+
+/**
+ * Project the verified company identity for display and device-local storage.
+ * IAM's path contains ancestors: omit the company root and append the current organization.
+ * @param identity - verified exchange result; old login servers may omit display fields.
+ * @returns name, email and department hierarchy, without IAM identifiers or credentials.
+ */
+export function companyAccountProfile(identity: CompanyIdentity): AccountProfile {
+  const parents = (identity.orgPathName ?? '').split('/').map(part => part.trim()).filter(Boolean).slice(1)
+  const current = identity.orgName?.trim()
+  const department = [...parents, ...(current ? [current] : [])].join(' / ')
+  return { id: null, name: identity.name?.trim() || identity.account, contact: identity.email,
+    ...(department ? { department } : {}) }
+}
 
 /** Deployment's shared model provider. */
 export const COMPANY_PROVIDER = 'company-gateway'
@@ -21,7 +54,7 @@ function record(value: unknown): value is Record<string, unknown> {
  * @returns the verified profile and personal gateway key, without IAM tokens or application secrets.
  */
 export async function exchangeCompanyLogin(endpoint: string, redirectUri: string, code: string,
-  signal: AbortSignal): Promise<{ apiKey: string; account: string; email: string }> {
+  signal: AbortSignal): Promise<CompanyIdentity> {
   try {
     const response = await fetch(endpoint, { method: 'POST', redirect: 'error', signal,
       headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify({ code, redirectUri }) })
@@ -30,7 +63,7 @@ export async function exchangeCompanyLogin(endpoint: string, redirectUri: string
     if (!record(value) || typeof value.email !== 'string' || !/^[^\s@]+@[^\s@]+$/.test(value.email)
       || value.account !== value.email.slice(0, value.email.indexOf('@'))
       || typeof value.apiKey !== 'string' || !/^[\x21-\x7e]+$/.test(value.apiKey)) throw new PlatformAuthError('protocol')
-    return { apiKey: value.apiKey, account: value.account, email: value.email }
+    return { apiKey: value.apiKey, account: value.account, email: value.email, ...displayFields(value) }
   } catch (error) {
     if (error instanceof PlatformAuthError) throw error
     throw new PlatformAuthError(signal.aborted ? 'expired' : 'no-response')
@@ -62,7 +95,7 @@ export function companyAuthorizeUrl(origin: string, redirectUri: string, state: 
  * Failures log only the stage, HTTP status and declared error code on the server.
  */
 export async function exchangeCompanyIdentity(origin: string, redirectUri: string, code: string,
-  clientSecret: string, authSecret: string, signal: AbortSignal): Promise<{ apiKey: string; account: string; email: string }> {
+  clientSecret: string, authSecret: string, signal: AbortSignal): Promise<CompanyIdentity> {
   let stage: 'iam-token' | 'iam-userinfo' | 'gateway-key' = 'iam-token'
   let httpStatus: number | undefined
   const post = async (url: string | URL, body: URLSearchParams | string): Promise<unknown> => {
@@ -100,7 +133,7 @@ export async function exchangeCompanyIdentity(origin: string, redirectUri: strin
     if (!record(result) || result.success !== true || !record(result.status) || result.status.code !== 20000
       || !record(result.data) || result.data.username !== `${system}_${account}` || typeof result.data.apiKey !== 'string'
       || !/^[\x21-\x7e]+$/.test(result.data.apiKey)) throw new PlatformAuthError('protocol')
-    return { apiKey: result.data.apiKey, account, email: user.email }
+    return { apiKey: result.data.apiKey, account, email: user.email, ...displayFields(user) }
   } catch (error) {
     // Fetch and JSON errors may contain private parameters; preserve only declared safe failures.
     console.error('[company-login] exchange failed', {
