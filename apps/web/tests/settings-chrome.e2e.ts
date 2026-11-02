@@ -47,11 +47,12 @@ describe('web e2e: settings modal and General preferences', () => {
   let tripwire: ReturnType<typeof watchConsole>
 
   beforeAll(async () => {
+    const browserEnvironment = { ...process.env }
     scaffold = await launchWebScaffold({
       developerTools: false,
       extraOverlayPath: fileURLToPath(new URL('./pin-browse-picker.overlay.yml', import.meta.url)),
     })
-    browser = await chromium.launch()
+    browser = await chromium.launch({ env: browserEnvironment })
     // Chinese browser: the shared page asserts the localized settings surface
     // the client derives from it (the English default has its own spec below).
     page = await browser.newPage({ viewport: { width: 1680, height: 1000 }, locale: ZH_BROWSER_LOCALE })
@@ -479,6 +480,9 @@ describe('web e2e: settings modal and General preferences', () => {
       reload = page.reload({ waitUntil: 'domcontentloaded' })
       const loading = page.getByText('Loading plugins…', { exact: true })
       await loading.waitFor({ timeout: 10_000 })
+      const boot = page.locator('[data-dsh-boot]')
+      await boot.getByText('灵犀办公', { exact: true }).waitFor()
+      expect(await boot.textContent()).not.toMatch(/harness/i)
       const state = await loading.evaluate((element) => {
         const boot = element.parentElement?.parentElement
         if (boot === undefined || boot === null) throw new Error('loading hint is detached from the boot page')
