@@ -71,6 +71,8 @@ An external id is a non-empty ASCII BCP 47-style tag. Its fallback must already 
 
 Every authenticated browser persists the preference through the Host settings service under the shared [settings scope policy](../ui-settings/README.md).
 
+The Host also injects the built-in document language before Client plugins load. The startup brand follows the saved Chinese or English preference; without one, it uses the first supported browser language and falls back to English. Desktop applies the same injection table before showing the brand. External language packs become available during plugin activation.
+
 -----
 
 <a id="understand-the-implementation"></a>

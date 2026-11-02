@@ -71,6 +71,8 @@ export function apply(ctx) {
 
 每个已认证浏览器都遵循共享的 [settings scope 策略](../ui-settings/README.zh.md)，通过 Host settings 服务持久化偏好。
 
+Host 还会在 Client 插件加载前注入内置文档语言。启动页品牌名遵循已保存的中文或英文偏好；没有偏好时选择浏览器请求的第一个受支持语言，无法匹配时回退到英文。Desktop 在显示品牌名前应用同一张注入表。外部语言包在插件激活期间可用。
+
 -----
 
 <a id="understand-the-implementation"></a>

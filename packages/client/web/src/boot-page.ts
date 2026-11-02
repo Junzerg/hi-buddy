@@ -34,7 +34,7 @@ export class BootPage {
     this.root = div(css.boot)
     this.root.dataset.dshBoot = ''
     this.card = div(css.card)
-    this.wordmark = div(css.wordmark, '灵犀办公')
+    this.wordmark = div(css.wordmark)
     this.spinner = div(css.spinner)
     this.spinner.dataset.dshBootSpinner = ''
     this.hint = div(css.hint, 'Loading plugins…')
@@ -42,6 +42,14 @@ export class BootPage {
     this.root.append(this.card)
     container.append(this.root)
     this.updateProgress()
+  }
+
+  /**
+   * Show the brand in the language supplied by the Host bootstrap.
+   * @param language - Document language after bootstrap injections complete.
+   */
+  setLanguage(language: string): void {
+    this.wordmark.textContent = language.toLowerCase().split('-')[0] === 'zh' ? '灵犀办公' : 'Lingxi Office'
   }
 
   /**

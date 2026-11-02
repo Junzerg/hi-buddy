@@ -4,17 +4,21 @@ import { BootPage } from '../src/boot-page.ts'
 
 afterEach(() => { document.body.innerHTML = '' })
 
-function mount() {
+function mount(language = 'en') {
   const el = document.createElement('div')
   document.body.append(el)
-  return { el, page: new BootPage(el) }
+  const page = new BootPage(el)
+  page.setLanguage(language)
+  return { el, page }
 }
 
 describe('BootPage', () => {
-  it('draws the loading skeleton before any plugin state arrives', () => {
-    const { el } = mount()
+  it.each([
+    ['zh-CN', '灵犀办公'], ['zh-TW', '灵犀办公'], ['en', 'Lingxi Office'], ['fr', 'Lingxi Office'],
+  ])('draws the %s loading page before any plugin state arrives', (language, name) => {
+    const { el } = mount(language)
     expect(el.firstElementChild?.getAttribute('data-dsh-boot')).toBe('')
-    expect(el.textContent).toContain('灵犀办公')
+    expect(el.textContent).toContain(name)
     expect(el.textContent).not.toMatch(/harness/i)
     expect(el.textContent).toContain('Loading plugins…')
   })

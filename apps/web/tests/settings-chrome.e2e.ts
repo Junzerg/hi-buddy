@@ -915,7 +915,23 @@ describe('web e2e: settings modal and General preferences', () => {
     // Reload keeps English; then restore zh so shared page state (and the
     // other specs' 设置-anchored selectors + goldens) see the default again.
     const warningStart = tripwire.warnings.length
-    await page.reload({ waitUntil: 'load' })
+    const pluginPattern = /\/plugins\/\?\?.+\/client\.js,.+\/client\.js&rev=[a-f\d]{12}$/
+    const bundles = Promise.withResolvers<undefined>()
+    await page.route(pluginPattern, async (route) => {
+      await bundles.promise
+      await route.continue()
+    })
+    let reload: ReturnType<Page['reload']> | undefined
+    try {
+      reload = page.reload({ waitUntil: 'domcontentloaded' })
+      const boot = page.locator('[data-dsh-boot]')
+      await boot.getByText('Lingxi Office', { exact: true }).waitFor({ timeout: 10_000 })
+      expect(await boot.textContent()).not.toMatch(/harness|灵犀办公/i)
+    } finally {
+      bundles.resolve(undefined)
+      await reload
+      await page.unroute(pluginPattern)
+    }
     await page.waitForSelector('[class*="frame"]', { timeout: 30_000 })
     acknowledgeReloadConnectionLoss(tripwire, warningStart)
     const enTrigger = page.getByRole('button', { name: 'Account menu' })

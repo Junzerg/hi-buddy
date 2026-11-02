@@ -270,6 +270,7 @@ describe('plugin activation', () => {
 })
 
 it('draws the shared boot page before Host injections and resumes without replacing the document', async () => {
+  const originalLanguage = document.documentElement.lang
   const gate = Promise.withResolvers<undefined>()
   vi.stubGlobal('__DSH_BOOT_READY__', gate)
   const container = document.createElement('div')
@@ -282,19 +283,23 @@ it('draws the shared boot page before Host injections and resumes without replac
     const page = container.querySelector('[data-dsh-boot]')
     const spinner = container.querySelector('[data-dsh-boot-spinner]')
     expect(spinner).not.toBeNull()
+    expect(container.textContent).not.toMatch(/Lingxi Office|灵犀办公/)
     await Promise.resolve()
     expect(create).not.toHaveBeenCalled()
     expect(error).not.toHaveBeenCalled()
     installFacade(create)
+    document.documentElement.lang = 'zh-CN'
     gate.resolve(undefined)
     await boot
     expect(create).toHaveBeenCalledOnce()
     expect(container.querySelector('[data-dsh-boot]')).toBe(page)
     expect(container.textContent).toContain('injections consumed')
+    expect(container.textContent).toContain('灵犀办公')
   } finally {
     gate.resolve(undefined)
     await boot
     await entry.dispose()
     vi.unstubAllGlobals()
+    document.documentElement.lang = originalLanguage
   }
 })

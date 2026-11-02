@@ -1,5 +1,6 @@
 /** Host registration for the browser locale preference. */
 import type {} from '@deepseek-ai/dsh-settings'
+import type {} from '@deepseek-ai/dsh-host-webserver'
 
 import type { Volatile, Context } from '@deepseek-ai/cordis'
 
@@ -21,12 +22,27 @@ export interface Config {
 
 /** Live preferences projected to the browser. */
 export const Config = z.object({
-  [LOCALE_PREFERENCE_FIELD]: LocaleSettingsFields[LOCALE_PREFERENCE_FIELD].volatile(),
+  preference: LocaleSettingsFields[LOCALE_PREFERENCE_FIELD].volatile(),
 })
 
-/** Host preferences are consumed through the configuration form projection.
+/** Project the locale preference to settings and the pre-plugin boot page.
  * @param ctx Plugin context used for optional settings presentation.
+ * @param config Validated live language preference.
  */
-export function apply(ctx: Context): void {
+export function apply(ctx: Context, config: Config): void {
   ctx.inject(['settings'], (child) => { child.effect(() => child.settings.configure({ auto: false }, ctx.fiber)) })
+  ctx.on('webserver/index-inject', (table) => {
+    table.push({
+      kind: 'script',
+      placement: 'body',
+      text: `(() => {
+  const preference = ${JSON.stringify(config.preference.get()?.toLowerCase() ?? null)}
+  const languages = preference === 'zh' || preference === 'en'
+    ? [preference] : [...(navigator.languages ?? []), navigator.language]
+  const language = languages.map(tag => tag.toLowerCase().split('-')[0])
+    .find(tag => tag === 'zh' || tag === 'en') ?? 'en'
+  document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en'
+})()`,
+    })
+  })
 }
