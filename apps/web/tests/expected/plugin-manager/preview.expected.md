@@ -5,7 +5,7 @@
 - text: v{{version}} 实验性
 - paragraph:
   - code: "@deepseek-ai/dsh-experimental-badge-skill-bundle"
-- paragraph: 让 Agent 为文档、PR 等产出添加「powered by dsh」徽章。
+- paragraph: 为文档、PR 等产出提供署名徽章技能。
 - region "详细介绍":
   - paragraph:
     - img "署名徽章技能功能预览"
@@ -13,7 +13,7 @@
 - text: 共 1 个 · 1 已停用
 - list:
   - listitem:
-    - text: DSH 提供官方 powered-by-署名徽章技能。
+    - text: 署名徽章技能 为文档、PR 等产出提供署名徽章技能。
     - code: skill-badge
     - code: "@deepseek-ai/dsh-skill-badge"
     - text: 已关闭
