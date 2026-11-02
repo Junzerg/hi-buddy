@@ -1,0 +1,18 @@
+{
+  "client/ui-chat/src/client/chat/ReasoningRow.module.css": [
+    ".root border: 1px solid var(--dsw-alias-border-l2)"
+  ],
+  "client/ui-conversation/src/client/skeleton/InputBar.module.css": [
+    ".hero .card border: 1px solid var(--dsw-alias-border-l2)",
+    ".root:not(.hero) .card border: 1px solid var(--dsw-alias-border-l2)"
+  ],
+  "client/ui-sidebar/src/client/SidebarRoot.module.css": [
+    ".betaTag border: 1px solid var(--dsw-alias-border-l3)"
+  ],
+  "client/ui-tool/src/client/tool/components/ToolRow.module.css": [
+    ".root border: 1px solid var(--dsw-alias-border-l2)"
+  ],
+  "client/ui-tool/src/client/tool/toolviews/bash-sample.module.css": [
+    ".card border: 1px solid var(--dsw-alias-border-l2)"
+  ]
+}

@@ -11,7 +11,7 @@ describe('createLayoutStore', () => {
     const { store } = createLayoutStore().create()
     expect(store.getSnapshot()).toEqual({
       panelInfo: { activePanelId: null },
-      layoutInfo: { viewportWidth: 1440, rightbarShown: false,
+      layoutInfo: { viewportWidth: 1440, rightbarWidth: 336, rightbarShown: false,
         rightbarTrack: false, rightbarFullscreen: false, rightbarInstant: false },
     })
   })
@@ -21,8 +21,27 @@ describe('createLayoutStore', () => {
     const a = createLayoutStore().create()
     const b = createLayoutStore().create()
     a.actions.openRightbar(true, false)
+    a.actions.setRightbarWidth(640)
     expect(b.store.getSnapshot().layoutInfo.rightbarShown).toBe(false)
+    expect(b.store.getSnapshot().layoutInfo.rightbarWidth).toBe(336)
     expect(write).not.toHaveBeenCalled()
+  })
+
+  it('retains the width through close, reopen, fullscreen and viewport changes', () => {
+    const { store, actions } = createLayoutStore().create()
+    const panelInfo = store.getSnapshot().panelInfo
+    actions.setRightbarWidth(640)
+    expect(store.getSnapshot().layoutInfo.rightbarInstant).toBe(true)
+    const resized = store.getSnapshot()
+    actions.setRightbarWidth(640)
+    expect(store.getSnapshot()).toBe(resized)
+    actions.openRightbar(true, false)
+    actions.openRightbar(true, true)
+    actions.closeRightbar()
+    actions.setViewportWidth(390)
+    actions.openRightbar(true, false)
+    expect(store.getSnapshot().layoutInfo.rightbarWidth).toBe(640)
+    expect(store.getSnapshot().panelInfo).toBe(panelInfo)
   })
 
 })

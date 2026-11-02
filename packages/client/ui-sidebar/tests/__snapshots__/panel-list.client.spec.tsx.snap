@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`sidebar task navigation > opens the More placeholder and updates its copy when the locale changes 1`] = `
+exports[`sidebar task navigation > retains hidden placeholder pages and updates their copy when the locale changes 1`] = `
 <main>
   <div
     data-slot="main"

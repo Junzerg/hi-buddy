@@ -129,12 +129,12 @@ export interface TopbarOwnerProps {
 
 /** Right column owner share: resolved normal geometry and opening eligibility. */
 export interface RightbarOwnerProps {
-  /** Fixed normal panel width in px, including overlay presentation. */
+  /** Resolved normal panel width in px, including overlay presentation. */
   width: number
   /** Current frame width in px. */
   viewportWidth: number
   /**
-   * Whether the panel can be opened. Fixed-width panels remain available
+   * Whether the panel can be opened. Normal panels remain available
    * in narrow windows, where they overlay the main column.
    */
   canShow: boolean

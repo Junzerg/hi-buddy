@@ -1,11 +1,12 @@
-/** Fixed-width sidebar and right panel around the flexible main column. */
+/** Fixed navigation and a resizable right panel around the flexible main column. */
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import type {
   PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore,
 } from '@deepseek-ai/dsh-client-ui-slots'
 import { IconPanelLeftOutlineRegular, Tooltip } from '@deepseek-ai/dsh-client-ui-primitives'
-import { computeColumns, RIGHTBAR_WIDTH } from './columns.ts'
+import { clampRightbarWidth, computeColumns, rightbarBounds, SIDEBAR_DEFAULT } from './columns.ts'
+import { RightbarResizeHandle } from './RightbarResizeHandle.tsx'
 import { DocumentTitle } from './DocumentTitle.tsx'
 import type { createLayoutStore } from './stores.ts'
 import css from './AppFrame.module.css'
@@ -79,8 +80,10 @@ export function AppFrame({
   }, [actions])
 
   const windowsTitlebar = document.documentElement.hasAttribute('data-windows-titlebar')
-  const cols = computeColumns(viewport, layoutInfo.rightbarTrack)
-  const sidebarWidth = sidebarCollapsed ? 0 : cols.sidebar
+  const sidebarWidth = sidebarCollapsed ? 0 : SIDEBAR_DEFAULT
+  const bounds = rightbarBounds(viewport, sidebarWidth)
+  const rightbarWidth = clampRightbarWidth(layoutInfo.rightbarWidth, bounds)
+  const cols = computeColumns(viewport, layoutInfo.rightbarTrack, rightbarWidth)
   const toggleLabel = t(sidebarCollapsed ? 'sidebar.expand' : 'sidebar.collapse')
   const sidebar = useMemo(() => renderSlot('sidebar', {
     collapsed: false, width: 236,
@@ -100,7 +103,8 @@ export function AppFrame({
       style={{
         '--dsh-sidebar-track-width': `${sidebarWidth}px`,
         ...(windowsTitlebar ? { '--dsh-windows-sidebar-width': `${sidebarWidth}px` } : {}),
-        '--dsh-rightbar-track-width': `${layoutInfo.rightbarTrack ? RIGHTBAR_WIDTH : 0}px`,
+        '--dsh-rightbar-track-width': `${layoutInfo.rightbarTrack ? rightbarWidth : 0}px`,
+        '--dsh-rightbar-panel-width': `${rightbarWidth}px`,
       } as CSSProperties}
       data-sidebar-collapsed={sidebarCollapsed || undefined}
       data-rightbar-collapsed={cols.rightbar === 0 || undefined}
@@ -116,7 +120,11 @@ export function AppFrame({
       <div className={css.sidebarCol} aria-hidden={sidebarCollapsed || undefined}>{sidebar}</div>
       <CenterColumn topbar={topbar}>{main}</CenterColumn>
       <RightbarColumn>
-        {renderSlot('rightbar', { width: RIGHTBAR_WIDTH, viewportWidth: viewport, canShow: true })}
+        {renderSlot('rightbar', { width: rightbarWidth, viewportWidth: viewport, canShow: true })}
+        {layoutInfo.rightbarShown && !layoutInfo.rightbarFullscreen && (
+          <RightbarResizeHandle width={rightbarWidth} bounds={bounds} label={t('rightbar.resize')}
+            onResize={actions.setRightbarWidth} />
+        )}
       </RightbarColumn>
       <div className={css.bottomRow} data-shell-bottom>{renderSlot('shell.bottom', {})}</div>
       <div className={css.overlayLayer} data-shell-overlay>{overlays}</div>

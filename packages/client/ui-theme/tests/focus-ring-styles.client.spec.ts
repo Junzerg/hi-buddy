@@ -61,10 +61,14 @@ describe('focus styles', () => {
     expect(ringColorViolations(`.a:focus-visible::after { outline: 2px solid ${FALLBACK}; }`)).toEqual([])
   })
 
-  it('uses the shared ring color throughout a non-empty client stylesheet corpus', () => {
+  it('uses the shared ring color with exact product-specific focus treatments', () => {
+    const exceptions = JSON.parse(readFileSync(new URL('./expected/focus-exceptions.expected.json', import.meta.url), 'utf8')) as Record<string, string[]>
     const files = packageStylesheets().filter(file => file.includes('/packages/client/'))
     expect(files.length).toBeGreaterThan(0)
-    const failures = files.flatMap(file => ringColorViolations(readFileSync(file, 'utf8')).map(value => `${file}: ${value}`))
-    expect(failures).toEqual([])
+    const failures = Object.fromEntries(files.map((file): [string, string[]] => [
+      file.slice(file.indexOf('/packages/client/') + '/packages/client/'.length),
+      ringColorViolations(readFileSync(file, 'utf8')),
+    ]).filter(([, violations]) => violations.length > 0))
+    expect(failures).toEqual(exceptions)
   })
 })

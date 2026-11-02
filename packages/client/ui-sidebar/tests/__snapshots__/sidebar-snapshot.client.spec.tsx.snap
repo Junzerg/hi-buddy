@@ -115,6 +115,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       <button
         aria-label="Experts·Skills·Connectors"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -142,6 +143,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       <button
         aria-label="Library"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -169,6 +171,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       <button
         aria-label="Assistant"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -201,6 +204,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       <button
         aria-label="Projects"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -228,6 +232,7 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
       <button
         aria-label="More"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -400,6 +405,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       <button
         aria-label="专家·技能·连接器"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -427,6 +433,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       <button
         aria-label="资料库"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -454,6 +461,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       <button
         aria-label="助理"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -486,6 +494,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       <button
         aria-label="项目"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -513,6 +522,7 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
       <button
         aria-label="更多"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -685,6 +695,7 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
       <button
         aria-label="Experts·Skills·Connectors"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -712,6 +723,7 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
       <button
         aria-label="Library"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -739,6 +751,7 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
       <button
         aria-label="Assistant"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -771,6 +784,7 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
       <button
         aria-label="Projects"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span
@@ -798,6 +812,7 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
       <button
         aria-label="More"
         class="panelRow"
+        hidden=""
         type="button"
       >
         <span

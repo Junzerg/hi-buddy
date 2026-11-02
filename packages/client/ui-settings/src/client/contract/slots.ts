@@ -15,6 +15,8 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface SlotMap {
     /** Optional sidebar account launcher; opens the shell-owned settings panel. */
     'settings.launcher': { kind: 'single'; scope: 'root'; owner: SettingsLauncherOwnerProps }
+    /** Task notifications rendered beside the sidebar account and settings controls. */
+    'settings.launcher.notifications': { kind: 'single'; scope: 'root' }
 
     /**
      * The sidebar-foot trigger row content: icon + label, supplied as slot

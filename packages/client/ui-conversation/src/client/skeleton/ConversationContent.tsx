@@ -160,7 +160,7 @@ export function ConversationContent(props: ConversationContentProps) {
     <div className={clsx(css.composerStack, hero && css.composerHero)}>
       {hero && (
         <HeroShell t={t}>
-          {renderSlot('conversation.hero.agentPreset', {})}
+          <div hidden>{renderSlot('conversation.hero.agentPreset', {})}</div>
         </HeroShell>
       )}
       {zone !== undefined && renderSlot('conversation.input.dock', zone)}

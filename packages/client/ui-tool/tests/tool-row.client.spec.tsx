@@ -338,16 +338,18 @@ describe('ToolRow', () => {
     expect(view.container.querySelector('[aria-expanded]')?.getAttribute('aria-expanded')).toBe('false')
   })
 
-  it('row click expands: chevron leading, summary kept inline, body in the scrolling card', () => {
+  it('row click expands with the business icon, summary and scrolling body retained', () => {
     const view = render(<ToolRow {...rowProps} />)
     fireEvent.click(view.getByRole('button'))
-    expect(view.queryByTestId('tool-icon')).toBeNull()
-    expect(view.container.querySelector('svg')).not.toBeNull()
+    expect(view.queryByTestId('tool-icon')).not.toBeNull()
+    expect(view.getByRole('button').getAttribute('aria-expanded')).toBe('true')
     expect(view.getByText('List files')).toBeTruthy()
     expect(view.getByText(/"a": 1/)).toBeTruthy()
     expect(view.container.querySelector('[class*="ioCard"]')).not.toBeNull()
     fireEvent.click(view.getByRole('button'))
     expect(view.queryByTestId('tool-icon')).not.toBeNull()
+    expect(view.getByRole('button').getAttribute('aria-expanded')).toBe('false')
+    expect(view.queryByText(/"a": 1/)).toBeNull()
     expect(view.getByText('List files')).toBeTruthy()
   })
 
@@ -397,9 +399,13 @@ describe('ToolRow', () => {
     const runningView = render(<ToolRow {...rowProps} state="running" />)
     expect(runningView.queryByTestId('tool-icon')).not.toBeNull()
     expect(runningView.container.querySelector('[data-state="running"]')).not.toBeNull()
+    runningView.unmount()
     const errorView = render(<ToolRow {...rowProps} state="error" />)
     expect(errorView.container.querySelector('[data-testid="tool-icon"]')).not.toBeNull()
-    expect(errorView.container.querySelector('[class*="chevronHover"]')).not.toBeNull()
+    expect(errorView.getByRole('button').getAttribute('aria-expanded')).toBe('false')
+    fireEvent.click(errorView.getByRole('button'))
+    expect(errorView.getByRole('button').getAttribute('aria-expanded')).toBe('true')
+    expect(errorView.container.querySelector('[data-testid="tool-icon"]')).not.toBeNull()
   })
 
   it('non-expandable rows render a passive leading slot and no row button', () => {

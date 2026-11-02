@@ -1,5 +1,10 @@
 /* Fixed navigation column with a scrolling workspace region and pinned footer. */
 
+/* Keep unfinished entries mounted without exposing navigation or reserving space. */
+.panelRow[hidden] {
+  display: none;
+}
+
 .root {
   --dsh-sidebar-inline-padding: 8px;
   display: flex;

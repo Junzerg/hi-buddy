@@ -25,7 +25,9 @@ kind: "package-reference"
 <a id="use-this-package"></a>
 ## 使用本包
 
-本插件在 root slot 中组合固定 236px 的侧边栏、自适应主内容和固定 336px 的右侧面板。窗口宽度大于 1180px 时，展开的右侧面板独占一列；宽度不超过 1180px 时，右侧面板覆盖主内容，不压缩主内容宽度。列宽与面板的过渡时间为 180ms。左侧栏始终保持 236px 展开；只有右侧面板可以收起和打开。外侧栏不提供宽度拖拽手柄。
+本插件在 root slot 中组合展开时宽 236px 的侧边栏、自适应主内容和初始宽度为 336px 的右侧面板。窗口宽度大于 1180px 时，展开的右侧面板独占一列；宽度不超过 1180px 时，右侧面板覆盖主内容，不压缩主内容宽度。列宽与面板的过渡时间为 180ms；调整宽度立即生效。
+
+拖动右侧面板的左边缘可调整宽度。空间允许时，最小宽度为 280px。宽窗口至少为主内容保留 360px；浮层在面板旁保留 24px 边缘。聚焦手柄后，左右方向键每次调整 16px，Home 和 End 分别选择最小和最大宽度。关闭面板或进入全屏会保留偏好宽度；全屏时隐藏手柄。刷新页面后宽度重置。
 
 全局面板占据 root 作用域的 `main` keyed slot；`conversation` 是为会话界面保留的 key。`ctx.layout.selectPanel(id)` 选中已注册面板，`null` 则选中会话界面，但不改变当前会话。Plugins 页面是默认组合中的一个全局面板。
 
@@ -54,7 +56,7 @@ Windows Electron 的 `data-windows-titlebar` 标记在所有列上方预留顶�
 
 `selectPanel(id)` 在改变选中态前检查实时 `main` 注册表；缺失的 key 会抛错并保留当前面板。`beginNavigation()` 为异步 UI 导航返回 abort signal。后续调用、有效面板选择（包括重复选择）或布局释放会中止该 signal，但不取消底层会话创建。消费方在提交导航或搬移草稿前检查 signal。
 
-一次注册声明框架的子 slot，并绑定 `ctx.layout` 的 `selectPanel`、`openRightbar(track, fullscreen)` 与 `closeRightbar`。同一个 root 存储把 `panelInfo` 选中态与 `layoutInfo` 测量、呈现报告分开。`ctx.layout.panelInfo` 与标准 `usePanelInfo` hook 共用同一个选中态来源；AppFrame 订阅引用稳定的布局对象。`rightbar` owner 提供固定 `width`、当前 `viewportWidth` 和表示能否打开面板的 `canShow`。窄窗口以浮层方式保留面板。显式全屏在宽窗口中保留普通轨道。AppFrame 保持各列容器挂载。右栏的 root 控制器仅在选中会话界面时，经 `SessionProvider` 渲染 `rightbar.session`；内容卸载时的报告释放轨道。独立的标题组件仅在会话界面可见时使用所选会话标题，以构建配置的产品标题或本地化 `common.brand.localBuild` 为回退值；语言变化会更新该回退值。主题呈现器是第二个 effect：从解析后的快照做纯 DOM 写入——初始状态经 getter 读取一次，此后仅事件驱动，不经过 React。它先应用调色板、字号、字体列表与 token 变量，再把渲染出的背景测量为唯一的颜色依据。全屏呈现禁用网格过渡；占用方完全覆盖框架后才报告新的列布局。退出全屏时，框架先保持无过渡并安装目标布局：关闭移除右轨道，恢复保留右轨道。后续普通几何操作恢复正常过渡。
+一次注册声明框架的子 slot，并绑定 `ctx.layout` 的 `selectPanel`、`openRightbar(track, fullscreen)` 与 `closeRightbar`。同一个 root 存储把 `panelInfo` 选中态与 `layoutInfo` 测量、呈现报告分开。`ctx.layout.panelInfo` 与标准 `usePanelInfo` hook 共用同一个选中态来源；AppFrame 订阅引用稳定的布局对象。`rightbar` owner 提供解析后的 `width`、当前 `viewportWidth` 和表示能否打开面板的 `canShow`。窄窗口以浮层方式保留面板。显式全屏在宽窗口中保留普通轨道。AppFrame 保持各列容器挂载。右栏的 root 控制器仅在选中会话界面时，经 `SessionProvider` 渲染 `rightbar.session`；内容卸载时的报告释放轨道。独立的标题组件仅在会话界面可见时使用所选会话标题，以构建配置的产品标题或本地化 `common.brand.localBuild` 为回退值；语言变化会更新该回退值。主题呈现器是第二个 effect：从解析后的快照做纯 DOM 写入——初始状态经 getter 读取一次，此后仅事件驱动，不经过 React。它先应用调色板、字号、字体列表与 token 变量，再把渲染出的背景测量为唯一的颜色依据。全屏呈现禁用网格过渡；占用方完全覆盖框架后才报告新的列布局。退出全屏时，框架先保持无过渡并安装目标布局：关闭移除右轨道，恢复保留右轨道。后续普通几何操作恢复正常过渡。
 
 </details>
 
@@ -89,8 +91,8 @@ Windows Electron 的 `data-windows-titlebar` 标记在所有列上方预留顶�
 
 这些限制界定了当前布局行为。它们是当前包约束，不是通用窗口管理器对比或任务积压。
 
-- **面板几何是瞬时状态**——右侧面板使用所选 Session 保存的展开状态；框架测量不持久化。
-- **窄窗口**——236px 侧栏始终保持展开；336px 右侧浮层会覆盖部分主内容。
+- **面板几何是瞬时状态**——右侧面板使用所选 Session 保存的展开状态；框架测量和偏好宽度不持久化。
+- **窄窗口**——右侧浮层覆盖部分主内容，并根据可用空间限制宽度。
 - **列宽与面板共用过渡参数**——框架发布 `--dsh-layout-transition-duration` 和 `--dsh-layout-transition-easing`，值为 180ms 和 `ease`。列宽与面板过渡共用这两个变量；显式全屏的几何变化立即生效。
 - **挤压重排期间无滚动锚定**——布局变化可能移动读者的视口。
 

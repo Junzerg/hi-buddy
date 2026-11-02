@@ -192,6 +192,7 @@ function createUiSession(ctx: Context, bench: SessionsBench): UiSession {
 afterEach(async () => {
   await Promise.all(roots.splice(0).map(ctx => ctx.fiber.dispose()))
   vi.restoreAllMocks()
+  vi.unstubAllGlobals()
 })
 
 describe('UiSession bindings', () => {
@@ -522,6 +523,60 @@ describe('UiSession bindings', () => {
 })
 
 describe('UiSession status', () => {
+  it('preserves unread completions across recreation, saves reads, and notifies again after another run', async () => {
+    const data = new Map<string, string>()
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => data.get(key) ?? null,
+      setItem: (key: string, value: string) => { data.set(key, value) },
+    })
+    const id = sessionId('saved-task')
+    const start = () => {
+      const ctx = new Context()
+      const bench = createSessionsBench(ctx)
+      bench.binding(id)
+      return { ctx, bench, service: createUiSession(ctx, bench) }
+    }
+    const first = start()
+    expect(first.service.sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(false)
+    first.bench.emitStatus(id, true)
+    first.bench.emitStatus(id, false)
+    expect(first.service.sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(true)
+    await first.ctx.fiber.dispose()
+
+    const second = start()
+    expect(second.service.sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(true)
+    second.bench.setMainView(id, 1)
+    expect(second.service.sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(false)
+    await second.ctx.fiber.dispose()
+
+    const third = start()
+    expect(third.service.sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(false)
+    third.bench.emitStatus(id, true)
+    third.bench.emitStatus(id, false)
+    expect(third.service.sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(true)
+  })
+
+  it('recovers a previously running task that ended before the next catalog arrived', async () => {
+    const data = new Map<string, string>()
+    vi.stubGlobal('localStorage', {
+      getItem: (key: string) => data.get(key) ?? null,
+      setItem: (key: string, value: string) => { data.set(key, value) },
+    })
+    const id = sessionId('running-at-reload')
+    const ctx = new Context()
+    const bench = createSessionsBench(ctx)
+    bench.binding(id)
+    const first = createUiSession(ctx, bench)
+    bench.emitStatus(id, true)
+    expect(first.sessionStatus.getSnapshot().get(id)?.running).toBe(true)
+    await ctx.fiber.dispose()
+
+    const next = new Context()
+    const restored = createSessionsBench(next)
+    restored.binding(id)
+    expect(createUiSession(next, restored).sessionStatus.getSnapshot().get(id)?.completionUnread).toBe(true)
+  })
+
   it('keeps synthetic-row status unknown until an event or Host baseline establishes it', () => {
     const ctx = new Context()
     const bench = createSessionsBench(ctx)

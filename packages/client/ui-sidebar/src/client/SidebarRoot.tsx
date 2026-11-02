@@ -258,7 +258,7 @@ export function SidebarRoot({
       <nav className={css.panelList} aria-label={t('panels.label')}>
         {NAV_PAGE_IDS.flatMap((page) => {
           const id = placeholderPanelId(page)
-          const entry = <button key={page} type="button"
+          const entry = <button key={page} type="button" hidden
             className={clsx(css.panelRow, activePanelId === id && css.panelActive)}
             aria-label={t(`panels.${page}`)} aria-current={activePanelId === id ? 'page' : undefined}
             onClick={() => {

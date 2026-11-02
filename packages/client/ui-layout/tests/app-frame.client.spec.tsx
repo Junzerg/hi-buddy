@@ -49,6 +49,17 @@ function resize(width: number): void {
   })
 }
 
+/** Pointer input with explicit identity, without changing the worker's DOM prototypes. */
+function pointer(handle: HTMLElement, type: string, x: number,
+  options: { id?: number; button?: number; primary?: boolean } = {}): void {
+  const event = new MouseEvent(type, { bubbles: true, clientX: x, button: options.button ?? 0 })
+  Object.defineProperties(event, {
+    pointerId: { value: options.id ?? 1 },
+    isPrimary: { value: options.primary ?? true },
+  })
+  fireEvent(handle, event)
+}
+
 function mountFrame(windowWidth = frameWidth) {
   vi.stubGlobal('innerWidth', windowWidth)
   const instance = createLayoutStore().create()
@@ -154,7 +165,7 @@ describe('AppFrame', () => {
     expect(document.title).toBe('Product')
   })
 
-  it('keeps the right panel available at its fixed width beside a closed track', () => {
+  it('keeps the right panel available at its initial width beside a closed track', () => {
     const { frame, sidebarOwner, rightOwner } = mountFrame()
     expect(sidebarOwner()).toEqual({ collapsed: false, width: 236 })
     expect(rightOwner()).toEqual({ width: 336, viewportWidth: 1440, canShow: true })
@@ -162,7 +173,7 @@ describe('AppFrame', () => {
     expect(frame.querySelector('[data-side]')).toBeNull()
   })
 
-  it('reserves the fixed right width only while the occupant reports a track', () => {
+  it('reserves the normal right width only while the occupant reports a track', () => {
     const { frame, instance } = mountFrame()
     act(() => { instance.actions.openRightbar(true, false) })
     expect(frame.style.getPropertyValue('--dsh-rightbar-track-width')).toBe('336px')
@@ -252,5 +263,93 @@ describe('AppFrame', () => {
     const { instance } = mountFrame()
     resize(0)
     expect(instance.getSnapshot().layoutInfo.viewportWidth).toBe(1440)
+  })
+
+  it('resizes both the panel and its reserved track with the keyboard, without remounting main content', () => {
+    const { instance, frame, getByRole, getByTestId, rightOwner, queryByRole } = mountFrame()
+    expect(queryByRole('separator')).toBeNull()
+    act(() => { instance.actions.openRightbar(true, false) })
+    const handle = getByRole('separator', { name: 'rightbar.resize' })
+    const main = getByTestId('main-content')
+    fireEvent.keyDown(handle, { key: 'ArrowLeft' })
+    expect(rightOwner().width).toBe(352)
+    expect(frame.style.getPropertyValue('--dsh-rightbar-track-width')).toBe('352px')
+    expect(frame.dataset.rightbarInstant).toBe('true')
+    fireEvent.keyDown(handle, { key: 'ArrowRight' })
+    expect(rightOwner().width).toBe(336)
+    fireEvent.keyDown(handle, { key: 'Home' })
+    expect(rightOwner().width).toBe(280)
+    fireEvent.keyDown(handle, { key: 'ArrowRight' })
+    expect(rightOwner().width).toBe(280)
+    fireEvent.keyDown(handle, { key: 'End' })
+    expect(rightOwner().width).toBe(844)
+    fireEvent.keyDown(handle, { key: 'ArrowLeft' })
+    fireEvent.keyDown(handle, { key: 'Escape' })
+    expect(rightOwner().width).toBe(844)
+    expect(getByTestId('main-content')).toBe(main)
+  })
+
+  it('retains the preferred width when the window shrinks and after closing the panel', () => {
+    const { instance, rightOwner, getByRole, queryByRole } = mountFrame()
+    act(() => { instance.actions.openRightbar(true, false); instance.actions.setRightbarWidth(800) })
+    resize(1300)
+    expect(rightOwner().width).toBe(704)
+    resize(390)
+    expect(rightOwner().width).toBe(366)
+    expect(getByRole('separator').getAttribute('aria-valuemax')).toBe('366')
+    expect(instance.getSnapshot().layoutInfo.rightbarWidth).toBe(800)
+    act(() => { instance.actions.closeRightbar() })
+    expect(queryByRole('separator')).toBeNull()
+    resize(1440)
+    act(() => { instance.actions.openRightbar(true, false) })
+    expect(rightOwner().width).toBe(800)
+    fireEvent.click(getByRole('button', { name: 'sidebar.collapse' }))
+    fireEvent.keyDown(getByRole('separator'), { key: 'End' })
+    expect(rightOwner().width).toBe(1080)
+    fireEvent.click(getByRole('button', { name: 'sidebar.expand' }))
+    expect(rightOwner().width).toBe(844)
+  })
+
+  it.each(['pointerup', 'pointercancel', 'lostpointercapture'])(
+    'ends only the captured gesture on %s', (endEvent) => {
+      const { instance, getByRole, rightOwner } = mountFrame()
+      act(() => { instance.actions.openRightbar(true, false) })
+      const handle = getByRole('separator')
+      handle.setPointerCapture = vi.fn()
+      pointer(handle, 'pointermove', 1000)
+      pointer(handle, 'pointerdown', 1104, { button: 2 })
+      pointer(handle, 'pointerdown', 1104, { primary: false })
+      expect(handle.dataset.resizing).toBeUndefined()
+      pointer(handle, 'pointerdown', 1104)
+      pointer(handle, 'pointerdown', 1000)
+      expect(handle.setPointerCapture).toHaveBeenCalledExactlyOnceWith(1)
+      expect(handle.dataset.resizing).toBe('true')
+      pointer(handle, 'pointermove', 1004, { id: 2 })
+      expect(rightOwner().width).toBe(336)
+      pointer(handle, 'pointermove', 1004)
+      expect(rightOwner().width).toBe(436)
+      pointer(handle, endEvent, 1004, { id: 2 })
+      expect(handle.dataset.resizing).toBe('true')
+      pointer(handle, endEvent, 1004)
+      expect(handle.dataset.resizing).toBeUndefined()
+      pointer(handle, 'pointermove', 900)
+      expect(rightOwner().width).toBe(436)
+    },
+  )
+
+  it('removes a captured handle in fullscreen and restores the chosen normal width', () => {
+    const { instance, getByRole, queryByRole, rightOwner } = mountFrame()
+    act(() => { instance.actions.openRightbar(true, false) })
+    const handle = getByRole('separator')
+    handle.setPointerCapture = vi.fn()
+    pointer(handle, 'pointerdown', 1104)
+    pointer(handle, 'pointermove', 900)
+    expect(rightOwner().width).toBe(540)
+    act(() => { instance.actions.openRightbar(true, true) })
+    expect(queryByRole('separator')).toBeNull()
+    expect(handle.isConnected).toBe(false)
+    act(() => { instance.actions.openRightbar(true, false) })
+    expect(rightOwner().width).toBe(540)
+    expect(getByRole('separator').dataset.resizing).toBeUndefined()
   })
 })

@@ -14,6 +14,11 @@ function unguardedHover(source: string): string[] {
       const offset = match.index + match[0].indexOf(':hover')
       return !spans.some(span => span.start < offset && offset < span.end)
     })
+    .filter((match) => {
+      const selectors = match[0].slice(0, -1).split(',').map(selector => selector.trim())
+      return selectors.some(selector => selector.includes(':hover')
+        && !selectors.includes(selector.replace(/:hover\b/g, '')))
+    })
     .map(match => match[0].slice(0, -1).trim())
 }
 
@@ -24,6 +29,8 @@ it('rejects unguarded hover and queries that also match devices without hover', 
     '@media (any-hover: hover) { .button:hover { color: red; } }',
     '@media (hover: hover), (pointer: coarse) { .button:hover { color: red; } }',
   ]) expect(unguardedHover(source)).toEqual(['.button:hover'])
+  expect(unguardedHover('.row.selected, .row.selected:hover, .row.selected.menuOpen { color: red; }')).toEqual([])
+  expect(unguardedHover('.row.selected, .row:hover { color: red; }')).toEqual(['.row.selected, .row:hover'])
   expect(unguardedHover(`
     @media (hover: hover) { .button:hover { color: red; } }
     .button:focus-visible { outline: auto; }

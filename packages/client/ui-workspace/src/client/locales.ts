@@ -6,6 +6,11 @@
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
+  'notifications.title': '通知',
+  'notifications.unread': '通知，{n} 条未读',
+  'notifications.many': '99+',
+  'notifications.empty': '暂无未读通知',
+  'notifications.ended': '任务已结束，点击查看',
   'defaultWorkspace.failed': '无法创建默认工作区，请通过“选择工作区”选择文件夹',
   'draft.workspaceRequired': '请先选择工作区',
   'draft.initializationFailed': '暂时无法填入草稿，请稍后重试',
@@ -132,6 +137,11 @@ export type WorkspaceKey = keyof typeof zh
 
 /** English dictionary, checked complete against the zh key set. */
 export const en = {
+  'notifications.title': 'Notifications',
+  'notifications.unread': 'Notifications, {n} unread',
+  'notifications.many': '99+',
+  'notifications.empty': 'No unread notifications',
+  'notifications.ended': 'Task ended. Open to view.',
   'defaultWorkspace.failed': 'Unable to create default workspace. Use Choose workspace to select a folder.',
   'draft.workspaceRequired': 'Choose a workspace first.',
   'draft.initializationFailed': 'Could not fill the draft. Please try again shortly.',

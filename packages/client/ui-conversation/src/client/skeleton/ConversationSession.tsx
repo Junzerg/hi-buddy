@@ -1,6 +1,6 @@
 /** Strict per-session header/body content inserted into the resident conversation layout. */
 
-import { useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import clsx from 'clsx'
 import { Button, IconEllipsisOutlineRegular, Menu, Tooltip } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { SessionListState, SessionSummary } from '@deepseek-ai/dsh-api-session-controller/client'
@@ -22,17 +22,26 @@ export type ConversationSessionHeaderProps = ConversationSessionHeaderSlotProps
 type ViewsMoreMenuProps =
   Omit<ConversationViewActionsOwnerProps, 'onDismiss'>
   & Pick<ConversationSessionHeaderSlotProps, 'renderSlot'>
-  & { readonly label: string; readonly current: boolean }
+  & { readonly label: string; readonly current: boolean; readonly onRemoveFocus: () => void }
 
 /** The View tab row's More launcher; its menu rows come from `conversation.session.header.views.actions`. */
-function ViewsMoreMenu({ label, current, entries, onOpen, onPinnedChange, renderSlot }: ViewsMoreMenuProps) {
+function ViewsMoreMenu({ label, current, entries, onOpen, onPinnedChange, renderSlot, onRemoveFocus }: ViewsMoreMenuProps) {
   const [open, setOpen] = useState(false)
+  const trigger = useRef<HTMLButtonElement>(null)
+  useLayoutEffect(() => {
+    const button = trigger.current
+    return () => {
+      if (button !== null && document.activeElement === button) {
+        onRemoveFocus()
+      }
+    }
+  }, [onRemoveFocus])
   const onDismiss = (): void => { setOpen(false) }
   return (
     <Menu open={open} onClose={onDismiss} portal autoFocus className={css.viewsMoreAnchor} listClassName={css.viewsMoreMenu}
       anchor={(
         <Tooltip label={label} portal>
-          <Button size="sm" className={clsx(css.viewsMore, current && css.viewsMoreActive)} aria-label={label} aria-haspopup="menu" aria-expanded={open}
+          <Button ref={trigger} size="sm" className={clsx(css.viewsMore, current && css.viewsMoreActive)} aria-label={label} aria-haspopup="menu" aria-expanded={open}
             onClick={() => { setOpen(value => !value) }}>
             <IconEllipsisOutlineRegular size={13} />
           </Button>
@@ -118,6 +127,14 @@ export function ConversationSessionHeader({
     return { visibleTabs, moreTabs: tabs.filter(tab => !visibleIds.has(tab.id)) }
   }, [tabs, unpinned, hasEntryActions, visibleViewLimit])
   const currentInMore = moreTabs.some(tab => tab.id === active?.id)
+  const tabFocusPending = useRef(false)
+  const restoreTabFocus = useCallback(() => { tabFocusPending.current = true }, [])
+  // The formerly folded tab must be committed before it can receive focus.
+  useLayoutEffect(() => {
+    if (!tabFocusPending.current) return
+    tabFocusPending.current = false
+    tabRow.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]')?.focus()
+  })
   return (
     <>
       <div className={css.titleRow}>
@@ -209,10 +226,11 @@ export function ConversationSessionHeader({
               </button>
             ))}
           </div>
-          {hasEntryActions && (
+          {hasEntryActions && moreTabs.length > 0 && (
             <ViewsMoreMenu
               label={currentInMore && active !== undefined ? t('session.moreViewsCurrent', { name: active.label }) : t('session.moreViews')}
               current={currentInMore}
+              onRemoveFocus={restoreTabFocus}
               entries={moreTabs.map(viewTab => ({
                 id: viewTab.id, label: viewTab.label,
                 pinned: !unpinned.includes(viewTab.id), active: viewTab.id === active?.id,

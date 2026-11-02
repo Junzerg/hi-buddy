@@ -4,6 +4,7 @@
  */
 import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-store'
 import type { MainPanelId } from './service.ts'
+import { RIGHTBAR_WIDTH } from './columns.ts'
 
 /**
  * Transient frame layout. The right panel's expanded state belongs to its occupant.
@@ -19,6 +20,8 @@ type LayoutState = {
 type LayoutInfo = {
   /** Last positive frame measurement; window width bootstraps the first render. */
   viewportWidth: number
+  /** Preferred normal width, retained across Session switches and panel closes. */
+  rightbarWidth: number
   /**
    * Whether the right panel is drawn at all, in either presentation.
    *
@@ -35,7 +38,7 @@ type LayoutInfo = {
   rightbarTrack: boolean
   /** Reported fullscreen presentation. */
   rightbarFullscreen: boolean
-  /** Suppress transitions for a fullscreen exit until another geometry action. */
+  /** Suppress transitions for a fullscreen exit or explicit width adjustment. */
   rightbarInstant: boolean
 }
 
@@ -47,6 +50,7 @@ type LayoutActions = {
   selectPanel: (draft: LayoutState, panelId: MainPanelId | null) => void
   retainMainPanels: (draft: LayoutState, panelIds: readonly string[]) => void
   setViewportWidth: (draft: LayoutState, width: number) => void
+  setRightbarWidth: (draft: LayoutState, width: number) => void
   openRightbar: (draft: LayoutState, track: boolean, fullscreen: boolean) => void
   closeRightbar: (draft: LayoutState) => void
 }
@@ -61,6 +65,7 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
       panelInfo: { activePanelId: null },
       layoutInfo: {
         viewportWidth: window.innerWidth,
+        rightbarWidth: RIGHTBAR_WIDTH,
         rightbarShown: false,
         rightbarTrack: false,
         rightbarFullscreen: false,
@@ -80,6 +85,11 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
         if (d.layoutInfo.viewportWidth === width) return
         d.layoutInfo.rightbarInstant = false
         d.layoutInfo.viewportWidth = width
+      },
+      setRightbarWidth: (d, width: number) => {
+        if (d.layoutInfo.rightbarWidth === width) return
+        d.layoutInfo.rightbarWidth = width
+        d.layoutInfo.rightbarInstant = true
       },
       openRightbar: (d, track: boolean, fullscreen: boolean) => {
         if (!d.layoutInfo.rightbarShown || d.layoutInfo.rightbarTrack !== track || d.layoutInfo.rightbarFullscreen !== fullscreen) {

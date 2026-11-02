@@ -28,6 +28,7 @@ import { RowActionToast } from '../src/client/session-actions/RowActionToast.tsx
 import type { ArchiveToastInjected, ToastDisplayInjected } from '../src/client/contract/toast.ts'
 import { SessionIdMenuItem } from '../src/client/session-actions/SessionId.tsx'
 import { WorkspacePicker } from '../src/client/WorkspacePicker.tsx'
+import { TaskNotifications, type TaskNotificationsInjected } from '../src/client/TaskNotifications.tsx'
 import { FLAT_SESSION_ORDER_KEY } from '../src/client/stores.ts'
 import { UNGROUPED_KEY } from '../src/client/tree.ts'
 import { apply as hostApply } from '../src/index.ts'
@@ -173,7 +174,7 @@ async function bench(access: 'fake' | 'static' = 'fake') {
   }
 }
 
-type HoleName = 'sidebar.workspaces' | 'conversation.hero.workspace' | 'conversation.empty.workspace' | 'shell.overlay'
+type HoleName = 'sidebar.workspaces' | 'conversation.hero.workspace' | 'conversation.empty.workspace' | 'shell.overlay' | 'settings.launcher.notifications'
 
 const MENU_ITEM = 'sidebar.workspaces.session.menu.item'
 const ROW_ACTION = 'sidebar.workspaces.session.row.action'
@@ -216,6 +217,27 @@ function viewInstance(slots: SlotRegistry) {
 const settled = (): Promise<void> => new Promise((resolve) => { setTimeout(resolve, 0) })
 
 describe('ui-workspace apply', () => {
+  it('binds notifications to the launcher declaration and releases them on declaration or plugin disposal', async () => {
+    const b = await bench()
+    onTestFinished(() => b.ctx.fiber.dispose())
+    const plugin = b.ctx.plugin({ inject: [...inject], apply })
+    await plugin.await()
+    const name = 'settings.launcher.notifications'
+    expect(b.slots.entries(name)).toEqual([])
+    const close = declare(b.slots, name)
+    await vi.waitFor(() => { expect(b.slots.entries(name)[0]?.component).toBe(TaskNotifications) })
+    const open = vi.spyOn(b.ctx.uiWorkspace, 'openSession').mockImplementation(() => {})
+    const face = faceOf(b.slots.entries(name)[0]!) as TaskNotificationsInjected
+    face.openSession(sid('finished'))
+    expect(open).toHaveBeenCalledExactlyOnceWith(sid('finished'))
+    close()
+    expect(b.slots.entries(name)).toEqual([])
+    declare(b.slots, name)
+    await vi.waitFor(() => { expect(b.slots.entries(name)).toHaveLength(1) })
+    await plugin.dispose()
+    expect(b.slots.entries(name)).toEqual([])
+  })
+
   it('keeps the host Loader entry inert', () => {
     expect(hostApply).not.toThrow()
   })

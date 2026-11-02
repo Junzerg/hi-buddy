@@ -113,30 +113,28 @@ describe('sidebar task navigation', () => {
     await mountPanel(runtime, { id: PLUGINS, heading: 'Plugins content', label: 'Plugins' })
     await mountPanel(runtime, { id: SCHEDULES, heading: 'Schedule content', label: 'Automation' })
     const navigation = view.getByRole('navigation', { name: 'Global panels' })
-    expect(within(navigation).getAllByRole('button').map(button => button.textContent)).toEqual(['Experts·Skills·Connectors', 'Scheduled tasks', 'Library', 'AssistantBETA', 'Projects', 'More'])
+    expect(within(navigation).getAllByRole('button').map(button => button.textContent)).toEqual(['Scheduled tasks'])
     expect(runtime.slots.entries('main').some(entry => entry.options.key === PLUGINS)).toBe(true)
     fireEvent.click(view.getByRole('button', { name: 'Scheduled tasks' }))
     expect(view.getByRole('heading', { name: 'Schedule content' })).toBeTruthy()
     expect(view.getByRole('button', { name: 'Scheduled tasks' }).getAttribute('aria-current')).toBe('page')
   })
 
-  it('opens the More placeholder and updates its copy when the locale changes', async () => {
-    const track = vi.fn<TrackProductEvent>()
-    const { runtime, view, locale, sidebar } = await bench(track)
-    fireEvent.click(view.getByRole('button', { name: 'More' }))
+  it('retains hidden placeholder pages and updates their copy when the locale changes', async () => {
+    const { runtime, view, locale, sidebar, layout } = await bench()
+    act(() => { layout.selectPanel('sidebar-more' as MainPanelId) })
     expect(view.getByRole('heading', { name: 'More · Coming soon' })).toBeTruthy()
-    expect(track).toHaveBeenCalledWith('sidebar_menu_click', { menu_name: 'more', position: 'sidebar' })
     act(() => { locale.setLocale('zh') })
     expect(view.getByRole('heading', { name: '更多 · 敬请期待' })).toBeTruthy()
     expect(view.getByText('第一版聚焦核心能力：发起任务、单个专家与多个 Skill 协同完成工作。更多应用将在后续版本开放。')).toBeTruthy()
     expect(view.getByRole('main')).toMatchSnapshot()
-    for (const [label, title] of [
-      ['专家·技能·连接器', '专家 · 技能 · 连接器 · 敬请期待'],
-      ['资料库', '资料库 · 规划中'],
-      ['助理', '助理（远程任务） · 功能敬请期待'],
-      ['项目', '项目工作台 · 第二版规划中'],
+    for (const [id, title] of [
+      ['sidebar-experts', '专家 · 技能 · 连接器 · 敬请期待'],
+      ['sidebar-library', '资料库 · 规划中'],
+      ['sidebar-assistant', '助理（远程任务） · 功能敬请期待'],
+      ['sidebar-project', '项目工作台 · 第二版规划中'],
     ] as const) {
-      fireEvent.click(view.getByRole('button', { name: label }))
+      act(() => { layout.selectPanel(id as MainPanelId) })
       expect(view.getByRole('heading', { name: title })).toBeTruthy()
     }
     await sidebar.dispose()

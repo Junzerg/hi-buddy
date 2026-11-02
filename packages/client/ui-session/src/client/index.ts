@@ -29,6 +29,7 @@ import type {
 // Type-only service merge for ctx.slots.
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import { renderSessionArea } from './session-provider.tsx'
+import { CompletionNotifications } from './completion-notifications.ts'
 
 /** Selector hook over the Session Controller list and current selection. */
 export type UseSessions = SnapshotSelectorHook<SessionListState>
@@ -289,7 +290,7 @@ export class UiSession extends Service {
   private readonly pendingDomains: RuntimePendingDomain[] = []
   private pendingSnapshot: ReadonlyMap<SessionId, SessionPendingInteractionBase> = new Map()
   private readonly running = new Map<SessionId, boolean>()
-  private readonly completionUnread = new Set<SessionId>()
+  private readonly completions = new CompletionNotifications()
   private statusSnapshot: SessionStatusSnapshot = new Map()
   private readonly statusListeners = new Set<() => void>()
   private mainRetainId: SessionId | undefined
@@ -506,12 +507,12 @@ export class UiSession extends Service {
   }
 
   private observeRunning(sessionId: SessionId, running: boolean): void {
-    const previous = this.running.get(sessionId)
+    const previous = this.running.get(sessionId) ?? this.completions.get(sessionId)?.running
     const beforeBaseline = this.sessions.list.getSnapshot().phase === 'pending'
     this.running.set(sessionId, running)
-    if (running) this.completionUnread.delete(sessionId)
-    else if ((previous === true || (previous === undefined && beforeBaseline))
-      && !this.isMain(sessionId)) this.completionUnread.add(sessionId)
+    const completed = previous === true || (previous === undefined && beforeBaseline)
+    this.completions.set(sessionId, running, !running && !this.isMain(sessionId)
+      && (completed || this.completions.get(sessionId)?.unread === true))
     this.publishStatus()
   }
 
@@ -522,18 +523,23 @@ export class UiSession extends Service {
     for (const id of list.ids) {
       const row = list.byId[id] as SessionSummary
       const previous = this.running.get(id)
-      if (previous === undefined) this.running.set(id, row.running)
+      if (previous === undefined) {
+        const saved = this.completions.get(id)
+        this.running.set(id, row.running)
+        this.completions.set(id, row.running, !row.running && !this.isMain(id)
+          && (saved?.unread === true || saved?.running === true))
+      }
       else if (previous !== row.running) this.observeRunning(id, row.running)
     }
     for (const id of present) {
-      if (this.isMain(id)) this.completionUnread.delete(id)
+      if (this.isMain(id)) this.completions.set(id, this.running.get(id) ?? false, false)
     }
     if (list.phase === 'ready') {
       for (const id of this.running.keys()) {
         if (present.has(id)) continue
         this.running.delete(id)
-        this.completionUnread.delete(id)
       }
+      this.completions.retain(present)
     }
     this.publishStatus()
   }
@@ -547,16 +553,17 @@ export class UiSession extends Service {
       ...(Object.keys(this.sessions.list.getSnapshot().byId) as SessionId[]),
       ...this.running.keys(),
       ...this.pendingSnapshot.keys(),
-      ...this.completionUnread,
+      ...this.completions.ids(),
     ])
     const next = new Map<SessionId, SessionStatus>()
     for (const id of ids) {
       next.set(id, {
         running: this.running.get(id),
         pendingInteraction: this.pendingSnapshot.get(id),
-        completionUnread: this.completionUnread.has(id),
+        completionUnread: this.completions.get(id)?.unread === true,
       })
     }
+    this.completions.flush()
     if (sameSessionStatus(this.statusSnapshot, next)) return
     this.statusSnapshot = next
     notifySubscribers(this.statusListeners, '[ui-session] Session status')

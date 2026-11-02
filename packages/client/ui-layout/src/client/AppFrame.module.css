@@ -186,7 +186,7 @@
 }
 
 /*
- * The right column never clips: its occupant anchors a fixed-width panel to the
+ * The right column never clips: its occupant anchors the normal panel to the
  * column's right edge (the frame's edge, which never moves) and lets the track
  * decide whether the centre makes room. With no track the panel hangs over the
  * centre from a zero-width column, and while the track animates the panel stays
@@ -196,6 +196,52 @@
   position: relative;
   min-width: 0;
   overflow: visible;
+}
+
+.rightbarResize {
+  position: absolute;
+  top: 0;
+  right: calc(var(--dsh-rightbar-panel-width) - 4px);
+  bottom: 0;
+  z-index: 18;
+  width: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.rightbarResize::after {
+  position: absolute;
+  inset: 0 auto 0 4px;
+  width: 1px;
+  content: '';
+  background: var(--dsw-alias-label-secondary);
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .rightbarResize:hover::after { opacity: 1; }
+}
+
+.rightbarResize[data-resizing]::after { opacity: 1; }
+
+.rightbarResize:focus-visible {
+  outline: var(--dsw-focus-ring-width) solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
+  outline-offset: -2px;
+}
+
+.frame:has(.rightbarResize[data-resizing]) {
+  transition: none;
+  cursor: col-resize;
+  user-select: none;
+}
+
+/* Embedded pages must not take the pointer away from the captured resize. */
+.frame:has(.rightbarResize[data-resizing]) :global(iframe),
+.frame:has(.rightbarResize[data-resizing]) :global(webview) {
+  pointer-events: none;
 }
 
 .bottomRow {

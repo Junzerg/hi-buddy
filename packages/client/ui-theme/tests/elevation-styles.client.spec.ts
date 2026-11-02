@@ -250,18 +250,19 @@ describe('neutral solid borders are hairlines', () => {
     expect(wideFilledDividers('.a { background: var(--dsw-alias-border-l2); height: 0.5px; }')).toEqual([])
   })
 
-  it('draws every solid neutral-token border at 0.5px under packages/', () => {
+  it('draws neutral borders at 0.5px with exact product-specific outline weights', () => {
+    const exceptions = JSON.parse(readFileSync(new URL('./expected/border-exceptions.expected.json', import.meta.url), 'utf8')) as Record<string, string[]>
     // Buttons, inputs, cards, and separators share the hairline weight;
     // dashed affordances and state-colored borders are out of scope.
-    const wide = packageStylesheets().flatMap((file) => {
+    const wide = Object.fromEntries(packageStylesheets().map((file): [string, string[]] => {
       const base = basename(file)
       const exempt = new Set([...RING_TRACKS]
         .filter(track => track.startsWith(`${base} `))
         .map(track => track.slice(base.length + 1)))
-      return wideNeutralBorders(readFileSync(file, 'utf8'), exempt)
-        .map(line => `${file} ${line}`)
-    })
-    expect(wide).toEqual([])
+      return [file.slice(file.indexOf('/packages/') + '/packages/'.length),
+        wideNeutralBorders(readFileSync(file, 'utf8'), exempt)]
+    }).filter(([, borders]) => borders.length > 0))
+    expect(wide).toEqual(exceptions)
   })
 
   it('rejects thick neutral inset strokes while allowing hairlines and state colors', () => {

@@ -759,7 +759,7 @@ describe('ConversationRoot resident composer', () => {
     act(() => { b.store.actions.setView('chat') })
     expect(external()).toEqual(['Chat', 'Timeline', 'Inspector'])
     expect(readWidth).toHaveBeenCalledTimes(reads)
-    expect(b.actionsOwner().entries).toEqual([])
+    expect(b.view.queryByRole('button', { name: /更多会话视图/ })).toBeNull()
     expect(b.setPinned).not.toHaveBeenCalled()
   })
 
@@ -778,11 +778,14 @@ describe('ConversationRoot resident composer', () => {
     fireEvent.click(b.view.getByRole('button', { name: '更多会话视图 · notes' }))
     expect(b.actionsOwner().entries.map(entry => entry.id)).toEqual(['timeline', 'inspector', 'notes'])
     expect(b.actionsOwner().entries.find(entry => entry.id === 'notes')?.active).toBe(true)
+    fireEvent.click(b.view.getByRole('menuitem', { name: 'Header view action' }))
+    b.view.getByRole('button', { name: '更多会话视图 · notes' }).focus()
     width = 1000
     act(() => { fireResize(row) })
     expect(external()).toEqual(viewTabs.map(tab => tab.label))
     expect(b.view.getByRole('tab', { name: 'notes' }).getAttribute('aria-selected')).toBe('true')
-    expect(b.actionsOwner().entries).toEqual([])
+    expect(document.activeElement).toBe(b.view.getByRole('tab', { name: 'notes' }))
+    expect(b.view.queryByRole('button', { name: /更多会话视图/ })).toBeNull()
     expect(b.setPinned).not.toHaveBeenCalled()
     const observers = resizeObservers.filter(observer => observer.targets.includes(row))
     expect(observers).toHaveLength(1)
@@ -790,14 +793,13 @@ describe('ConversationRoot resident composer', () => {
     expect(observers[0]!.targets).toEqual([])
   })
 
-  it('keeps all five Views outside when the sampled width budget is sufficient', () => {
+  it('hides More when every View fits outside', () => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1000)
     const viewTabs = ['chat', 'trajectory', 'timeline', 'inspector', 'notes'].map(id => ({ id, label: id }))
     const b = mount(sessionSnapshotOf(), undefined, undefined, { viewTabs, entryActions: true })
     expect(within(b.view.getByRole('tablist')).getAllByRole('tab').map(tab => tab.textContent))
       .toEqual(viewTabs.map(tab => tab.label))
-    fireEvent.click(b.view.getByRole('button', { name: zh['session.moreViews'] }))
-    expect(b.actionsOwner().entries).toEqual([])
+    expect(b.view.queryByRole('button', { name: zh['session.moreViews'] })).toBeNull()
   })
 
   it('omits More while the View actions list has no registrations', () => {
@@ -853,21 +855,22 @@ describe('ConversationRoot resident composer', () => {
     const chip = b.view.getByRole('button', { name: '选择工作区' })
     expect((chip as HTMLButtonElement).disabled).toBe(false)
     expect(b.slotCalls).toContain('conversation.hero.workspace')
-    // Agent preset sits under the hero title; both choices stay open only
-    // before the first message.
+    // Keep the preset contribution mounted for a later release.
     expect(b.slotCalls).toContain('conversation.hero.agentPreset')
     expect(b.slotCalls).toContain('conversation.hero.options')
   })
 
-  it('seats agent preset under the hero title, and New Session options only for a Session', () => {
+  it('keeps the new-task mode selector hidden and mounted, and options only for a Session', () => {
     const b = mount(sessionSnapshotOf({ blank: true }))
     const headline = b.view.getByTestId('hero-headline')
     const preset = within(b.view.container).getByTestId('view-conversation.hero.agentPreset')
     expect(headline.compareDocumentPosition(preset) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(preset.closest('[hidden]')).not.toBeNull()
     expect(within(b.view.container).getByTestId('view-conversation.hero.options')).toBeTruthy()
 
     const cold = mount(sessionSnapshotOf(), [], undefined, { sessionId: undefined })
     expect(cold.slotCalls).toContain('conversation.hero.agentPreset')
+    expect(within(cold.view.container).getByTestId('view-conversation.hero.agentPreset').closest('[hidden]')).not.toBeNull()
     expect(cold.slotCalls).not.toContain('conversation.hero.options')
   })
 

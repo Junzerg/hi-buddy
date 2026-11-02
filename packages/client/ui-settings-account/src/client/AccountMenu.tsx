@@ -4,7 +4,7 @@ import {
   Toast, Menu, Tooltip, IconPaperPlaneOutlineMedium, IconPaperPlaneOutlineRegular,
   IconSettingsOutlineMedium, IconSettingsOutlineRegular, IconUserOutlineMedium,
 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { InjectFace, PropsLocale, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
+import type { InjectFace, PropsLocale, PropsRuntime, PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
 import type { AccountSectionInjected } from './AccountSection.tsx'
 import { SignOutDialog } from './SignOutDialog.tsx'
 import { SignInDialog } from './SignInDialog.tsx'
@@ -15,6 +15,7 @@ import css from './AccountMenu.module.css'
 
 /** Account launcher composed by the settings shell. */
 export type AccountMenuProps = PropsRuntime<'settings.launcher'> & PropsLocale<'settings.account'> & InjectFace<AccountSectionInjected>
+  & PropsRenderSlots<'settings.launcher.notifications'>
 
 /** The signed-in label stays empty while the profile loads.
  * @param props - sidebar geometry, settings navigation and account operations.
@@ -23,7 +24,7 @@ export type AccountMenuProps = PropsRuntime<'settings.launcher'> & PropsLocale<'
 export function AccountMenu({
   subscribeSessionExpired, subscribeModelSignInRequired, wide, settingsShortcut, openSettings, openOnboarding, settingsOpen,
   useAccount, useTheme, signOut, hasRunningAccountTasks, refreshAccount, bonusNoticeShown, bonusNoticeDismissed,
-  feedbackDestination, contactUs, showLogin, start, cancel, t,
+  feedbackDestination, contactUs, showLogin, start, cancel, t, renderSlot,
 }: AccountMenuProps) {
   const anchor = useRef<HTMLDivElement>(null)
   // The launcher outlives the panel, so a false-to-true edge is one Settings entry:
@@ -92,14 +93,14 @@ export function AccountMenu({
         else void requestSignOut()
       }} />
     {wide && <div className={css.footerActions}>
-      <Tooltip label={t('notifications')} side="top">
+      {renderSlot('settings.launcher.notifications', {}, { fallback: <Tooltip label={t('notifications')} side="top">
         <button type="button" className={css.iconButton} aria-label={t('notifications')}>
           <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.6}
             strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
             <path d="M6.5 9.5a5.5 5.5 0 1 1 11 0c0 4.5 1.8 5.6 1.8 5.6H4.7s1.8-1.1 1.8-5.6M10 18.6a2 2 0 0 0 4 0" />
           </svg>
         </button>
-      </Tooltip>
+      </Tooltip> })}
       <Tooltip label={t('contactUs')} side="top">
         <button type="button" className={css.iconButton} aria-label={t('contactUs')} onClick={openFeedback}>
           <IconPaperPlaneOutlineRegular size={15} />

@@ -76,7 +76,7 @@ export interface UiWorkspace {
    * and the Host reuses it under the requested preset or its default, creating another Session when it
    * reuses none. Concurrent calls for the same Workspace and preset share one attempt.
    * @param workspaceId - target Workspace.
-   * @param options - choices for the created or reused Session.
+   * @param options - choices for the created or reused Session; omission uses Standard mode.
    * @returns a Session already addressable through the Session Controller.
    */
   connectWorkspace(workspaceId: WorkspaceId, options?: Pick<StartSessionOptions, 'agentPreset'>): Promise<SessionId>
@@ -216,18 +216,19 @@ class UiWorkspaceService extends Service implements UiWorkspace {
     workspaceId: WorkspaceId,
     reuse: Pick<StartSessionOptions, 'agentPreset'>,
   ): Promise<SessionId> {
+    const requested = { agentPreset: reuse.agentPreset ?? 'standard' }
     const workspace = this.workspaces.list.getSnapshot().items
       .find(item => item.workspaceId === workspaceId)
     if (workspace === undefined) {
       throw new Error(`uiWorkspace.connectWorkspace: unknown workspace ${workspaceId}`)
     }
     const inflight = this.connecting.get(workspaceId)
-    if (inflight !== undefined && inflight.agentPreset === reuse.agentPreset) return inflight.attempt
+    if (inflight !== undefined && inflight.agentPreset === requested.agentPreset) return inflight.attempt
 
-    const attempt = this.createInWorkspace(workspace, reuse).finally(() => {
+    const attempt = this.createInWorkspace(workspace, requested).finally(() => {
       if (this.connecting.get(workspaceId)?.attempt === attempt) this.connecting.delete(workspaceId)
     })
-    this.connecting.set(workspaceId, { agentPreset: reuse.agentPreset, attempt })
+    this.connecting.set(workspaceId, { agentPreset: requested.agentPreset, attempt })
     return attempt
   }
 

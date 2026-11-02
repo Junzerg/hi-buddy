@@ -1,0 +1,18 @@
+{
+  "ui-agent-preset/src/client/AgentPresetSeat.module.css": [
+    ".option:focus-visible bypasses --dsw-focus-ring-color"
+  ],
+  "ui-conversation/src/client/skeleton/InputBar.module.css": [
+    ".hero .card:focus-within { box-shadow: 0 4px 18px color-mix(in srgb, var(--dsw-specific-sidebar-accent) 12%, transparent) }",
+    ".root:not(.hero) .card:focus-within { box-shadow: 0 4px 18px color-mix(in srgb, var(--dsw-specific-sidebar-accent) 12%, transparent) }"
+  ],
+  "ui-layout/src/client/AppFrame.module.css": [
+    ".sidebarToggle:focus-visible bypasses --dsw-focus-ring-color"
+  ],
+  "ui-settings-account/src/client/AccountMenu.module.css": [
+    ".trigger:focus-visible, .iconButton:focus-visible { outline: var(--dsw-focus-ring-width) solid var(--dsw-specific-sidebar-accent) }"
+  ],
+  "ui-sidebar/src/client/WorkbenchTopbar.module.css": [
+    ".button:focus-visible bypasses --dsw-focus-ring-color"
+  ]
+}

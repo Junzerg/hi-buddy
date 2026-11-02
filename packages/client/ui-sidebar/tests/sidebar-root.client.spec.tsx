@@ -290,6 +290,8 @@ describe('SidebarRoot shell', () => {
     // The settings seat rides the same wide flag (ui-settings renders the row).
     expect(b.settingsOwner().wide).toBe(true)
     expect(b.footerActionOwner().wide).toBe(true)
+    expect(screen.getByTestId('settings-seat').closest('[hidden]')).toBeNull()
+    expect(screen.getByTestId('footer-action-seat').closest('[hidden]')).toBeNull()
     // Expanded: the request is a no-op (no accidental collapse).
     b.regionOwner().expandSidebar()
     expect(b.regionOwner().wide).toBe(true)

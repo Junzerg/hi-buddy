@@ -290,6 +290,7 @@ function bench(options: BenchOptions = {}) {
   const layout = new LayoutController({
     selectPanel: vi.fn(), retainMainPanels: vi.fn(),
     setViewportWidth: vi.fn(),
+    setRightbarWidth: vi.fn(),
     openRightbar: vi.fn(), closeRightbar: vi.fn(),
   }, () => true, createSnapshotStore({ activePanelId: null }))
   const selectPanel = vi.spyOn(layout, 'selectPanel')
@@ -336,7 +337,7 @@ describe('UiWorkspaceService', () => {
       expect(b.sessions.retain).toHaveBeenCalledExactlyOnceWith(sid('created-default'), { source: 'mainView' })
     })
     expect(b.workspaces.initializeDefault).toHaveBeenCalledExactlyOnceWith(expect.any(AbortSignal))
-    expect(b.sessions.create).toHaveBeenCalledWith({ workspaceId: wid('default') })
+    expect(b.sessions.create).toHaveBeenCalledWith({ workspaceId: wid('default'), agentPreset: 'standard' })
     expect(b.notify).not.toHaveBeenCalled()
   })
 
@@ -668,7 +669,7 @@ describe('UiWorkspaceService', () => {
       workspaces: workspaceState([workspace('a', [sid('blank')]), workspace('b', [sid('archived')])], [sid('archived')]),
     })
     await expect(b.uiWorkspace.connectWorkspace(wid('a'))).resolves.toBe(sid('blank'))
-    expect(b.sessions.create).toHaveBeenCalledExactlyOnceWith({ workspaceId: wid('a'), sessionId: sid('blank') })
+    expect(b.sessions.create).toHaveBeenCalledExactlyOnceWith({ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'standard' })
     b.sessions.create.mockClear()
     b.sessions.retain.mockClear()
     const created = Promise.withResolvers<SessionId>()
@@ -689,12 +690,12 @@ describe('UiWorkspaceService', () => {
     })
     b.uiWorkspace.startSession(wid('a'))
     await vi.waitFor(() => {
-      expect(b.sessions.create).toHaveBeenCalledExactlyOnceWith({ workspaceId: wid('a'), sessionId: sid('blank') })
+      expect(b.sessions.create).toHaveBeenCalledExactlyOnceWith({ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'standard' })
     })
     await vi.waitFor(() => { expect(b.sessions.retain).toHaveBeenCalledWith(sid('blank'), expect.anything()) })
   })
 
-  it('reuses any blank without a requested preset and only a matching blank with one', async () => {
+  it('uses a Standard blank by default and respects an explicit preset', async () => {
     const b = bench({
       sessions: sessionState([
         summary('creator', { blank: true, cwd: '/w/a', projectionValues: { agentPreset: 'cordis' } }),
@@ -702,11 +703,11 @@ describe('UiWorkspaceService', () => {
       ], 'pending'),
       workspaces: workspaceState([workspace('a', [sid('creator'), sid('plain')])]),
     })
-    await expect(b.uiWorkspace.connectWorkspace(wid('a'))).resolves.toBe(sid('creator'))
+    await expect(b.uiWorkspace.connectWorkspace(wid('a'))).resolves.toBe(sid('plain'))
     await expect(b.uiWorkspace.connectWorkspace(wid('a'), { agentPreset: 'standard' })).resolves.toBe(sid('plain'))
     await expect(b.uiWorkspace.connectWorkspace(wid('a'), { agentPreset: 'ptc' })).resolves.toBe(sid('created-a'))
     expect(b.sessions.create.mock.calls).toEqual([
-      [{ workspaceId: wid('a'), sessionId: sid('creator') }],
+      [{ workspaceId: wid('a'), sessionId: sid('plain'), agentPreset: 'standard' }],
       [{ workspaceId: wid('a'), sessionId: sid('plain'), agentPreset: 'standard' }],
       [{ workspaceId: wid('a'), agentPreset: 'ptc' }],
     ])
@@ -794,7 +795,7 @@ describe('UiWorkspaceService', () => {
     })
     missingMember.uiWorkspace.startSession()
     await vi.waitFor(() => {
-      expect(missingMember.sessions.create).toHaveBeenCalledWith({ workspaceId: wid('newer') })
+      expect(missingMember.sessions.create).toHaveBeenCalledWith({ workspaceId: wid('newer'), agentPreset: 'standard' })
     })
   })
 
@@ -1053,7 +1054,7 @@ describe('UiWorkspaceService', () => {
     await vi.waitFor(() => {
       expect(b.sessions.retain).toHaveBeenCalledExactlyOnceWith(sid('created-a'), { source: 'mainView' })
     })
-    expect(b.sessions.create).toHaveBeenCalledExactlyOnceWith({ workspaceId: wid('a') })
+    expect(b.sessions.create).toHaveBeenCalledExactlyOnceWith({ workspaceId: wid('a'), agentPreset: 'standard' })
   })
 
   it('restores a saved ungrouped blank directly', () => {
@@ -1104,7 +1105,9 @@ describe('UiWorkspaceService', () => {
     } else {
       await expect(b.uiWorkspace.connectWorkspace(wid('a'))).resolves.toBe(sid('created-a'))
     }
-    expect(b.sessions.create.mock.calls).toEqual([[{ workspaceId: wid('a'), sessionId: sid('held') }]])
+    expect(b.sessions.create.mock.calls).toEqual([[{
+      workspaceId: wid('a'), sessionId: sid('held'), ...(source === 'saved' ? {} : { agentPreset: 'standard' }),
+    }]])
   })
 
   it('reloads the projections of a blank the Host declined so a stale blank row is corrected', async () => {
@@ -1244,7 +1247,7 @@ describe('UiWorkspaceService', () => {
     const creator = b.uiWorkspace.connectWorkspace(wid('a'), { agentPreset: 'ptc' })
     const again = b.uiWorkspace.connectWorkspace(wid('a'), { agentPreset: 'ptc' })
     expect(b.sessions.create.mock.calls).toEqual([
-      [{ workspaceId: wid('a'), sessionId: sid('blank') }],
+      [{ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'standard' }],
       [{ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'ptc' }],
     ])
     acquired.resolve(sid('blank'))
@@ -1262,9 +1265,9 @@ describe('UiWorkspaceService', () => {
     const creator = b.uiWorkspace.connectWorkspace(wid('a'), { agentPreset: 'ptc' })
     const latest = b.uiWorkspace.connectWorkspace(wid('a'))
     expect(b.sessions.create.mock.calls).toEqual([
-      [{ workspaceId: wid('a'), sessionId: sid('blank') }],
+      [{ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'standard' }],
       [{ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'ptc' }],
-      [{ workspaceId: wid('a'), sessionId: sid('blank') }],
+      [{ workspaceId: wid('a'), sessionId: sid('blank'), agentPreset: 'standard' }],
     ])
     earliest.resolve(sid('blank'))
     await expect(Promise.all([plain, creator, latest])).resolves.toEqual([sid('blank'), sid('blank'), sid('blank')])

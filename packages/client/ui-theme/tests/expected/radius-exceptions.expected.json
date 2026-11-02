@@ -1,4 +1,25 @@
 {
+  "ui-agent-preset/src/client/AgentPresetSeat.module.css": [
+    ".seg: border-radius: 18px",
+    ".option: border-radius: 20px",
+    ".hint: border-radius: 12px"
+  ],
+  "ui-chat/src/client/chat/AssistantMarkdown.module.css": [
+    ".avatar: border-radius: 7px"
+  ],
+  "ui-chat/src/client/chat/MessageItem.module.css": [
+    ".userStack .userBubble: border-radius: 14px 14px 4px 14px"
+  ],
+  "ui-chat/src/client/chat/ReasoningRow.module.css": [
+    ".root: border-radius: 12px"
+  ],
+  "ui-conversation/src/client/skeleton/InputBar.module.css": [
+    ".hero .card: border-radius: 18px",
+    ".hero .cardWorkspaceTrigger::after: border-radius: 18px",
+    ".root:not(.hero) .card: border-radius: 18px",
+    ".root:not(.hero) .cardWorkspaceTrigger::after: border-radius: 18px",
+    ".heroWorkspaceRow button[class*='workspace'], .heroWorkspaceRow button[class*='trigger'], .composerToolsRow button[class*='trigger']: border-radius: 6px"
+  ],
   "ui-deliverables/src/client/ChangedFiles.module.css": [
     ".tile: border-radius: 10px"
   ],
@@ -61,5 +82,14 @@
     ".keyBadge: border-radius: 10px",
     ".unbound: border-radius: 10px",
     ".recorder: border-radius: 10px"
+  ],
+  "ui-sidebar/src/client/SidebarRoot.module.css": [
+    ".betaTag: border-radius: 5px"
+  ],
+  "ui-tool/src/client/tool/components/ToolRow.module.css": [
+    ".root: border-radius: 12px"
+  ],
+  "ui-tool/src/client/tool/toolviews/bash-sample.module.css": [
+    ".card: border-radius: 12px"
   ]
 }
