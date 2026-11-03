@@ -32,9 +32,9 @@ pnpm run dev:web --haier
 
 Open the authenticated Web URL printed by the second command. The Web workspace stays hidden behind a mandatory sign-in dialog until IAM authentication succeeds. Click Sign in to reach the simulated Haier IAM page. Select a simulated account and approve login. The real Host exchanges the authorization code, saves the profile, discovers the simulated model and selects it. Sign out through the application's account controls to clear its account grant and company models.
 
-The service console is at `http://127.0.0.1:18080`. The existing login exchange listens at `http://127.0.0.1:18081/company-login/exchange`. The Web Host uses `127.0.0.1:18743`, matching the exchange service's registered callback. Occupied ports cause startup to fail; the launcher does not stop other applications.
+The service console is at `http://127.0.0.1:18080`. The existing login exchange listens at `http://127.0.0.1:18081/company-login/exchange`. The Web Host uses `127.0.0.1:3080`, matching the simulator's explicitly configured callback. Desktop development and installed Desktop retain the company IAM callback on port 18743. Occupied ports cause startup to fail; the launcher does not stop other applications.
 
-When the browser runs on another machine, forward ports 18743 and 18080 from the development machine to that browser's machine, keeping the same loopback ports. Both the Web URL and IAM URL must be reachable from the browser. The Host itself calls the exchange on port 18081; that port needs no browser forwarding.
+When the browser runs on another machine, forward ports 3080 and 18080 from the development machine to that browser's machine, keeping the same loopback ports. Both the Web URL and IAM URL must be reachable from the browser. The Host itself calls the exchange on port 18081; that port needs no browser forwarding.
 
 To reuse existing artifacts, add the normal development entry's `--skip-build` option:
 
@@ -84,7 +84,7 @@ The Docker test starts its own Compose project with OS-assigned host ports, uses
 With the simulator Web Host running, the following command accepts its printed authenticated startup URL and checks real account RPC, authorization callback, profile, model discovery, cancellation and sign-out cleanup. It signs out the simulated account before and after the check:
 
 ```sh
-node haier-simulator/smoke.mjs 'http://127.0.0.1:18743/?token=<printed-token>'
+node haier-simulator/smoke.mjs 'http://127.0.0.1:3080/?token=<printed-token>'
 ```
 
 ## Dev Note

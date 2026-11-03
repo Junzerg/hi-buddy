@@ -9,9 +9,10 @@ beforeEach(() => {
 })
 afterEach(() => { vi.unstubAllGlobals(); vi.restoreAllMocks() })
 
-async function endpoint() {
+async function endpoint(callbackUri?: string) {
   const server = createCompanyLoginServer({ iamOrigin: 'http://iam-stg.haiercash.work',
-    clientSecret: 'fixture-application-secret', authSecret: 'fixture-gateway-secret' })
+    clientSecret: 'fixture-application-secret', authSecret: 'fixture-gateway-secret',
+    ...callbackUri === undefined ? {} : { callbackUri } })
   onTestFinished(() => new Promise<void>((resolve, reject) => {
     server.close((error) => { if (error) reject(error); else resolve() })
     server.closeAllConnections()
@@ -24,8 +25,9 @@ async function endpoint() {
 
 const callback = { code: 'fixture-code', redirectUri: 'http://127.0.0.1:18743/oauth/callback' }
 
-it.each([18743, 3080])('exchanges company IAM at callback port %s without exposing service secrets or IAM tokens', async (port) => {
-  const request = { ...callback, redirectUri: `http://127.0.0.1:${String(port)}/oauth/callback` }
+it.each([undefined, 'http://127.0.0.1:3080/oauth/callback'])
+('exchanges credentials using the production default or an explicitly configured simulator callback: %s', async (callbackUri) => {
+  const request = { ...callback, redirectUri: callbackUri ?? callback.redirectUri }
   const upstream = vi.fn<typeof fetch>()
     .mockResolvedValueOnce(Response.json({ access_token: 'private-iam-token' }))
     .mockResolvedValueOnce(Response.json({ ret: 0, email: 'employee@example.test', sub: '18000001', name: '张宁',
@@ -33,7 +35,7 @@ it.each([18743, 3080])('exchanges company IAM at callback port %s without exposi
     .mockResolvedValueOnce(Response.json({ success: true, status: { code: 20000 }, msg: null, extraInfo: {},
       data: { username: 'lingxi-office_employee', apiKey: 'personal-key', newlyCreated: false, authorizedModels: ['fixture-model'] } }))
   vi.stubGlobal('fetch', upstream)
-  const response = await send(await endpoint(), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request) })
+  const response = await send(await endpoint(callbackUri), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request) })
   expect(response.status).toBe(200)
   expect(response.headers.get('cache-control')).toBe('no-store')
   expect(await response.json()).toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test',
@@ -51,9 +53,7 @@ it.each([18743, 3080])('exchanges company IAM at callback port %s without exposi
 })
 
 it.each([{ ...callback, account: 'another-user' }, { ...callback, redirectUri: 'http://attacker.test/' }, { redirectUri: callback.redirectUri },
-  { ...callback, redirectUri: 'http://127.0.0.1:3081/oauth/callback' },
-  { ...callback, redirectUri: 'http://127.0.0.1:3080/another-path' },
-  { ...callback, redirectUri: 'http://localhost:3080/oauth/callback' }])
+  { ...callback, redirectUri: 'http://127.0.0.1:3080/oauth/callback' }])
 ('rejects client-selected identities and unregistered callbacks: %j', async (body) => {
   const upstream = vi.fn<typeof fetch>()
   vi.stubGlobal('fetch', upstream)

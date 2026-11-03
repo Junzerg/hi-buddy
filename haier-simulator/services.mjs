@@ -51,7 +51,7 @@ async function body(req, type) {
 
 /** Each instance owns its codes, IAM tokens and personal keys; callers own listen/close. */
 export function createHaierSimulator({
-  callbackUris = ['http://127.0.0.1:18743/oauth/callback'], now = Date.now,
+  callbackUris = ['http://127.0.0.1:3080/oauth/callback'], now = Date.now,
 } = {}) {
   const pending = new Map()
   const codes = new Map()

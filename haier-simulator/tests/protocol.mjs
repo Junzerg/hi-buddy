@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 
-export const callback = 'http://127.0.0.1:18743/oauth/callback'
+export const callback = 'http://127.0.0.1:3080/oauth/callback'
 export const form = value => ({ method: 'POST', headers: { 'content-type': 'application/x-www-form-urlencoded' },
   body: new URLSearchParams(value), redirect: 'manual' })
 

@@ -3,6 +3,7 @@ import { createCompanyLoginServer } from './company-login-server.mjs'
 
 const server = createCompanyLoginServer({
   iamOrigin: 'http://haier-services:8080',
+  callbackUri: 'http://127.0.0.1:3080/oauth/callback',
   clientSecret: 'haier-simulator-client-secret',
   authSecret: 'haier-simulator-gateway-secret',
 })

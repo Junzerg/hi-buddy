@@ -174,7 +174,7 @@ test('connects the standard Web entry to the simulator without mutating the pare
   assert.equal(environment.DSH_HOME, '/existing/home')
   assert.equal(configured.env.DSH_HOME, join(root, 'home'))
   assert.equal(configured.env.PATH, 'preserved')
-  assert.deepEqual(configured.appArgs, ['--host', '127.0.0.1', '--port', '18743', '--no-open'])
+  assert.deepEqual(configured.appArgs, ['--host', '127.0.0.1', '--port', '3080', '--no-open'])
   assert.match(readFileSync(join(root, 'home/profiles/web/cordis.patch.yml'), 'utf8'), new RegExp(origin))
 })
 

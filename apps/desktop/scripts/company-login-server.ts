@@ -5,6 +5,8 @@ import { exchangeCompanyIdentity } from '../../../packages/credentials/deepseek-
 
 /** Server-only deployment credentials and IAM connection. */
 export interface CompanyLoginServerConfig {
+  /** Exact callback accepted by this server; the simulator supplies its own loopback URI. Production defaults to port 18743. */
+  callbackUri?: string
   /** IAM origin; STG is supplied by the server entry point. */
   iamOrigin: string
   /** APP176 application secret, supplied only on the versions server. */
@@ -20,6 +22,7 @@ export interface CompanyLoginServerConfig {
  */
 export function createCompanyLoginServer(config: CompanyLoginServerConfig): Server {
   if (!config.clientSecret || !config.authSecret) throw new Error('Company login requires both server deployment secrets')
+  const callbackUri = config.callbackUri ?? 'http://127.0.0.1:18743/oauth/callback'
   return createServer({ requestTimeout: 30_000, headersTimeout: 10_000 }, (req, res) => {
     res.setHeader('cache-control', 'no-store')
     res.setHeader('content-type', 'application/json')
@@ -39,8 +42,7 @@ export function createCompanyLoginServer(config: CompanyLoginServerConfig): Serv
       try { value = JSON.parse(body) } catch { res.writeHead(400).end('{}'); return }
       if (typeof value !== 'object' || value === null || !('code' in value) || typeof value.code !== 'string'
         || !/^[\x21-\x7e]{1,2048}$/.test(value.code) || !('redirectUri' in value)
-        || typeof value.redirectUri !== 'string'
-        || !['http://127.0.0.1:18743/oauth/callback', 'http://127.0.0.1:3080/oauth/callback'].includes(value.redirectUri)
+        || value.redirectUri !== callbackUri
         || Object.keys(value).some(key => key !== 'code' && key !== 'redirectUri')) {
         res.writeHead(400).end('{}'); return
       }

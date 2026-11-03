@@ -61,11 +61,11 @@ function migrateProfileSettings(projectDir: string): void {
 export class DesktopProjectManager {
   /**
    * @param paths - Electron-owned package state and reserved desktop profile paths.
-   * @param runtime - bundled application location and whether this is an unpackaged development launch.
+   * @param runtime - location of the bundled application runtime.
    */
   constructor(
     readonly paths: DesktopPaths,
-    readonly runtime: { readonly dsh: string; readonly development?: boolean },
+    readonly runtime: { readonly dsh: string },
   ) {}
 
   /**
@@ -86,7 +86,7 @@ export class DesktopProjectManager {
       readDesktopRuntime(this.runtime.dsh)
       migrateProfileSettings(this.paths.profile)
       createPluginProfile(this.paths.profile)
-      await upgradeCompanyProfile(this.runtime.dsh, this.paths.profile, this.runtime.development)
+      await upgradeCompanyProfile(this.runtime.dsh, this.paths.profile)
       removeLinkProjections(this.paths.profile)
     })
   }

@@ -6,7 +6,7 @@ import { pathToFileURL } from 'node:url'
 
 export async function verifyWeb(startupUrl) {
   const url = new URL(startupUrl)
-  if (url.origin !== 'http://127.0.0.1:18743') throw new Error('Use the simulator Web Host startup URL on 127.0.0.1:18743')
+  if (url.origin !== 'http://127.0.0.1:3080') throw new Error('Use the simulator Web Host startup URL on 127.0.0.1:3080')
   const landing = await fetch(url, { redirect: 'manual' })
   assert.equal(landing.status, 303)
   const cookie = landing.headers.getSetCookie().map(value => value.split(';')[0]).join('; ')

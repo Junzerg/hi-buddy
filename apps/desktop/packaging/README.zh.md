@@ -324,7 +324,7 @@ Windows 用户没有部署步骤。客户端内置 `http://172.28.236.3:18765/co
 
 1. 将 `company-login.env.example` 复制为 `company-login.env`，仅填写 `COMPANY_IAM_CLIENT_SECRET`（IAM APP176 应用密钥）和 `COMPANY_GATEWAY_AUTH_SECRET`（已提供的网关 authSecret）。设置文件权限为管理员可读；不要上传到 versions 下载目录或写进镜像。
 2. 使用现有 versions 镜像作为 `VERSIONS_IMAGE`，保留镜像内原下载内容。登录接口直接复用内网已有的 `node:22-slim`，无需构建新镜像或联网拉取；本地镜像标签不同时可设置 `NODE_IMAGE`。检查端口 18765 原容器及挂载配置，保留其启动参数和回滚方式，再用生成的 Compose 配置接替该容器。登录容器不发布额外端口。
-3. 在部署目录运行 `docker compose build`，随后 `docker compose up -d`。Node 仅执行授权码换取 token、userInfo 验证和网关 getOrCreate，无账号数据库、会话管理或回调服务器。接口仅接受安装版 Desktop 的 `http://127.0.0.1:18743/oauth/callback` 和未打包 Desktop 开发版的 `http://127.0.0.1:3080/oauth/callback`。IAM APP176 也必须允许所用回调；本接口接受回调不代表已在 IAM 登记。已部署的旧接口 bundle 必须更新后才能交换 3080 回调。
+3. 在部署目录运行 `docker compose build`，随后 `docker compose up -d`。Node 仅执行授权码换取 token、userInfo 验证和网关 getOrCreate，无账号数据库、会话管理或回调服务器。回调固定为 `http://127.0.0.1:18743/oauth/callback`。
 4. 确认原 `/versions` 下载页面可访问，再用包含此客户端改动的新测试包验证 IAM 登录。缺少服务端密钥时接口不启动；IAM 或网关失败时登录失败，不伪造成功。修改服务器上的密钥后运行 `docker compose up -d --force-recreate company-login`，Windows 用户无需操作。
 
 浏览器授权使用 <https://iam-stg.haierxj.com>，服务器换 token 和获取 userInfo 使用 <http://iam-stg.haiercash.work>；服务器还需要能访问测试网关。getOrCreate 请求携带 `X-Ploto-Direct-Target: ploto-llm-admin-app`，JSON 请求体包含 `system=lingxi-office`；返回的 username 必须为 `lingxi-office_` 加已验证的邮箱账号前缀。完整 .4 安装包内置 HaierCash 公司提供方（<http://ai-gateway.haierxj.cn/v1>），禁用原生 DeepSeek 提供方，Desktop 回调端口为 18743，无需单独补丁；本部署准备命令不会覆盖 .3 或 .4 安装包，也不会发布自动更新。

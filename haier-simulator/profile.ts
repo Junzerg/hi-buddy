@@ -98,7 +98,7 @@ export async function configureHaierDevelopment({
   env: NodeJS.ProcessEnv; appArgs: readonly string[]
 }> {
   if (appArgs.some(value => ['--host', '--port', '--public-url'].some(flag => value === flag || value.startsWith(`${flag}=`)))) {
-    throw new Error('--haier owns --host and --port for the registered 127.0.0.1:18743 callback; omit address overrides')
+    throw new Error('--haier owns --host and --port for the simulator 127.0.0.1:3080 callback; omit address overrides')
   }
   const servicesPort = Number(environment.HAIER_SIMULATOR_PORT ?? 18080)
   const exchangePort = Number(environment.HAIER_EXCHANGE_PORT ?? 18081)
@@ -112,5 +112,5 @@ export async function configureHaierDevelopment({
   const value: unknown = await healthy.json()
   if (!healthy.ok || record(value).service !== 'haier-simulator') throw unavailable()
   const { env } = prepareWeb({ stateDirectory, servicesPort, exchangePort, environment })
-  return { env, appArgs: ['--host', '127.0.0.1', '--port', '18743', ...appArgs] }
+  return { env, appArgs: ['--host', '127.0.0.1', '--port', '3080', ...appArgs] }
 }
