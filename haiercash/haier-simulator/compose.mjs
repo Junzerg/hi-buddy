@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolve } from 'node:path'
 
 export const directory = fileURLToPath(new URL('.', import.meta.url))
-export const repository = resolve(directory, '..')
+export const repository = resolve(directory, '../..')
 
 export async function compose(args, { env = process.env, capture = false, projectDirectory = directory } = {}) {
   return run('docker', ['compose', '--project-directory', projectDirectory, ...args], { env, capture })
@@ -52,7 +52,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1]
       await compose(['up', '--build', '-d', '--wait', '--wait-timeout', '60'])
       console.log(`海尔服务模拟器：http://127.0.0.1:${process.env.HAIER_SIMULATOR_PORT ?? '18080'}`)
     } else if (action === 'down') await compose(['down', '--remove-orphans'])
-    else throw new Error('Usage: node haier-simulator/compose.mjs up|down')
+    else throw new Error('Usage: node haiercash/haier-simulator/compose.mjs up|down')
   } catch (error) {
     console.error(error.message)
     process.exitCode = 1

@@ -26,7 +26,7 @@ Install the repository dependencies with pnpm and use Node >=24.9. Docker Engine
 From the repository root:
 
 ```sh
-pnpm --dir haier-simulator run up
+pnpm --dir haiercash/haier-simulator run up
 pnpm run dev:web --haier
 ```
 
@@ -45,7 +45,7 @@ pnpm run dev:web --haier --skip-build
 Run one set of repository watchers at a time. Ctrl+C stops the Web process and its watchers; the Docker services remain available. Stop those services with:
 
 ```sh
-pnpm --dir haier-simulator run down
+pnpm --dir haiercash/haier-simulator run down
 ```
 
 <a id="scenarios"></a>
@@ -64,7 +64,7 @@ Use **Reset simulated credentials** in the service console to invalidate all iss
 
 Simulator source, Compose configuration and development connection settings live here. Generated exchange bundles go under `.build/`; the isolated Harness home and writable Web profile go under `.state/`. Both directories are Git-ignored. Profile settings and conversation history persist across Web restarts. Simulator credentials live in container memory; restarting the simulated service requires signing in again when the application next detects its old key is invalid.
 
-The simulator matches the Haier interfaces consumed by this application: IAM authorize/token/userInfo, personal-key getOrCreate, model listing and chat completions. The company-login container runs a bundle of the [existing exchange service](../apps/desktop/scripts/company-login-server.ts). Its original internal personal-key hostname resolves to the simulated service inside the Compose network. Application secrets are fixed synthetic values; no production secret files are read.
+The simulator matches the Haier interfaces consumed by this application: IAM authorize/token/userInfo, personal-key getOrCreate, model listing and chat completions. The company-login container runs a bundle of the [existing exchange service](../../apps/desktop/scripts/company-login-server.ts). Its original internal personal-key hostname resolves to the simulated service inside the Compose network. Application secrets are fixed synthetic values; no production secret files are read.
 
 The normal `pnpm run dev:web --haier` entry reads this directory's development settings; without `--haier`, it uses the normal Harness home. Windows packaging does not reference the simulator. It changes no production endpoint or IAM requirement. The `--haier` profile enables the Web application's mandatory IAM entry: loading, sign-out and expired or non-IAM credentials retain the login dialog, while IAM success restores access. Desktop's mandatory IAM window remains owned by Electron. Enterprise SSO cookies, MFA, real IAM policy, real model output and Windows shell behavior still need intranet acceptance. Application sign-out clears its local grant; it does not perform global IAM single sign-out.
 
@@ -75,8 +75,8 @@ The normal `pnpm run dev:web --haier` entry reads this directory's development s
 Run the HTTP contract tests and the Docker test separately:
 
 ```sh
-pnpm --dir haier-simulator run test
-pnpm --dir haier-simulator run test:docker
+pnpm --dir haiercash/haier-simulator run test
+pnpm --dir haiercash/haier-simulator run test:docker
 ```
 
 The Docker test starts its own Compose project with OS-assigned host ports, uses the real exchange service, and removes its containers and network on completion. It requires Docker and may download the Node base image on its first run.
@@ -84,7 +84,7 @@ The Docker test starts its own Compose project with OS-assigned host ports, uses
 With the simulator Web Host running, the following command accepts its printed authenticated startup URL and checks real account RPC, authorization callback, profile, model discovery, cancellation and sign-out cleanup. It signs out the simulated account before and after the check:
 
 ```sh
-node haier-simulator/smoke.mjs 'http://127.0.0.1:3080/?token=<printed-token>'
+node haiercash/haier-simulator/smoke.mjs 'http://127.0.0.1:3080/?token=<printed-token>'
 ```
 
 ## Dev Note

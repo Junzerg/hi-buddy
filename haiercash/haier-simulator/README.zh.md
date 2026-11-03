@@ -26,7 +26,7 @@ description: "在本地模拟海尔 IAM、个人 API Key 和模型网关，供�
 在仓库根目录执行：
 
 ```sh
-pnpm --dir haier-simulator run up
+pnpm --dir haiercash/haier-simulator run up
 pnpm run dev:web --haier
 ```
 
@@ -45,7 +45,7 @@ pnpm run dev:web --haier --skip-build
 同一时间只运行一组仓库监听进程。Ctrl+C 停止 Web 进程及其监听进程，Docker 服务继续运行。通过以下命令停止这些服务：
 
 ```sh
-pnpm --dir haier-simulator run down
+pnpm --dir haiercash/haier-simulator run down
 ```
 
 <a id="scenarios"></a>
@@ -64,7 +64,7 @@ IAM 页面提供正常登录、拒绝授权、授权码过期，以及 Token、�
 
 模拟服务源码、Compose 配置和开发连接配置位于本目录。生成的中间服务 bundle 位于 `.build/`，独立的 Harness home 和可写 Web profile 位于 `.state/`；两个目录均被 Git 忽略。Web 重启后保留 profile 设置和会话历史。模拟凭据保存在容器内存中；模拟服务重启后，应用下次发现旧 Key 失效时需要重新登录。
 
-模拟器匹配应用实际使用的海尔接口：IAM authorize/token/userInfo、个人 Key getOrCreate、模型列表和聊天补全。company-login 容器运行[现有中间服务](../apps/desktop/scripts/company-login-server.ts)的 bundle。其原有的内网个人 Key 主机名在 Compose 网络内解析到模拟服务。应用密钥均为固定虚构值，不读取生产密钥文件。
+模拟器匹配应用实际使用的海尔接口：IAM authorize/token/userInfo、个人 Key getOrCreate、模型列表和聊天补全。company-login 容器运行[现有中间服务](../../apps/desktop/scripts/company-login-server.ts)的 bundle。其原有的内网个人 Key 主机名在 Compose 网络内解析到模拟服务。应用密钥均为固定虚构值，不读取生产密钥文件。
 
 正常的 `pnpm run dev:web --haier` 入口读取本目录的开发配置；不带 `--haier` 时使用原来的 Harness home。Windows 打包流程不引用模拟器。它不修改生产接口地址或 IAM 要求。`--haier` profile 会开启 Web 应用的强制 IAM 入口：加载、退出、凭据过期或持有非 IAM 凭据时保留登录弹窗，IAM 登录成功后恢复使用。Desktop 强制 IAM 的窗口仍由 Electron 负责。企业单点登录 Cookie、MFA、真实 IAM 策略、真实模型输出和 Windows 桌面行为仍需内网验收。应用退出会清除本地凭据，不执行 IAM 全局单点退出。
 
@@ -75,8 +75,8 @@ IAM 页面提供正常登录、拒绝授权、授权码过期，以及 Token、�
 分别运行 HTTP 协议测试和 Docker 测试：
 
 ```sh
-pnpm --dir haier-simulator run test
-pnpm --dir haier-simulator run test:docker
+pnpm --dir haiercash/haier-simulator run test
+pnpm --dir haiercash/haier-simulator run test:docker
 ```
 
 Docker 测试使用独立 Compose 项目和操作系统分配的宿主端口，调用真实中间服务，并在完成后删除自己创建的容器和网络。需要 Docker，首次运行可能下载 Node 基础镜像。
@@ -84,7 +84,7 @@ Docker 测试使用独立 Compose 项目和操作系统分配的宿主端口，�
 模拟器 Web Host 运行期间，以下命令接收其输出的带认证信息的启动地址，验证真实账号 RPC、授权回调、用户资料、模型发现、取消和退出清理。检查前后都会退出模拟账号：
 
 ```sh
-node haier-simulator/smoke.mjs 'http://127.0.0.1:3080/?token=<printed-token>'
+node haiercash/haier-simulator/smoke.mjs 'http://127.0.0.1:3080/?token=<printed-token>'
 ```
 
 ## 开发备注

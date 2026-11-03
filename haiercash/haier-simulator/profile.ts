@@ -105,7 +105,7 @@ export async function configureHaierDevelopment({
   for (const port of [servicesPort, exchangePort]) {
     if (!Number.isInteger(port) || port < 1 || port > 65535) throw new Error('Simulator ports must be between 1 and 65535')
   }
-  const unavailable = (): Error => new Error('Start the simulator with pnpm --dir haier-simulator run up')
+  const unavailable = (): Error => new Error('Start the simulator with pnpm --dir haiercash/haier-simulator run up')
   const healthy = await fetch(`http://127.0.0.1:${servicesPort}/health`, { signal: AbortSignal.timeout(3000) }).catch(() => {
     throw unavailable()
   })

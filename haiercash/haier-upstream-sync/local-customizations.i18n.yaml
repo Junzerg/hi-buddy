@@ -1,0 +1,22 @@
+# Bilingual-pair consistency record for local-customizations.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/haier-upstream-sync/local-customizations.md
+/:
+  en: cdbcafe6e1b0b4f3
+  zh: 321641176316d347
+/haier-customization-register:
+  en: 254e682ae9c3a65c
+  zh: 34586d7c6525b420
+/haier-customization-register/summary:
+  en: 340380efbff1d186
+  zh: 2f27f4a766af4246
+/haier-customization-register/contents:
+  en: 2fbebc316bdd42d3
+  zh: 2b229c6053b5e40d
+/haier-customization-register/active-requirements:
+  en: 2236ba175b455a90
+  zh: 639f6288072b4049
+/haier-customization-register/maintenance:
+  en: 002c893efe703279
+  zh: 5658a63d20d6ba9f

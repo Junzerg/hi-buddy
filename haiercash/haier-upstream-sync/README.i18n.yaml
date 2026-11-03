@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/haier-upstream-sync/README.md
+/:
+  en: 1865e269495e6cf7
+  zh: 60f9ad62a2730609
+/haier-upstream-synchronization:
+  en: d470e38ecbdc2b32
+  zh: 4eb64ffe58fbfa95
+/haier-upstream-synchronization/summary:
+  en: 50eb2a4e83c3764e
+  zh: 3b87d14616df7996
+/haier-upstream-synchronization/contents:
+  en: 1562bbbedfa98971
+  zh: 53e2e32e2c9be4fe
+/haier-upstream-synchronization/documents-and-versions:
+  en: 82fed29c56893548
+  zh: b3e00bbdd3d2451f
+/haier-upstream-synchronization/integration-workflow:
+  en: d0eca795f4a09118
+  zh: 3d85cbb379f9a5bb
+/haier-upstream-synchronization/conflict-rules:
+  en: d3915c3357f635ac
+  zh: 8be5fdac225f489d
+/haier-upstream-synchronization/acceptance-and-recovery:
+  en: a32ba9b71c0626d6
+  zh: 90fbbd8ffd78e314

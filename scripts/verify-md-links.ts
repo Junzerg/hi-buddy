@@ -21,6 +21,7 @@ const PATTERNS = [
   'README.zh.md',
   '.agents/notes/**/*.md',
   'docs/**/*.md',
+  'haiercash/haier-upstream-sync/**/*.md',
   'packages/*.md',
   'packages/*/*.md',
   'packages/*/*/*.md',

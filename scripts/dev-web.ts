@@ -50,7 +50,7 @@ import {
   repositoryClientBuildEnvironment,
 } from './client-build-environment.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
-import { configureHaierDevelopment } from '../haier-simulator/profile.ts'
+import { configureHaierDevelopment } from '../haiercash/haier-simulator/profile.ts'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 

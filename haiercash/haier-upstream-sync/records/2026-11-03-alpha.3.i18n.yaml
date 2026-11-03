@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for 2026-11-03-alpha.3.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/haier-upstream-sync/records/2026-11-03-alpha.3.md
+/:
+  en: 4e07935a7f0f949c
+  zh: e7eea530262a44a2
+/upstream-alpha-3-integration-assessment:
+  en: 615d32f0a195f7e1
+  zh: f31c2f5f21694ed8
+/upstream-alpha-3-integration-assessment/summary:
+  en: da244b440382f6fd
+  zh: 5d156977b34d7917
+/upstream-alpha-3-integration-assessment/contents:
+  en: 79da8b378e0c823f
+  zh: 05e78c6b0004ca72
+/upstream-alpha-3-integration-assessment/baselines:
+  en: 027ba7837c082f27
+  zh: e5ebe9071b972af3
+/upstream-alpha-3-integration-assessment/preview-evidence:
+  en: 9ea9612e499cd916
+  zh: b1936d51ca695230
+/upstream-alpha-3-integration-assessment/next-steps-and-gaps:
+  en: e532c783dd1389d5
+  zh: 6d804f2cac523478
+/upstream-alpha-3-integration-assessment/dev-note:
+  en: 010119d33e30bdab
+  zh: 805a79696d6cdb6e
