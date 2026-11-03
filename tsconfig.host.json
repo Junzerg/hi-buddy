@@ -236,6 +236,7 @@
     "packages/experimental/inspector/scripts/**/*.ts",
     "packages/llm/llm-pi-ai/scripts/**/*.ts",
     "scripts/**/*.ts",
+    "haier-simulator/profile.ts",
     "website/**/*.ts",
     "website/.vitepress/**/*.ts"
   ],

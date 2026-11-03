@@ -17,6 +17,8 @@ import { ContactConfig, CONTACT_CONFIG_GLOBAL } from '../contact-config.ts'
 import { contactUrl } from './contact-url.ts'
 import { authorizeUrlWithTheme } from './authorize-url.ts'
 import { BrowserLogin } from './browser-login.ts'
+import { RequiredSignIn } from './RequiredSignIn.tsx'
+import { IAM_LOGIN_REQUIRED_GLOBAL } from '../login-config.ts'
 import { AccountOnboarding } from './AccountOnboarding.tsx'
 import { AccountPlatformHost, type AccountPlatformHostInjected } from './AccountPlatformHost.tsx'
 import { AccountMenu } from './AccountMenu.tsx'
@@ -48,8 +50,9 @@ export function apply(ctx: Context): void {
   const desktop = 'dshDesktop' in globalThis
   ctx.effect(() => ctx.locale.register('settings.account', { en, zh }), 'account: dictionaries')
   const t = ctx.locale.bind('settings.account')
-  const page = globalThis as Partial<Record<typeof CONTACT_CONFIG_GLOBAL, unknown>>
+  const page = globalThis as Partial<Record<typeof CONTACT_CONFIG_GLOBAL | typeof IAM_LOGIN_REQUIRED_GLOBAL, unknown>>
   const config = ContactConfig(page[CONTACT_CONFIG_GLOBAL] ?? {})
+  const requireIamLogin = !desktop && page[IAM_LOGIN_REQUIRED_GLOBAL] === true
   let snapshot: AccountSnapshot = {
     view: undefined, details: undefined, avatar: undefined, failed: false, loginVisible: false, desktopOnboardingVisible: desktop,
     platformAvailable: !desktop,
@@ -231,7 +234,7 @@ export function apply(ctx: Context): void {
         openForm(deviceInfo)
       })()
     },
-    showLogin(visible) { publish({ ...snapshot, loginVisible: visible }) },
+    showLogin(visible) { publish({ ...snapshot, loginVisible: !requireIamLogin && visible }) },
     setOnboarding(active) { publish({ ...snapshot, onboarding: active }) },
     bonusNoticeShown(orderId) { notices.shown(orderId) },
     bonusNoticeDismissed(orderId) { notices.dismiss(orderId) },
@@ -246,7 +249,7 @@ export function apply(ctx: Context): void {
       },
     },
     async start() {
-      publish({ ...snapshot, loginVisible: true, loginFailed: false })
+      publish({ ...snapshot, loginVisible: !requireIamLogin, loginFailed: false })
       const transport = (globalThis as typeof globalThis & {
         __DSH_TRANSPORT__?: { streamBaseUrl?: string }
       }).__DSH_TRANSPORT__
@@ -276,6 +279,12 @@ export function apply(ctx: Context): void {
       if (result.ok) return
       throw result.error
     },
+  }
+  if (requireIamLogin) {
+    ctx.slots.inject('shell.overlay', () => ctx.slots.register({
+      name: 'shell.overlay', id: 'account.required-sign-in', locale: 'settings.account',
+      inject: () => ({ hooks: operations.hooks, start: operations.start, cancel: operations.cancel }),
+    }, RequiredSignIn))
   }
   if (desktop) {
     const controller = new DesktopOnboardingController(
@@ -312,7 +321,7 @@ export function apply(ctx: Context): void {
       }),
     }, DesktopOnboardingEntry))
   }
-  ctx.remoteAccess.whenAccess('account/watch', () => ctx.slots.inject('settings.models.sign-in', () => ctx.slots.register({
+  if (!requireIamLogin) ctx.remoteAccess.whenAccess('account/watch', () => ctx.slots.inject('settings.models.sign-in', () => ctx.slots.register({
     name: 'settings.models.sign-in', locale: 'settings.account', inject: () => operations,
   }, AccountOnboarding)))
   ctx.remoteAccess.whenAccess('account/watch', () => ctx.slots.inject('shell.quota-notice', () => ctx.slots.register({

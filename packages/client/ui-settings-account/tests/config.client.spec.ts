@@ -38,3 +38,16 @@ it('hides the generated account form and releases its policy on disposal', async
   await fiber.dispose()
   expect(release).toHaveBeenCalledOnce()
 })
+
+it('publishes mandatory IAM only when the deployment enables it', async () => {
+  const ctx = new Context()
+  onTestFinished(() => ctx.fiber.dispose())
+  const fiber = await ctx.plugin({ Config, apply }, { requireIamLogin: true })
+  const table: IndexInjection[] = []
+  ctx.emit('webserver/index-inject', table, PAGE_PEER)
+  expect(table).toContainEqual({ kind: 'global', name: '__DSH_REQUIRE_IAM_LOGIN__', value: true })
+  await fiber.dispose()
+  table.length = 0
+  ctx.emit('webserver/index-inject', table, PAGE_PEER)
+  expect(table).toEqual([])
+})

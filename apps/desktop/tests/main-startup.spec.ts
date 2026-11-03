@@ -116,6 +116,7 @@ const harness = await vi.hoisted(async () => {
     visible = true
     isVisible() { return this.visible }
     isFocused() { return true }
+    async loadFile(path: string) { await this.loadURL(`file://${path}`) }
     async loadURL(url: string) {
       this.urls.push(url)
       this.webContents.mainFrame.url = url
@@ -149,7 +150,7 @@ const harness = await vi.hoisted(async () => {
     readonly updateTasks = vi.fn(async (_action: 'inspect' | 'lock' | 'unlock') => false)
     readonly inspectQuit = vi.fn(async () => ({ activeTasks: false, scheduledTasks: false }))
     url = 'http://127.0.0.1:3080/?token=test'
-    fetch = vi.fn(async () => Response.json({ hasApiKey: true, writable: true, localePreference: null }))
+    fetch = vi.fn(async () => Response.json({ loggedIn: true, authenticationMethod: 'iam', hasApiKey: true, writable: true, localePreference: null }))
     readonly ready = deferred()
     readonly exited = deferred()
     readonly stopping = deferred()
@@ -388,7 +389,7 @@ vi.mock('../src/welcome-backend.ts', () => ({
     readLocalePreference: async () => null,
     read: async (): Promise<unknown> => (await harness.hosts.at(-1)!.fetch()).json() as Promise<unknown>,
     save: async () => ({ ok: true }),
-    account: { watch: harness.watchAccount, state: async () => ({ status: 'signed-out', attempt: null }) },
+    account: { watch: harness.watchAccount, state: async () => ({ status: 'credential-stored', authenticationMethod: 'iam', attempt: null }) },
   }),
 }))
 
@@ -2490,7 +2491,7 @@ describe('desktop main startup', () => {
   })
 })
 
-it.each(['failed', 'expired'] as const)('focuses DSH once when browser authorization becomes %s', async (phase) => {
+it.each(['failed', 'expired'] as const)('shows the login window when browser authorization becomes %s', async (phase) => {
   await import('../src/main.ts')
   await harness.preparing.promise
   harness.prepared.resolve()
@@ -2505,7 +2506,9 @@ it.each(['failed', 'expired'] as const)('focuses DSH once when browser authoriza
   }
   harness.publishAccount(state)
   harness.publishAccount(state)
-  expect(window.focus).toHaveBeenCalledTimes(1)
+  await vi.waitFor(() => { expect(harness.windows[1]?.show).toHaveBeenCalledOnce() })
+  expect(window.focus).not.toHaveBeenCalled()
+  expect(window.hide).toHaveBeenCalled()
 })
 
 it.each([['light', false], ['dark', true]] as const)('opens Platform authorization in the effective %s palette', async (theme, shouldUseDarkColors) => {

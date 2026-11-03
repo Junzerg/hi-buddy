@@ -1,9 +1,12 @@
 /** Native onboarding reuses authenticated Web RPC and never reads credential values. */
 import { describe, expect, it, vi } from 'vitest'
 import { connectDesktopWelcome } from '../src/welcome-backend.ts'
+import { needsWelcome } from '../src/welcome-api.ts'
+import type { AccountView } from '@deepseek-ai/dsh-deepseek-account/types'
 
 function transport(preference?: string) {
   const keys = new Map<string, string>()
+  const account: AccountView = { links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out', attempt: null }
   const namespaces: { ns: string; value: Record<string, unknown> }[] = [
     { ns: 'llm-deepseek', value: { apiKeyEnv: 'CUSTOM_DEEPSEEK_KEY' } },
     { ns: 'llm-pi-ai', value: { profiles: { example: { apiKeyEnv: 'EXAMPLE_API_KEY' } } } },
@@ -17,7 +20,7 @@ function transport(preference?: string) {
       payload: { args: { ref: string; value: string; refs: string[]; apiKey: string } }
     }
     let value: unknown
-    if (method === 'account/getState') value = { links: { usageUrl: 'http://localhost/usage', topUpUrl: 'http://localhost/top_up' }, status: 'signed-out', attempt: null }
+    if (method === 'account/getState') value = account
     else if (method === 'settings/describe') value = { namespaces }
     else if (method === 'llm/listConfigurableProviders') value = [{ settingsNs: 'llm-pi-ai', settingsPath: ['profiles', 'example'] }]
     else if (method === 'productAnalytics/enabled') value = true
@@ -27,7 +30,7 @@ function transport(preference?: string) {
     else value = Object.fromEntries(payload.args.refs.map(ref => [ref, { configured: keys.has(ref), writable: true }]))
     return Response.json({ type: 'server-response', rpcId, result: { ok: true, value } })
   })
-  return { send, keys, namespaces }
+  return { send, keys, namespaces, account }
 }
 
 const url = 'http://127.0.0.1:19387/?token=fixture'
@@ -43,6 +46,19 @@ describe('desktop welcome Web operations', () => {
     expect(host.keys.has('CUSTOM_DEEPSEEK_KEY')).toBe(false)
     expect(host.send.mock.calls.some(([input]) => input.endsWith('/api/account/completeApiKeySignIn'))).toBe(true)
   })
+  it('requires IAM even when the Host reports stored provider keys or a manual account grant', async () => {
+    const host = transport()
+    const backend = await connectDesktopWelcome(url, host.send)
+    host.keys.set('CUSTOM_DEEPSEEK_KEY', 'fixture-key')
+    expect(needsWelcome(await backend.read())).toBe(true)
+    Object.assign(host.account, { status: 'credential-stored', authenticationMethod: 'api-key' })
+    expect(needsWelcome(await backend.read())).toBe(true)
+    Object.assign(host.account, { authenticationMethod: 'iam' })
+    expect(needsWelcome(await backend.read())).toBe(false)
+    Object.assign(host.account, { status: 'signed-out', authenticationMethod: undefined })
+    expect(needsWelcome(await backend.read())).toBe(true)
+  })
+
   it('authenticates through Web and stores only through the configured credential reference', async () => {
     const host = transport()
     const backend = await connectDesktopWelcome(url, host.send)

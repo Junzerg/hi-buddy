@@ -214,19 +214,19 @@ Dependency installation does not run the locked Electron package's separate bina
 
 ### Startup onboarding
 
-The API-key input starts empty and uses `autocomplete="new-password"` to ask Chromium not to autofill saved login passwords.
+Desktop requires a stored company grant acquired through IAM. Unauthenticated startup, sign-out, and credential expiry show the native login window and keep the workspace hidden. Configured provider keys and manually acquired account grants do not permit entry.
 
-Repeated launches and `dsh://open` keep the workspace hidden until the startup credential check or a welcome action permits entry. Entering from Welcome places keyboard focus on the document without selecting a sidebar control; Tab navigation remains available.
+Repeated launches and `dsh://open` keep the workspace hidden until the Host confirms an IAM grant. Entering from Welcome places keyboard focus on the document without selecting a sidebar control; Tab navigation remains available.
 
-Desktop checks existing account and API-key credentials after Host startup. The original welcome window retains sign-in and manual API-key entry; saving a company key completes model discovery and default selection before entering the workspace.
+Desktop checks the account authentication method after Host startup. The login page starts authorization only when the user selects Sign in. Successful IAM login enters the workspace; failure, expiry and cancellation retain the login page. The native preload exposes no API-key or skip operation. Sessions and settings remain stored across sign-out.
 
 The welcome window reads the shared `locale.preference` before it appears. An explicit supported language choice wins; otherwise Desktop picks the first supported OS language and falls back to English. The main UI reads the same preference and OS language order through its isolated preload before mounting. Language changes in Settings update the shell’s current dictionary and menu; automatic selection writes no preference. The welcome window has no language selector.
 
-The browser-login waiting page offers a copy-link action for the current pending authorization, a loading indicator, and cancellation. Clipboard failures leave the copy action available for retry. Copy feedback resets after two seconds; the copied state disables the link until it resets. Welcome text uses Montserrat Light with system fallbacks; large action buttons keep the system font, while text buttons use Montserrat Light. English introductory copy is 24px throughout. Chinese introductory copy is 24px with a 26px product name. Login action buttons are 240px wide with 14px labels. Authorization status headings use 20px Montserrat Regular text. The API-key page uses a 20px heading and a 14px back action, with 84px between the secondary button’s bottom edge and the window bottom.
+The browser-login waiting page offers a copy-link action for the current pending authorization, a loading indicator, and cancellation. Clipboard failures leave the copy action available for retry. Copy feedback resets after two seconds; the copied state disables the link until it resets. Welcome text uses Montserrat Light with system fallbacks; large action buttons keep the system font, while text buttons use Montserrat Light. English introductory copy is 24px throughout. Chinese introductory copy is 24px with a 26px product name. Login action buttons are 240px wide with 14px labels. Authorization status headings use 20px Montserrat Regular text.
 
 ### Welcome window appearance
 
-The welcome window follows system appearance with the design’s Platform light/dark colors and shows the 600 × 700 entry layout and the API-key form, with native window controls, a draggable title area, a local brand SVG, system sans-serif fallbacks, and locally bundled Montserrat Light for non-button text. The window uses macOS menu vibrancy or Windows acrylic with the onboarding window tint: 40% white in light mode and 50% rgb(24 25 28) in dark mode. The local React welcome entry bundles React and the shared `StateDot` loading indicator with its CSS; it uses the isolated preload without loading the main Web application. The entry, sign-in status and API-key pages share a fixed bottom action row; the back-to-sign-in link sits below it. Buttons share the platform motion timings, and Reduce Motion disables their transitions. The OS owns blur strength and outer corners. macOS Reduce Transparency suppresses translucency, and Increase Contrast forces that setting on. Save and continue writes to the development credential store; Set up later opens the real workspace without saving a key or completion flag. The generated project links the declared workspace dependency closure as well as pnpm’s hoisted packages, so unhoisted configured plugins remain resolvable. [The window note](../../.agents/notes/implemented/architecture/2026-09-08-desktop-welcome-window-material.md) owns the material and onboarding decisions.
+The welcome window follows system appearance with the design’s Platform light/dark colors and shows the 600 × 700 login layout, with native window controls, a draggable title area, a local brand SVG, system sans-serif fallbacks, and locally bundled Montserrat Light for non-button text. The window uses macOS menu vibrancy or Windows acrylic with the onboarding window tint: 40% white in light mode and 50% rgb(24 25 28) in dark mode. The local React welcome entry bundles React and the shared `StateDot` loading indicator with its CSS; it uses the isolated preload without loading the main Web application. The entry and sign-in status pages share a fixed bottom action row. Buttons share the platform motion timings, and Reduce Motion disables their transitions. The OS owns blur strength and outer corners. macOS Reduce Transparency suppresses translucency, and Increase Contrast forces that setting on. Sign-out also prevents delayed workspace-entry callbacks from showing the main window. The generated project links the declared workspace dependency closure as well as pnpm’s hoisted packages, so unhoisted configured plugins remain resolvable. [The window note](../../.agents/notes/implemented/architecture/2026-09-08-desktop-welcome-window-material.md) owns the material and onboarding decisions.
 
 <a id="package"></a>
 
@@ -370,7 +370,7 @@ An unpackaged Electron process uses `.desktop-build/development/project` under i
 
 ## Known limitations
 
-- Account sign-in is not connected; the Sign in button is disabled. Windows material rendering still requires platform QA.
+- Windows material rendering still requires platform QA.
 
 - Release signing, notarization, update hosting, and previous-version installed-artifact qualification require the production release environment.
 - Dependency lifecycle scripts follow pnpm’s build permissions; Desktop provides no separate approval dialog.
@@ -383,7 +383,7 @@ Sign in opens company IAM in the system browser. The existing Host callback veri
 
 When an expired account returns to Welcome, the main process retains a one-time notification until the renderer requests it over window-owned IPC. Reloading Welcome does not repeat the notice; manual sign-out and cold startup do not create it.
 
-An expired login displays a timeout heading with explicit Sign in again and Add API Key actions. Opening the API-key form dismisses the authorization view; late account-state notifications do not replace an in-progress key entry.
+An expired login displays a timeout heading with an explicit Sign in again action. Login cancellation returns to the entry page without opening the workspace.
 
 Company login reuses the existing account provider, authorization state, cancellation and Host callback. Manual and IAM-acquired keys use one built-in model provider. See the [account provider](../../packages/credentials/deepseek-account-platform/README.md) for deployment credentials and gateway completion.
 

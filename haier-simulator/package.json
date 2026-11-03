@@ -1,0 +1,14 @@
+{
+  "name": "haier-simulator",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.9.0"
+  },
+  "scripts": {
+    "up": "node compose.mjs up",
+    "down": "node compose.mjs down",
+    "test": "node --test tests/*.test.mjs",
+    "test:docker": "node --test tests/docker.e2e.mjs"
+  }
+}

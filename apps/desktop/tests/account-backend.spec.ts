@@ -17,6 +17,15 @@ it('projects only safe account fields and refuses non-browser authorization sche
   expect(() => accountView({ ...state, attempt: { ...state.attempt, errorCode: 'raw-server-message' } })).toThrow()
 })
 
+it('preserves the Host authentication method and rejects unrecognized methods', () => {
+  const state = { status: 'credential-stored', attempt: null,
+    links: { usageUrl: 'https://example.test/usage', topUpUrl: 'https://example.test/top_up' } }
+  for (const authenticationMethod of ['iam', 'api-key']) {
+    expect(accountView({ ...state, authenticationMethod })).toEqual({ ...state, authenticationMethod })
+  }
+  expect(() => accountView({ ...state, authenticationMethod: 'unknown' })).toThrow('invalid authentication method')
+})
+
 it('accepts a no-response login failure without discarding the account projection', () => {
   const state = { status: 'signed-out', attempt: { id: 'test', phase: 'failed', errorCode: 'no-response' },
     links: { usageUrl: 'https://platform.deepseek.com/usage', topUpUrl: 'https://platform.deepseek.com/top_up' } }

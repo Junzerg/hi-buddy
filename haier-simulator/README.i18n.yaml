@@ -1,0 +1,31 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haier-simulator/README.md
+/:
+  en: 12f789d12176504d
+  zh: 85fefbffe5764a91
+/haier-service-simulator:
+  en: c37d528a7b7651cf
+  zh: 214d37909ed78eb3
+/haier-service-simulator/summary:
+  en: 9263b1c2efaa5806
+  zh: 0b855546c537e7e0
+/haier-service-simulator/table-of-contents:
+  en: e37012bc31b1950c
+  zh: 54d05df10f2bb967
+/haier-service-simulator/start:
+  en: 710498fe1d58552d
+  zh: 607ec5cfdd49f497
+/haier-service-simulator/scenarios:
+  en: c6fe2d59b34cc0f2
+  zh: d2045e9d8a4829c5
+/haier-service-simulator/development-data-and-boundaries:
+  en: 5ba3973e6eb624ec
+  zh: de5cbf7812c8b49a
+/haier-service-simulator/checks:
+  en: 00cf9e1cc4be9c1f
+  zh: 66cbe226330c7229
+/haier-service-simulator/dev-note:
+  en: b75c8458928b72b9
+  zh: 003ba4e17b4b5269

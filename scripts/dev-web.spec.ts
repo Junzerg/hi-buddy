@@ -76,7 +76,14 @@ describe('StageSupervisor', () => {
 
 describe('parseDevWebArguments', () => {
   it('builds, serves, and watches natively by default', () => {
-    expect(parseDevWebArguments([])).toEqual({ skipBuild: false, serve: true, pollInterval: undefined, appArgs: [] })
+    expect(parseDevWebArguments([])).toEqual({ haier: false, skipBuild: false, serve: true, pollInterval: undefined, appArgs: [] })
+  })
+
+  it('keeps the Haier simulator opt-in in the normal development entry', () => {
+    expect(parseDevWebArguments(['--haier', '--skip-build', '--no-open'])).toEqual({
+      haier: true, skipBuild: true, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
+    })
+    expect(() => parseDevWebArguments(['--haier', '--no-serve'])).toThrow('--haier requires a served Web Host')
   })
 
   it('reads the polling interval with its 500ms default', () => {
@@ -90,7 +97,7 @@ describe('parseDevWebArguments', () => {
 
   it('separates its own flags from the arguments forwarded to dsh web', () => {
     expect(parseDevWebArguments(['--skip-build', '--poll', '--no-open', '--port', '8080'])).toEqual({
-      skipBuild: true, serve: true, pollInterval: 500, appArgs: ['--no-open', '--port', '8080'],
+      haier: false, skipBuild: true, serve: true, pollInterval: 500, appArgs: ['--no-open', '--port', '8080'],
     })
   })
 

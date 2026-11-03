@@ -20,6 +20,10 @@ export function accountView(value: unknown): AccountView {
   }
   validateBrowserDestination(value.links.usageUrl)
   validateBrowserDestination(value.links.topUpUrl)
+  if ('authenticationMethod' in value && value.authenticationMethod !== undefined
+    && value.authenticationMethod !== 'iam' && value.authenticationMethod !== 'api-key') {
+    throw new Error('desktop account: invalid authentication method')
+  }
   const attempt = value.attempt
   if (attempt !== null && (typeof attempt !== 'object' || !('id' in attempt) || typeof attempt.id !== 'string'
     || !('phase' in attempt) || !['initializing', 'waiting-browser', 'exchanging', 'committing', 'succeeded', 'cancelled', 'expired', 'failed'].includes(String(attempt.phase))
@@ -34,6 +38,7 @@ export function accountView(value: unknown): AccountView {
   const parsed = value as AccountView
   return {
     status: parsed.status,
+    ...parsed.authenticationMethod === undefined ? {} : { authenticationMethod: parsed.authenticationMethod },
     links: { usageUrl: parsed.links.usageUrl, topUpUrl: parsed.links.topUpUrl },
     attempt: parsed.attempt === null ? null : {
       id: parsed.attempt.id, phase: parsed.attempt.phase,

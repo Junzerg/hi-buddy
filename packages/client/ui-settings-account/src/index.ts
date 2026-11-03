@@ -4,9 +4,12 @@ import type {} from '@deepseek-ai/dsh-host-webserver'
 import type {} from '@deepseek-ai/dsh-settings'
 import { type ContactConfig, ContactConfigFields, CONTACT_CONFIG_GLOBAL } from './contact-config.ts'
 import z from '@deepseek-ai/schemastery'
+import { IAM_LOGIN_REQUIRED_GLOBAL } from './login-config.ts'
 import { OnboardingSettingsFields, type OnboardingStep, type OnboardingPurpose, type OnboardingProcess } from './onboarding-settings.ts'
 /** Public feedback options and live device-local onboarding progress. */
 export interface Config extends ContactConfig {
+  /** Require an IAM-issued account grant before exposing the Web workspace. Desktop keeps its native entry. */
+  requireIamLogin?: boolean
   /** Onboarding progress format version. */
   version: Volatile<1>
   /** Last accepted onboarding page. */
@@ -25,6 +28,7 @@ export interface Config extends ContactConfig {
 
 /** Configuration projected through the account plugin's shared form. */
 export const Config = z.object({
+  requireIamLogin: z.boolean().default(false),
   feedbackDestination: ContactConfigFields.feedbackDestination,
   contactFormUrl: ContactConfigFields.contactFormUrl,
   contactSource: ContactConfigFields.contactSource,
@@ -49,6 +53,7 @@ export function apply(ctx: Context, config: Config): void {
     scope.effect(() => scope.settings.configure({ auto: false }, ctx.fiber))
   })
   ctx.on('webserver/index-inject', (table) => {
+    if (config.requireIamLogin) table.push({ kind: 'global', name: IAM_LOGIN_REQUIRED_GLOBAL, value: true })
     table.push({ kind: 'global', name: CONTACT_CONFIG_GLOBAL, value: {
       feedbackDestination: config.feedbackDestination,
       contactFormUrl: config.contactFormUrl, contactSource: config.contactSource,

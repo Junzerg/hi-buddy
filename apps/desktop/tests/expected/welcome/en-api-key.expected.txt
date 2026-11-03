@@ -1,8 +1,0 @@
-Lingxi Office
-Lingxi Office
-Add an API key to get started
-Configure official DeepSeek models to start using Office
-Enter API key [password]
-Save and continue [disabled]
-Set up later
-Back to sign in

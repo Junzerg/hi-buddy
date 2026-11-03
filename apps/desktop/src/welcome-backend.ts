@@ -2,11 +2,11 @@ import type { ProductEvent } from '@deepseek-ai/dsh-client-product-analytics/typ
 /** Native welcome operations using the shared Web authentication and RPC APIs. */
 
 import { randomUUID } from 'node:crypto'
+import type { WelcomeAuthentication } from './welcome-api.ts'
 import { desktopAccountBackend, type DesktopAccountBackend } from './account-backend.ts'
 
 /** Metadata needed before the native entry or workspace becomes visible. */
-export interface WelcomeState {
-  readonly loggedIn: boolean
+export interface WelcomeState extends WelcomeAuthentication {
   readonly hasApiKey: boolean
   readonly writable: boolean
   readonly localePreference: string | null
@@ -118,8 +118,10 @@ export async function connectDesktopWelcome(
       Object.assign(states, batch)
     }
     if (ref !== undefined && !record(states[ref])) throw new Error('desktop welcome: missing credential metadata')
+    const state = await account.state()
     return {
-      loggedIn: (await account.state()).status === 'credential-stored',
+      loggedIn: state.status === 'credential-stored',
+      ...state.authenticationMethod === undefined ? {} : { authenticationMethod: state.authenticationMethod },
       hasApiKey: Object.values(states).some(value => record(value) && value.configured === true),
       writable: ref !== undefined && record(states[ref]) && states[ref].writable === true,
       localePreference: localePreference(namespaces),

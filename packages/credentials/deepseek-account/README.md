@@ -34,6 +34,8 @@ Account consumers read stored login state, start or cancel a browser login, and 
 <a id="use-this-package"></a>
 ## Use this package
 
+`AccountView.authenticationMethod` identifies a stored company grant as `iam` or `api-key`; it is absent without a company grant and does not assert current server validation. Desktop requires `iam` before opening its workspace.
+
 `AccountProfile.department` optionally carries the company department hierarchy as display text; absent or null values mean that department information is unavailable.
 
 `AccountProfile.avatarUrl` is an optional profile image URL; null or absence means no avatar.

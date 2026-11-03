@@ -3,14 +3,14 @@
 # After editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write docs/upgrade-guide/v0.2.1-rc.3/company-gateway-login/guide.md
 /:
-  en: fae78c18888b53fa
-  zh: 9e841431c22df0d0
+  en: dae4ed1ecb332159
+  zh: 30e9cd0646d42daa
 /company-gateway-login:
   en: d4278dd8d5e3a429
   zh: f958721429862f36
 /company-gateway-login/change:
-  en: 9cabe58fbb52f44b
-  zh: b3c1b18a5fe61c53
+  en: d7ec34b4aeeb8d00
+  zh: 634e03d3234cb63b
 /company-gateway-login/migration:
-  en: 157fed56af8a32d4
-  zh: 982dbca8fa63cf38
+  en: 39caa811886fa659
+  zh: f435a8ec535591bc

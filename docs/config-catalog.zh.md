@@ -617,11 +617,13 @@ export interface Config {
 ## `@deepseek-ai/dsh-client-ui-settings-account`
 
 - `refs`: `Volatile` (`@deepseek-ai/cordis`)
-- `source`: [`packages/client/ui-settings-account/src/index.ts:9`](../packages/client/ui-settings-account/src/index.ts)
+- `source`: [`packages/client/ui-settings-account/src/index.ts:10`](../packages/client/ui-settings-account/src/index.ts)
 
 ```ts config-catalog
 /** Public feedback options and live device-local onboarding progress. */
 export interface Config extends ContactConfig {
+  /** Require an IAM-issued account grant before exposing the Web workspace. Desktop keeps its native entry. */
+  requireIamLogin?: boolean
   /** Onboarding progress format version. */
   version: Volatile<1>
   /** Last accepted onboarding page. */

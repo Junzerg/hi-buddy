@@ -12,6 +12,7 @@ import { DesktopProjectManager } from '../src/project-manager.ts'
 import { resolveDesktopPaths } from '../src/paths.ts'
 import { desktopClientMetadata } from '../src/client-metadata.ts'
 import { connectDesktopWelcome, type DesktopWelcomeBackend } from '../src/welcome-backend.ts'
+import { needsWelcome } from '../src/welcome-api.ts'
 import { DESKTOP_HOST_PROTOCOL_VERSION } from '../src/host-protocol.ts'
 import { prepareDevelopmentProject } from '../scripts/development-project.ts'
 
@@ -214,7 +215,8 @@ describe.skipIf(!existsSync(builtHost))('built Desktop welcome flow', () => {
         expect(await companyModels()).toEqual([])
         expect(await backend!.save('wrong-company-key')).toEqual({ ok: false })
         expect(await backend!.save('sk-company-fixture')).toEqual({ ok: true })
-        expect(await status()).toMatchObject({ hasApiKey: true })
+        expect(await status()).toMatchObject({ hasApiKey: true, authenticationMethod: 'api-key' })
+        expect(needsWelcome(await status())).toBe(true)
         await backend!.account.start(desktopClientMetadata('en'))
         await expect.poll(async () => (await backend!.account.state()).attempt?.phase).toBe('waiting-browser')
         const waiting = await backend!.account.state()
@@ -227,10 +229,12 @@ describe.skipIf(!existsSync(builtHost))('built Desktop welcome flow', () => {
         const approved = await fetch(callback, { redirect: 'manual' })
         expect(approved.status).toBe(302)
         expect(approved.headers.get('location')).toBe('dsh://open')
-        expect(await status()).toMatchObject({ loggedIn: true, hasApiKey: true })
+        expect(await status()).toMatchObject({ loggedIn: true, authenticationMethod: 'iam', hasApiKey: true })
+        expect(needsWelcome(await status())).toBe(false)
         expect(await companyModels()).toHaveLength(1)
         await backend!.account.signOut(desktopClientMetadata('en'))
         expect(await status()).toMatchObject({ loggedIn: false, hasApiKey: false })
+        expect(needsWelcome(await status())).toBe(true)
         expect(await companyModels()).toEqual([])
         expect(readFileSync(join(home, '.credentials.yaml'), 'utf8')).not.toContain('sk-company-fixture')
         await backend!.account.start(desktopClientMetadata('en'))
@@ -239,13 +243,16 @@ describe.skipIf(!existsSync(builtHost))('built Desktop welcome flow', () => {
         const retryCallback = new URL(retry.searchParams.get('redirect_uri')!)
         retryCallback.search = new URLSearchParams({ code: 'fixture-code', state: retry.searchParams.get('state')! }).toString()
         expect((await fetch(retryCallback, { redirect: 'manual' })).status).toBe(302)
-        expect(await status()).toMatchObject({ loggedIn: true, hasApiKey: true })
+        expect(await status()).toMatchObject({ loggedIn: true, authenticationMethod: 'iam', hasApiKey: true })
+        expect(needsWelcome(await status())).toBe(false)
         expect(await companyModels()).toHaveLength(1)
         await restart()
-        expect(await status()).toMatchObject({ loggedIn: true, hasApiKey: true })
+        expect(await status()).toMatchObject({ loggedIn: true, authenticationMethod: 'iam', hasApiKey: true })
+        expect(needsWelcome(await status())).toBe(false)
         expect(await companyModels()).toHaveLength(1)
         await backend!.account.signOut(desktopClientMetadata('en'))
         expect(await status()).toMatchObject({ loggedIn: false, hasApiKey: false })
+        expect(needsWelcome(await status())).toBe(true)
         expect(await companyModels()).toEqual([])
         return
       }

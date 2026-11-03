@@ -366,6 +366,7 @@ async function main(): Promise<void> {
     if (failure?.status === 'rejected') throw failure.reason
   }
   let enteredWorkspace = false
+  let accountGeneration = 0
   // NSIS passes --updated when it launches the application after installation.
   let raiseAfterUpdate = process.platform === 'win32' && process.argv.includes('--updated')
   let shellInstallerOwnsQuit = false
@@ -484,6 +485,17 @@ async function main(): Promise<void> {
         const accountBackend = welcomeBackend.account
         stopAccount = accountBackend.watch((state) => {
           if (quitting) return
+          const authenticated = !needsWelcome({
+            loggedIn: state.status === 'credential-stored', authenticationMethod: state.authenticationMethod,
+          })
+          if (!authenticated) {
+            accountGeneration++
+            if (enteredWorkspace) {
+              enteredWorkspace = false
+              mainWindow?.hide()
+              void showWelcome().catch((error: unknown) => { reportFatal(error, 'main') })
+            }
+          }
           if (welcomeWindow !== undefined && !welcomeWindow.isDestroyed()) welcomeWindow.webContents.send(WELCOME_IPC.state, state)
           const attempt = state.attempt
           if (attempt?.phase === 'waiting-browser' && attempt.authorizeUrl !== undefined && openedAttempt !== attempt.id) {
@@ -494,15 +506,16 @@ async function main(): Promise<void> {
             returnedAttempt = attempt.id
             focusPrimaryWindow()
           }
-          if (state.status === 'credential-stored' && attempt?.phase === 'succeeded' && welcomeWindow !== undefined) void enterWorkspace({ activate: false }).catch(() => undefined)
+          if (authenticated && attempt?.phase === 'succeeded' && welcomeWindow !== undefined) void enterWorkspace({ activate: false }).catch(() => undefined)
         }, () => {
           // The stream reconnects; a transport failure does not change account state.
         }, () => {
-          void readWelcomeState().then(async (value) => {
-            if (!needsWelcome(value) || quitting) return
-            pendingWelcomeNotice = 'session-expired'
-            enteredWorkspace = false
-            await showWelcome()
+          if (quitting) return
+          accountGeneration++
+          pendingWelcomeNotice = 'session-expired'
+          enteredWorkspace = false
+          mainWindow?.hide()
+          void showWelcome().then(async () => {
             const state = await accountBackend.state()
             if (welcomeWindow !== undefined && !welcomeWindow.isDestroyed()) welcomeWindow.webContents.send(WELCOME_IPC.state, state)
           }).catch(() => undefined)
@@ -1135,9 +1148,21 @@ async function main(): Promise<void> {
   }
   const enterWorkspace = async ({ activate = true }: { activate?: boolean } = {}): Promise<void> => {
     if (quitting) return
+    const generation = accountGeneration
+    const account = await welcomeBackend?.account.state()
+    if (generation !== accountGeneration || isQuitting()) return
+    if (account === undefined || needsWelcome({
+      loggedIn: account.status === 'credential-stored', authenticationMethod: account.authenticationMethod,
+    })) {
+      enteredWorkspace = false
+      mainWindow?.hide()
+      await showWelcome()
+      return
+    }
+    if (isQuitting()) return
     const window = mainWindow ?? createMainWindow()
     await navigateMain(applicationUrl)
-    if (isQuitting() || recovery.active || window.isDestroyed()) return
+    if (isQuitting() || recovery.active || window.isDestroyed() || generation !== accountGeneration) return
     if (activate) window.show()
     else window.showInactive()
     enteredWorkspace = true
@@ -1188,14 +1213,6 @@ async function main(): Promise<void> {
           }
           await clipboard.writeText(platformLoginUrl(state.attempt.authorizeUrl))
         },
-        saveApiKey: async (apiKey) => {
-          if (backend.host === undefined || welcomeBackend === undefined) return { ok: false }
-          const saved = await welcomeBackend.save(apiKey)
-          if (!saved.ok) return saved
-          await enterWorkspace()
-          return { ok: true }
-        },
-        skip: enterWorkspace,
       })
       const window = welcomeWindow
       window.once('closed', () => {
@@ -1224,7 +1241,7 @@ async function main(): Promise<void> {
     locale = resolveDesktopStartupLocale(state.localePreference, systemLanguages)
     windowsLanguage = locale.id
     refreshApplicationMenu()
-    if (!enteredWorkspace && needsWelcome({ loggedIn: state.loggedIn, hasApiKey: state.hasApiKey })) {
+    if (!enteredWorkspace && needsWelcome(state)) {
       // A later login must retain its own activation policy instead of replaying startup focus.
       raiseAfterUpdate = false
       await showWelcome()

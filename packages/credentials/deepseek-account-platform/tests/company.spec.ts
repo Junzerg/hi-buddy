@@ -129,6 +129,7 @@ async function keyFixture() {
 it('completes manual keys through the provider and preserves an available default', async () => {
   const f = await keyFixture()
   await f.ctx.deepseekAccount.completeApiKeySignIn('fixture-key')
+  expect(await f.ctx.deepseekAccount.getState()).toMatchObject({ status: 'credential-stored', authenticationMethod: 'api-key' })
   expect(f.discover).toHaveBeenCalledWith('llm-pi-ai', {
     api: 'openai-completions', baseURL: 'http://ai-gateway.haierxj.cn/v1', apiKey: 'fixture-key',
   }, expect.any(AbortSignal))
@@ -209,7 +210,7 @@ it('restores company display data after provider restart and clears it before th
     const callback = new URL(authorize.searchParams.get('redirect_uri')!)
     callback.search = new URLSearchParams({ code: 'fixture-code', state: previousState! }).toString()
     expect((await fetch(callback, { redirect: 'manual' })).status).toBe(302)
-    expect((await wait('succeeded')).status).toBe('credential-stored')
+    expect(await wait('succeeded')).toMatchObject({ status: 'credential-stored', authenticationMethod: 'iam' })
     const profile = { status: 'ready', value: { id: null, name: '张宁', contact: 'employee@example.test',
       department: '金融科技中心 / 架构平台 / AI工程' } }
     expect(await account.getProfile(client)).toEqual(profile)
@@ -218,7 +219,7 @@ it('restores company display data after provider restart and clears it before th
       await f.ctx.plugin(PlatformAccount, f.accountConfig)
       account = f.ctx.deepseekAccount
       expect(await account.getProfile(client)).toEqual(profile)
-      expect((await account.getState()).attempt).toBeNull()
+      expect(await account.getState()).toMatchObject({ authenticationMethod: 'iam', attempt: null })
     }
     await account.signOut(client)
     expect(await account.getProfile(client)).toBeNull()

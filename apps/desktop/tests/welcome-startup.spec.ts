@@ -24,6 +24,7 @@ const state = vi.hoisted(() => ({
   stopHost: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
   loadWorkspace: vi.fn<(url: string) => Promise<void>>().mockResolvedValue(undefined),
   showWorkspace: vi.fn(),
+  hideWorkspace: vi.fn(),
   showInactiveWorkspace: vi.fn(),
   focusWorkspace: vi.fn(),
   moveTopWorkspace: vi.fn(),
@@ -79,7 +80,7 @@ vi.mock('electron', () => ({
     restore = vi.fn()
     focus = state.focusWorkspace
     moveTop = state.moveTopWorkspace
-    hide = vi.fn()
+    hide = state.hideWorkspace
     show = state.showWorkspace
     showInactive = state.showInactiveWorkspace
     async loadURL(url: string) { state.contents = this.webContents; await state.loadWorkspace(url); this.ready?.() }
@@ -128,12 +129,14 @@ vi.mock('../src/welcome-backend.ts', () => ({
     readLocalePreference: async () => state.preference,
     read: async () => {
       await state.beforeRead()
-      return { loggedIn: false, hasApiKey: state.hasApiKey, writable: true, localePreference: state.preference }
+      const account = await state.accountState()
+      return { loggedIn: account.status === 'credential-stored', authenticationMethod: account.authenticationMethod,
+        hasApiKey: state.hasApiKey, writable: true, localePreference: state.preference }
     },
     save: async () => ({ ok: true }),
     account: {
       watch: (listener: (value: AccountView) => void, _failed: () => void, expired: () => void) => {
-        state.accountListener = listener
+        state.accountListener = (account) => { state.accountState.mockResolvedValue(account); listener(account) }
         state.expiryListener = expired
         return () => {}
       },
@@ -160,6 +163,7 @@ vi.mock('../src/welcome-window.ts', () => ({
     state.operations = operations
     await state.beforeWelcome()
     return { once: vi.fn(), close: state.closeWelcome, isDestroyed: () => false,
+      isVisible: () => true, isMinimized: () => false, restore: vi.fn(),
       show: vi.fn(), focus: vi.fn(), webContents: { send: vi.fn() } }
   },
 }))
@@ -172,11 +176,11 @@ afterEach(() => {
   vi.restoreAllMocks()
 })
 
-it.each([false, true])('starts welcome onboarding without carrying update focus into login or skip (Windows update=%s)', async (updated) => {
+it.each([[false, false], [false, true], [true, false], [true, true]])('requires IAM before workspace entry and after logout (Windows update=%s, stored API key=%s)', async (updated, hasApiKey) => {
   vi.resetModules()
   vi.clearAllMocks()
   state.preference = 'zh'
-  state.hasApiKey = false
+  state.hasApiKey = hasApiKey
   state.operations = undefined
   state.accountState.mockResolvedValue({ status: 'signed-out', attempt: null, links: { usageUrl: '', topUpUrl: '' } })
   if (updated) vi.stubGlobal('process', { ...process, platform: 'win32', argv: ['desktop', '--updated'] })
@@ -234,9 +238,18 @@ it.each([false, true])('starts welcome onboarding without carrying update focus 
   state.accountState.mockResolvedValue({ ...account, attempt: { id: attemptId, phase: 'expired' } })
   await expect(state.operations!.copySignInLink(attemptId)).rejects.toThrow('login link is unavailable')
   expect(state.copy).toHaveBeenCalledTimes(2)
-  await state.operations!.skip()
+  expect(state.operations).not.toHaveProperty('skip')
+  expect(state.operations).not.toHaveProperty('saveApiKey')
+  const stored: AccountView = { ...account, status: 'credential-stored',
+    attempt: { id: attemptId, phase: 'succeeded' } }
+  state.accountListener!({ ...stored, authenticationMethod: 'api-key' })
+  await vi.advanceTimersByTimeAsync(0)
+  expect(state.showWorkspace).not.toHaveBeenCalled()
+  expect(state.showInactiveWorkspace).not.toHaveBeenCalled()
+  state.accountListener!({ ...stored, authenticationMethod: 'iam' })
+  await vi.waitFor(() => { expect(state.showInactiveWorkspace).toHaveBeenCalledOnce() })
   expect(state.loadWorkspace).not.toHaveBeenCalled()
-  expect(state.showWorkspace).toHaveBeenCalledOnce()
+  expect(state.showWorkspace).not.toHaveBeenCalled()
   expect(state.moveTopWorkspace).not.toHaveBeenCalled()
   expect(state.focusWorkspace).not.toHaveBeenCalled()
   expect(state.windowOptions).toMatchObject({
@@ -245,7 +258,7 @@ it.each([false, true])('starts welcome onboarding without carrying update focus 
   })
   expect(state.closeWelcome).toHaveBeenCalledOnce()
   activate()
-  expect(state.showWorkspace).toHaveBeenCalledTimes(3)
+  expect(state.showWorkspace).toHaveBeenCalledTimes(2)
   expect(state.quit).not.toHaveBeenCalled()
   expect(state.stopHost).not.toHaveBeenCalled()
   const contents = state.contents as { mainFrame: { url: string }; send: ReturnType<typeof vi.fn> }
@@ -265,34 +278,34 @@ it.each([false, true])('starts welcome onboarding without carrying update focus 
   expect(state.menu).toHaveBeenCalledTimes(initialMenus + 1)
   expect(await bootstrap(event)).toEqual({ languages: ['en-US'], preference: 'en' })
   const welcomeCount = state.beforeWelcome.mock.calls.length
-  state.hasApiKey = true
-  state.accountListener!({ ...account, status: 'credential-stored', attempt: null })
+  const shown = state.showWorkspace.mock.calls.length
   state.accountListener!({ ...account, status: 'signed-out', attempt: null })
-  state.expiryListener!()
-  await vi.advanceTimersByTimeAsync(0)
-  expect(state.beforeWelcome).toHaveBeenCalledTimes(welcomeCount)
-  expect(await state.operations!.takeNotice()).toBeUndefined()
-  state.hasApiKey = false
-  state.accountListener!({ ...account, status: 'credential-stored', attempt: null })
-  state.accountListener!({ ...account, status: 'signed-out', attempt: null })
-  await vi.advanceTimersByTimeAsync(0)
-  expect(state.beforeWelcome).toHaveBeenCalledTimes(welcomeCount)
-  state.expiryListener!()
+  expect(state.hideWorkspace).toHaveBeenCalled()
+  activate()
+  expect(state.showWorkspace).toHaveBeenCalledTimes(shown)
   await vi.waitFor(() => { expect(state.beforeWelcome).toHaveBeenCalledTimes(welcomeCount + 1) })
+  expect(await state.operations!.takeNotice()).toBeUndefined()
+  state.expiryListener!()
+  await vi.advanceTimersByTimeAsync(0)
   expect(await state.operations!.takeNotice()).toBe('session-expired')
   expect(await state.operations!.takeNotice()).toBeUndefined()
+
+  // A sign-out received while the login read is pending prevents that stale read from reopening the workspace.
+  const pending = Promise.withResolvers<AccountView>()
+  state.accountState.mockReturnValueOnce(pending.promise)
+  state.accountListener!({ ...stored, authenticationMethod: 'iam' })
   state.accountListener!({ ...account, status: 'signed-out', attempt: null })
+  pending.resolve({ ...stored, authenticationMethod: 'iam' })
   await vi.advanceTimersByTimeAsync(0)
-  expect(await state.operations!.takeNotice()).toBeUndefined()
-  state.accountListener!({ ...account, status: 'credential-stored', attempt: null })
-  state.accountListener!({ ...account, status: 'signed-out', attempt: null })
-  await vi.advanceTimersByTimeAsync(0)
-  expect(await state.operations!.takeNotice()).toBeUndefined()
+  expect(state.showInactiveWorkspace).toHaveBeenCalledOnce()
+  activate()
+  expect(state.showWorkspace).toHaveBeenCalledTimes(shown)
+
   state.showWorkspace.mockClear()
   state.focusWorkspace.mockClear()
   vi.stubEnv('DSH_DESKTOP_OPEN_DEVTOOLS', '1')
-  state.accountListener!({ ...account, status: 'credential-stored', attempt: { id: attemptId, phase: 'succeeded' } })
-  await vi.waitFor(() => { expect(state.showInactiveWorkspace).toHaveBeenCalledOnce() })
+  state.accountListener!({ ...stored, authenticationMethod: 'iam' })
+  await vi.waitFor(() => { expect(state.showInactiveWorkspace).toHaveBeenCalledTimes(2) })
   expect(state.showWorkspace).not.toHaveBeenCalled()
   expect(state.focusWorkspace).not.toHaveBeenCalled()
   expect(state.moveTopWorkspace).not.toHaveBeenCalled()
@@ -300,5 +313,4 @@ it.each([false, true])('starts welcome onboarding without carrying update focus 
   state.appListeners.get('open-url')!({ preventDefault: vi.fn() }, 'dsh://open')
   expect(state.showWorkspace).toHaveBeenCalledOnce()
   expect(state.focusWorkspace).toHaveBeenCalledOnce()
-
 })

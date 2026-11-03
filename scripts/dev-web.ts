@@ -19,7 +19,7 @@
  * MUST NOT run beside `pnpm run build` or `build:artifacts`: they write the same `lib/` and
  * `apps/web/dist/` trees. The build stage here finishes before any watcher starts.
  *
- * Usage: `pnpm run dev:web [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]`.
+ * Usage: `pnpm run dev:web [--haier] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]`.
  * `--skip-build` requires the artifact tree from a prior `build` or `build:artifacts`: every
  * watcher is incremental over the previous stage's output and none of them
  * bootstraps a missing tree. `--no-serve` keeps only the watchers, for a
@@ -50,6 +50,7 @@ import {
   repositoryClientBuildEnvironment,
 } from './client-build-environment.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
+import { configureHaierDevelopment } from '../haier-simulator/profile.ts'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 
@@ -80,6 +81,8 @@ export function devWebBuildEnvironment(
 
 /** Resolved `dev-web` command line: the script's own flags plus the arguments forwarded to `dsh web`. */
 export interface DevWebArguments {
+  /** Use the isolated development profile connected to the local Haier simulator. */
+  readonly haier: boolean
   /** Skip the `pnpm run build:artifacts` that otherwise precedes the watchers. */
   readonly skipBuild: boolean
   /** Start `dsh web`; false keeps only the rebuild watchers beside an already running server. */
@@ -94,7 +97,7 @@ export interface DevWebArguments {
 const DEFAULT_POLL_INTERVAL = 500
 
 /**
- * Parse the script's command line. `--skip-build`, `--no-serve`, and `--poll[=ms]`
+ * Parse the script's command line. `--haier`, `--skip-build`, `--no-serve`, and `--poll[=ms]`
  * belong to this script; a bare `--` is dropped; every other token is forwarded
  * to `dsh web`.
  * @param argv - arguments after the script path.
@@ -103,6 +106,7 @@ const DEFAULT_POLL_INTERVAL = 500
  * when `--no-serve` leaves forwarded arguments without a `dsh web` process.
  */
 export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
+  let haier = false
   let skipBuild = false
   let serve = true
   let pollInterval: number | undefined
@@ -110,17 +114,19 @@ export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
   for (const arg of argv) {
     // `pnpm run` forwards a `--` separator verbatim; it carries no meaning here.
     if (arg === '--') continue
-    if (arg === '--skip-build') skipBuild = true
+    if (arg === '--haier') haier = true
+    else if (arg === '--skip-build') skipBuild = true
     else if (arg === '--no-serve') serve = false
     else if (arg === '--poll' || arg.startsWith('--poll=')) {
       pollInterval = arg === '--poll' ? DEFAULT_POLL_INTERVAL : Number(arg.slice('--poll='.length))
       if (!Number.isInteger(pollInterval) || pollInterval <= 0) throw new Error(`dev-web: invalid --poll interval "${arg}"`)
     } else appArgs.push(arg)
   }
+  if (haier && !serve) throw new Error('--haier requires a served Web Host; omit --no-serve')
   if (!serve && appArgs.length > 0) {
     throw new Error(`dev-web: --no-serve leaves no dsh web process for ${appArgs[0] ?? ''}`)
   }
-  return { skipBuild, serve, pollInterval, appArgs }
+  return { haier, skipBuild, serve, pollInterval, appArgs }
 }
 
 /**
@@ -335,9 +341,14 @@ if (isMain) {
   let options: DevWebArguments
   try {
     options = parseDevWebArguments(process.argv.slice(2))
+    if (options.haier) {
+      const development = await configureHaierDevelopment({ appArgs: options.appArgs })
+      Object.assign(process.env, development.env)
+      options = { ...options, appArgs: development.appArgs }
+    }
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
-    console.error('dev-web: usage: pnpm run dev:web [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]')
+    console.error('dev-web: usage: pnpm run dev:web [--haier] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]')
     process.exit(1)
   }
 

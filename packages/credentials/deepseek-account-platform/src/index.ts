@@ -206,12 +206,17 @@ export class PlatformAccount extends DeepSeekAccount {
 
   override async getState(): Promise<AccountView> {
     const record = await this.ctx.credentials.readRecord(KEY)
-    if (record !== undefined && (record.kind !== 'grant' || !grant.safeParse(record.payload).success)) {
+    const parsed = record?.kind === 'grant' ? grant.safeParse(record.payload) : undefined
+    if (record !== undefined && !parsed?.success) {
       throw new PlatformAuthError('storage')
     }
+    const authenticationMethod = this.companyLogin && parsed?.success
+      ? parsed.data.companyProfile === undefined ? 'api-key' as const : 'iam' as const
+      : undefined
     const attempt = this.attempt?.view ?? null
     return {
       status: record === undefined ? 'signed-out' : 'credential-stored',
+      ...authenticationMethod === undefined ? {} : { authenticationMethod },
       // Credential removal can notify watchers before sign-out finishes clearing the attempt.
       attempt: record === undefined && attempt?.phase === 'succeeded' ? null : attempt,
       links: { usageUrl: new URL('/usage', this.origin).href, topUpUrl: new URL('/top_up', this.origin).href },
