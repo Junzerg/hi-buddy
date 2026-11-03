@@ -127,6 +127,7 @@ Function InstallerPreflight
     ReadRegStr $0 HKCU "${INSTALL_REGISTRY_KEY}" "InstallLocation"
     ${If} $0 != $INSTDIR
     ${OrIfNot} ${FileExists} "$INSTDIR\${APP_EXECUTABLE_FILENAME}"
+    ${AndIfNot} ${FileExists} "$INSTDIR\${LEGACY_APP_EXECUTABLE_FILENAME}"
         FindFirst $0 $1 "$INSTDIR\*.*"
         ${DoWhile} $1 != ""
             ${If} $1 != "."

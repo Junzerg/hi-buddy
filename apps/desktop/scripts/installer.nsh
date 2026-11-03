@@ -11,6 +11,9 @@ ManifestDPIAware true
 !macro customHeader
   !define /ifndef INSTALLER_STRINGS_FILE "${INSTALLER_BUILD_DIR}\strings.nsh"
   !include "${INSTALLER_STRINGS_FILE}"
+  ; Pre-rename product executable: installations from the "Lingxi Office" era keep this
+  ; name on disk and in the running process list during migration to the current product.
+  !define LEGACY_APP_EXECUTABLE_FILENAME "Lingxi Office.exe"
   !ifdef BUILD_UNINSTALLER
     BrandingText " "
     SetFont "Segoe UI" 9

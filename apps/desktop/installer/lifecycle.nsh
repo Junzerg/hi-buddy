@@ -51,6 +51,21 @@ Function InstallerBeforeInstall
         Quit
     ${EndIf}
     Call InstallerCheckAppRunning
+    Call InstallerCheckLegacyAppRunning
+FunctionEnd
+
+Function InstallerCheckLegacyAppRunning
+    ; The stock check only detects ${APP_EXECUTABLE_FILENAME}; a pre-rename installation may
+    ; still be running the legacy executable and hold locks during directory replacement.
+    nsExec::ExecToStack `"$SYSDIR\cmd.exe" /C tasklist /FI "IMAGENAME eq ${LEGACY_APP_EXECUTABLE_FILENAME}" /NH`
+    Pop $0
+    Pop $1
+    ${If} $1 contains "${LEGACY_APP_EXECUTABLE_FILENAME}"
+        MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION "$(appRunning)" /SD IDOK IDOK +2
+            Quit
+        nsExec::Exec `"$SYSDIR\cmd.exe" /C taskkill /IM "${LEGACY_APP_EXECUTABLE_FILENAME}" /FI "USERNAME eq %USERNAME%"`
+        Sleep 500
+    ${EndIf}
 FunctionEnd
 
 Function InstallerProgressShow
