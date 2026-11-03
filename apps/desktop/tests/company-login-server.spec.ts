@@ -24,7 +24,8 @@ async function endpoint() {
 
 const callback = { code: 'fixture-code', redirectUri: 'http://127.0.0.1:18743/oauth/callback' }
 
-it('obtains the personal key from server-verified email without returning application secrets or IAM tokens', async () => {
+it.each([18743, 3080])('exchanges company IAM at callback port %s without exposing service secrets or IAM tokens', async (port) => {
+  const request = { ...callback, redirectUri: `http://127.0.0.1:${String(port)}/oauth/callback` }
   const upstream = vi.fn<typeof fetch>()
     .mockResolvedValueOnce(Response.json({ access_token: 'private-iam-token' }))
     .mockResolvedValueOnce(Response.json({ ret: 0, email: 'employee@example.test', sub: '18000001', name: '张宁',
@@ -32,7 +33,7 @@ it('obtains the personal key from server-verified email without returning applic
     .mockResolvedValueOnce(Response.json({ success: true, status: { code: 20000 }, msg: null, extraInfo: {},
       data: { username: 'lingxi-office_employee', apiKey: 'personal-key', newlyCreated: false, authorizedModels: ['fixture-model'] } }))
   vi.stubGlobal('fetch', upstream)
-  const response = await send(await endpoint(), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(callback) })
+  const response = await send(await endpoint(), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request) })
   expect(response.status).toBe(200)
   expect(response.headers.get('cache-control')).toBe('no-store')
   expect(await response.json()).toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test',
@@ -42,13 +43,17 @@ it('obtains the personal key from server-verified email without returning applic
   expect(upstream.mock.calls[1]?.[0]).toEqual(new URL('http://iam-stg.haiercash.work/sso/oauth2/userInfo'))
   expect(tokenBody).toBeInstanceOf(URLSearchParams)
   expect((tokenBody as URLSearchParams).get('client_secret')).toBe('fixture-application-secret')
+  expect((tokenBody as URLSearchParams).get('redirect_uri')).toBe(request.redirectUri)
   const keyBody = upstream.mock.calls[2]?.[1]?.body
   if (typeof keyBody !== 'string') throw new Error('Expected a JSON string for the personal-key request body')
   expect(JSON.parse(keyBody)).toEqual({ account: 'employee', authSecret: 'fixture-gateway-secret', system: 'lingxi-office' })
   expect(console.info).toHaveBeenCalledWith('[company-login] personal key obtained')
 })
 
-it.each([{ ...callback, account: 'another-user' }, { ...callback, redirectUri: 'http://attacker.test/' }, { redirectUri: callback.redirectUri }])
+it.each([{ ...callback, account: 'another-user' }, { ...callback, redirectUri: 'http://attacker.test/' }, { redirectUri: callback.redirectUri },
+  { ...callback, redirectUri: 'http://127.0.0.1:3081/oauth/callback' },
+  { ...callback, redirectUri: 'http://127.0.0.1:3080/another-path' },
+  { ...callback, redirectUri: 'http://localhost:3080/oauth/callback' }])
 ('rejects client-selected identities and unregistered callbacks: %j', async (body) => {
   const upstream = vi.fn<typeof fetch>()
   vi.stubGlobal('fetch', upstream)

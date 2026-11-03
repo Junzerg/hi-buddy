@@ -15,6 +15,8 @@ Signed-out Desktop users remain on the login page. Sign-out and credential expir
 
 ## Migration
 
+Unpackaged Desktop development uses port 3080 while installed Desktop retains port 18743. Both connect to company IAM. For development login, deploy the updated company-login endpoint and have the IAM administrator confirm that APP176 allows `http://127.0.0.1:3080/oauth/callback`; the client cannot register that callback itself.
+
 1. Back up the existing Harness home, including credentials, settings and profile overrides, before installing the test build. Retain the .3 installer; rollback requires restoring its matching data backup because downgrade compatibility has not been qualified.
 2. Desktop automatically repairs legacy connection overrides before starting the Host and retains a backup beside the profile patch. Credentials, saved models and unrelated settings are preserved; no client repair script is required.
 3. Administrators deploy the login endpoint and configure both application secrets on the existing versions server. Windows users only install the application and use the login button, without editing files, running scripts or configuring environment variables.

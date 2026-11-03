@@ -96,3 +96,22 @@ it.each([': invalid fixture-private-value', '- id: llm-pi-ai\n  config:\n    pro
   expect(readFileSync(f.file, 'utf8')).toBe(original)
   expect(readdirSync(f.paths.profile)).toEqual(['cordis.patch.yml'])
 })
+
+it.each([legacy, '[]\n'])('uses 3080 for unpackaged Desktop development while retaining company IAM: %s', async (original) => {
+  const f = fixture(original)
+  const development = new DesktopProjectManager(f.paths, { dsh: f.runtime, development: true })
+  await development.applyRelease()
+  const rows = yaml.load(readFileSync(f.file, 'utf8'), { schema: entryListSchema }) as { id: string; config?: Record<string, unknown> }[]
+  expect(rows.findLast(row => row.id === 'webserver')?.config).toMatchObject({ port: 3080 })
+  const baseAccount = original === legacy ? rows.findLast(row => row.id === 'deepseek-account')?.config : undefined
+  if (baseAccount !== undefined) expect(baseAccount).toMatchObject({
+    companyLogin: true, platformOrigin: 'https://iam-stg.haierxj.com',
+    companyLoginEndpoint: 'http://172.28.236.3:18765/company-login/exchange',
+  })
+  const prepared = readFileSync(f.file, 'utf8')
+  await development.applyRelease()
+  expect(readFileSync(f.file, 'utf8')).toBe(prepared)
+  await new DesktopProjectManager(f.paths, { dsh: f.runtime }).applyRelease()
+  const packaged = yaml.load(readFileSync(f.file, 'utf8'), { schema: entryListSchema }) as { id: string; config?: Record<string, unknown> }[]
+  expect(packaged.findLast(row => row.id === 'webserver')?.config).toMatchObject({ port: 18743 })
+})

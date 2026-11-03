@@ -39,7 +39,8 @@ export function createCompanyLoginServer(config: CompanyLoginServerConfig): Serv
       try { value = JSON.parse(body) } catch { res.writeHead(400).end('{}'); return }
       if (typeof value !== 'object' || value === null || !('code' in value) || typeof value.code !== 'string'
         || !/^[\x21-\x7e]{1,2048}$/.test(value.code) || !('redirectUri' in value)
-        || value.redirectUri !== 'http://127.0.0.1:18743/oauth/callback'
+        || typeof value.redirectUri !== 'string'
+        || !['http://127.0.0.1:18743/oauth/callback', 'http://127.0.0.1:3080/oauth/callback'].includes(value.redirectUri)
         || Object.keys(value).some(key => key !== 'code' && key !== 'redirectUri')) {
         res.writeHead(400).end('{}'); return
       }

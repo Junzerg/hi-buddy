@@ -50,9 +50,10 @@ function append(original: string, patches: Record<string, unknown>[]): string {
  * Upgrade only legacy company connection overrides while the caller holds the Desktop profile lock.
  * @param runtime - verified bundled dsh directory containing the deployment defaults.
  * @param profile - reserved Desktop profile directory, before starting its Host.
+ * @param development - unpackaged launch using port 3080; packaged launches retain the registered port 18743.
  * @returns after backing up and atomically replacing changed overrides; credentials and other settings are untouched.
  */
-export async function upgradeCompanyProfile(runtime: string, profile: string): Promise<void> {
+export async function upgradeCompanyProfile(runtime: string, profile: string, development = false): Promise<void> {
   const base = bundleRows(runtime, 'dsh-base')
   const account = base.find(row => row.id === 'deepseek-account')?.config
   if (!object(account) || account.companyLogin !== true) return
@@ -74,7 +75,7 @@ export async function upgradeCompanyProfile(runtime: string, profile: string): P
     }
     if (!object(config) || !object(builtin.config)) throw new Error('Desktop company upgrade: invalid connection settings')
     let next: Record<string, unknown>
-    if (id === 'webserver') next = { ...builtin.config, ...config, port: 18743 }
+    if (id === 'webserver') next = { ...builtin.config, ...config, port: development ? 3080 : 18743 }
     else if (id === 'deepseek-account') next = { ...builtin.config, ...config,
       companyLogin: true, companyLoginEndpoint: account.companyLoginEndpoint,
       platformOrigin: account.platformOrigin, inferenceOrigin: account.inferenceOrigin }
@@ -90,8 +91,8 @@ export async function upgradeCompanyProfile(runtime: string, profile: string): P
           api: route.api, apiKeyEnv: route.apiKeyEnv, accountRequired: route.accountRequired,
           baseURL: route.baseURL, displayName: route.displayName } } }
     }
-    // A fresh profile uses its built-in defaults; only persisted overrides need repair.
-    if (overrides.length && !isDeepStrictEqual(config, next)) patches.push({ id, config: next })
+    // Development needs a local port override even when its profile has no persisted connections.
+    if ((overrides.length || (development && id === 'webserver')) && !isDeepStrictEqual(config, next)) patches.push({ id, config: next })
   }
   if (!patches.length) return
   const next = append(original, patches)
