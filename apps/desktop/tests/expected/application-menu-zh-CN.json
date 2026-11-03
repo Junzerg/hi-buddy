@@ -4,7 +4,7 @@
   },
   {
     "role": "hide",
-    "label": "隐藏 灵犀办公"
+    "label": "隐藏 海智伙伴"
   },
   {
     "role": "hideOthers",
@@ -16,6 +16,6 @@
   },
   {
     "role": "quit",
-    "label": "退出 灵犀办公"
+    "label": "退出 海智伙伴"
   }
 ]

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-session-title-first-prompt-llm",
-  "description": "First-message LLM provider plugin for Lingxi Office session titles",
+  "description": "First-message LLM provider plugin for HiBuddy session titles",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

@@ -14,7 +14,7 @@ function mount(language = 'en') {
 
 describe('BootPage', () => {
   it.each([
-    ['zh-CN', '灵犀办公'], ['zh-TW', '灵犀办公'], ['en', 'Lingxi Office'], ['fr', 'Lingxi Office'],
+    ['zh-CN', '海智伙伴'], ['zh-TW', '海智伙伴'], ['en', 'HiBuddy'], ['fr', 'HiBuddy'],
   ])('draws the %s loading page before any plugin state arrives', (language, name) => {
     const { el } = mount(language)
     expect(el.firstElementChild?.getAttribute('data-dsh-boot')).toBe('')

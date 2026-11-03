@@ -15,7 +15,7 @@
 - button "Account menu": More
 - banner:
   - button "Open right sidebar"
-- text: Lingxi, here to help Local work agent platform · Consumer finance
+- text: HiBuddy, here to help Local work agent platform · Consumer finance
 - button "Standard mode"
 - textbox "What can I help with today? @ add context, / skills and commands":
   - paragraph

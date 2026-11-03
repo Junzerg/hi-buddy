@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-sandbox-local",
-  "description": "Local process-sandbox backends for the Lingxi Office sandbox seam: bwrap, the npm-distributed landlock-run launcher, macOS Seatbelt, or the Windows ACL restricted-token runner — functionally probed, fail-closed",
+  "description": "Local process-sandbox backends for the HiBuddy sandbox seam: bwrap, the npm-distributed landlock-run launcher, macOS Seatbelt, or the Windows ACL restricted-token runner — functionally probed, fail-closed",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

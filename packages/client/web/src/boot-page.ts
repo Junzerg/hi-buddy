@@ -49,7 +49,7 @@ export class BootPage {
    * @param language - Document language after bootstrap injections complete.
    */
   setLanguage(language: string): void {
-    this.wordmark.textContent = language.toLowerCase().split('-')[0] === 'zh' ? '灵犀办公' : 'Lingxi Office'
+    this.wordmark.textContent = language.toLowerCase().split('-')[0] === 'zh' ? '海智伙伴' : 'HiBuddy'
   }
 
   /**

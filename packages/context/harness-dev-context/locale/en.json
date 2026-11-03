@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "Lingxi Office development context",
-    "description": "Give the model the Lingxi Office source directory and Web URL without changing its system prompt."
+    "title": "HiBuddy development context",
+    "description": "Give the model the HiBuddy source directory and Web URL without changing its system prompt."
   }
 }

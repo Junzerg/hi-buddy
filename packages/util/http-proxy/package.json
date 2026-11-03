@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-http-proxy",
-  "description": "Process-wide outbound HTTP proxy policy for Lingxi Office: resolve it from the launch environment and install it as undici's global dispatcher",
+  "description": "Process-wide outbound HTTP proxy policy for HiBuddy: resolve it from the launch environment and install it as undici's global dispatcher",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

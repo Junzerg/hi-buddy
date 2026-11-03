@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-skill-badge",
-  "description": "Bundled dsh badge skill provider for Lingxi Office",
+  "description": "Bundled dsh badge skill provider for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

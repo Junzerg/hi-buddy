@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-subprocess",
-  "description": "Subprocess seam (ctx.subprocess) for the Lingxi Office — managed process groups, bounded spill-backed output, and escalated kills behind one abstract service",
+  "description": "Subprocess seam (ctx.subprocess) for the HiBuddy — managed process groups, bounded spill-backed output, and escalated kills behind one abstract service",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

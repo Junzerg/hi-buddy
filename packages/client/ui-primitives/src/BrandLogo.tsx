@@ -2,7 +2,7 @@ import type { IconProps } from './icons/props.ts'
 import { FLOWER_PETALS, FLOWER_VIEWBOX } from './brand-artwork.ts'
 
 /**
- * Render the six-petal Lingxi Office mark on a transparent canvas.
+ * Render the six-petal HiBuddy mark on a transparent canvas.
  * @param props - Requested width and optional layout class.
  * @returns Decorative vector artwork at its native aspect ratio.
  */

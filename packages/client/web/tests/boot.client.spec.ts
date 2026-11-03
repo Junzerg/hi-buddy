@@ -283,7 +283,7 @@ it('draws the shared boot page before Host injections and resumes without replac
     const page = container.querySelector('[data-dsh-boot]')
     const spinner = container.querySelector('[data-dsh-boot-spinner]')
     expect(spinner).not.toBeNull()
-    expect(container.textContent).not.toMatch(/Lingxi Office|灵犀办公/)
+    expect(container.textContent).not.toMatch(/HiBuddy|海智伙伴/)
     await Promise.resolve()
     expect(create).not.toHaveBeenCalled()
     expect(error).not.toHaveBeenCalled()
@@ -294,7 +294,7 @@ it('draws the shared boot page before Host injections and resumes without replac
     expect(create).toHaveBeenCalledOnce()
     expect(container.querySelector('[data-dsh-boot]')).toBe(page)
     expect(container.textContent).toContain('injections consumed')
-    expect(container.textContent).toContain('灵犀办公')
+    expect(container.textContent).toContain('海智伙伴')
   } finally {
     gate.resolve(undefined)
     await boot

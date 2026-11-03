@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-scope",
-  "description": "Scoped-context registration primitive (scope tags, scope-filtered event dispatch) for Lingxi Office",
+  "description": "Scoped-context registration primitive (scope tags, scope-filtered event dispatch) for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-session",
-  "description": "Event-sourced session store for Lingxi Office",
+  "description": "Event-sourced session store for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

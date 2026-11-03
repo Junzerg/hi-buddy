@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-settings",
-  "description": "Abstract user-settings seam (ctx.settings) for Lingxi Office",
+  "description": "Abstract user-settings seam (ctx.settings) for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

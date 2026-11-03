@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-fs-sandbox",
-  "description": "Sandbox-enforcing implementation of the Lingxi Office filesystem seam: fences write/edit by the per-call sandbox mode (read-only denies mutation, workspace-write contains it to the workspace + temp roots) while reads pass through",
+  "description": "Sandbox-enforcing implementation of the HiBuddy filesystem seam: fences write/edit by the per-call sandbox mode (read-only denies mutation, workspace-write contains it to the workspace + temp roots) while reads pass through",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

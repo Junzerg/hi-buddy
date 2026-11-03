@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-web-search-perplexity",
-  "description": "Perplexity-backed search provider for the Lingxi Office web capability seam (ctx.web)",
+  "description": "Perplexity-backed search provider for the HiBuddy web capability seam (ctx.web)",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

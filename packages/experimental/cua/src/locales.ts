@@ -3,14 +3,14 @@
 /** English application-access messages. */
 export const en = {
   question: 'Allow computer use to launch, read, capture and control this application?',
-  detail: 'Session access lasts until Lingxi Office restarts or computer use is disabled.',
+  detail: 'Session access lasts until HiBuddy restarts or computer use is disabled.',
   approve: 'Allow for this session',
 }
 
 /** Chinese application-access messages. */
 export const zh = {
   question: '允许 Computer Use 启动、读取、截图和控制此应用吗？',
-  detail: '会话授权在灵犀办公重启或关闭 Computer Use 后失效。',
+  detail: '会话授权在海智伙伴重启或关闭 Computer Use 后失效。',
   approve: '本会话允许',
 } satisfies Record<keyof typeof en, string>
 

@@ -1,7 +1,7 @@
-- region "What would you like Lingxi Office to help with?":
-  - heading "What would you like Lingxi Office to help with?" [level=1]:
+- region "What would you like HiBuddy to help with?":
+  - heading "What would you like HiBuddy to help with?" [level=1]:
     - text: What would you like
-    - emphasis: Lingxi Office
+    - emphasis: HiBuddy
     - text: to help with?
   - paragraph: We’ll tailor the interface and tools to fit the way you work.
   - checkbox "Office & creative work"

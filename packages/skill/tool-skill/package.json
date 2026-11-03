@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-tool-skill",
-  "description": "Model-facing skill loading tool for Lingxi Office",
+  "description": "Model-facing skill loading tool for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

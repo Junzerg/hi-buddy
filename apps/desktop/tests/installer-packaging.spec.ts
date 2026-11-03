@@ -63,9 +63,9 @@ describe('installer preparation preserves application dependencies', () => {
       })
       const appInfo = new AppInfo(metadataPackager, undefined)
       expect(appInfo.companyName).toBe('HaierCash')
-      expect(appInfo.copyright).toBe(`Copyright © ${new Date().getFullYear()} Lingxi Office`)
+      expect(appInfo.copyright).toBe(`Copyright © ${new Date().getFullYear()} HiBuddy`)
       if (platform === 'win32') {
-        expect(expandMacro(config.nsis.uninstallDisplayName, null, appInfo, {}, false)).toBe('Lingxi Office')
+        expect(expandMacro(config.nsis.uninstallDisplayName, null, appInfo, {}, false)).toBe('HiBuddy')
         expect(config.nsis.installerLanguages).toEqual(readInstallerLocales().map(locale => locale.id))
       }
       const aboutIcon = config.extraResources.find(resource => resource.to === 'icon.png')

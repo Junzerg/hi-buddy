@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-token-meter",
-  "description": "Replay-aware token measurement service (ctx.tokenMeter) for Lingxi Office",
+  "description": "Replay-aware token measurement service (ctx.tokenMeter) for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

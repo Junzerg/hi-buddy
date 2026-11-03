@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-persona",
-  "description": "Composition-authored deployment persona section for Lingxi Office",
+  "description": "Composition-authored deployment persona section for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

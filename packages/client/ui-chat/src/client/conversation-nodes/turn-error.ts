@@ -40,10 +40,10 @@ function endFailure(reason: TurnEndReason): { readonly message: string; readonly
     case 'aborted':
       // User and parent cancellations show only the stopped turn summary.
       return reason.reason.kind === 'hook' && reason.reason.reason === 'deepseek-account/signed-out'
-        ? { message: 'Stopped because you signed out of Lingxi Office.', code: 'ACCOUNT_SIGNED_OUT' }
+        ? { message: 'Stopped because you signed out of HiBuddy.', code: 'ACCOUNT_SIGNED_OUT' }
         : undefined
     case 'interrupted':
-      return { message: 'The Lingxi Office process exited before this turn finished.', code: 'INTERRUPTED' }
+      return { message: 'The HiBuddy process exited before this turn finished.', code: 'INTERRUPTED' }
     default:
       // Completed, blocked, max-tokens, forked, and plugin-merged endings have no failure row.
       return undefined

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-home-paths",
-  "description": "Shared filesystem path helpers for Lingxi Office",
+  "description": "Shared filesystem path helpers for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

@@ -33,12 +33,12 @@ describe('DocumentTitle', () => {
   it('projects a durable title and restores the product title', () => {
     const { sessionId, sessions, props } = titleSources()
     document.title = 'stale title'
-    const mounted = render(<DocumentTitle {...props} productTitle="DeepSeek Harness" />)
-    expect(document.title).toBe('DeepSeek Harness')
+    const mounted = render(<DocumentTitle {...props} productTitle="HiBuddy" />)
+    expect(document.title).toBe('HiBuddy')
     act(() => { sessions.update((state) => { state.byId[sessionId]!.title = 'First title' }) })
-    expect(document.title).toBe('First title — DeepSeek Harness')
+    expect(document.title).toBe('First title — HiBuddy')
     act(() => { sessions.update((state) => { state.byId[sessionId]!.title = 'Revised title' }) })
-    expect(document.title).toBe('Revised title — DeepSeek Harness')
+    expect(document.title).toBe('Revised title — HiBuddy')
     act(() => {
       const state = sessions.getSnapshot()
       sessions.set({
@@ -46,18 +46,18 @@ describe('DocumentTitle', () => {
         byId: { ...state.byId, [sessionId]: { ...state.byId[sessionId]!, retainedBy: {} } },
       })
     })
-    expect(document.title).toBe('DeepSeek Harness')
+    expect(document.title).toBe('HiBuddy')
     mounted.unmount()
-    expect(document.title).toBe('DeepSeek Harness')
+    expect(document.title).toBe('HiBuddy')
   })
 
   it('uses the localized product title supplied by the frame', () => {
     const { sessionId, sessions, props } = titleSources()
     sessions.update((state) => { state.byId[sessionId]!.title = 'First title' })
-    const mounted = render(<DocumentTitle {...props} productTitle="Lingxi Office Local Build" />)
-    expect(document.title).toBe('First title — Lingxi Office Local Build')
+    const mounted = render(<DocumentTitle {...props} productTitle="HiBuddy Local Build" />)
+    expect(document.title).toBe('First title — HiBuddy Local Build')
     mounted.unmount()
-    expect(document.title).toBe('Lingxi Office Local Build')
+    expect(document.title).toBe('HiBuddy Local Build')
   })
 
   it('keeps the product title across global panels and restores the latest Session title on return', () => {

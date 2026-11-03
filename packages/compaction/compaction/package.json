@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-compaction",
-  "description": "Abstract compaction service seam (ctx.compaction) for Lingxi Office",
+  "description": "Abstract compaction service seam (ctx.compaction) for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

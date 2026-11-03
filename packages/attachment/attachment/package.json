@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-attachment",
-  "description": "Durable immutable attachment storage seam for Lingxi Office",
+  "description": "Durable immutable attachment storage seam for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

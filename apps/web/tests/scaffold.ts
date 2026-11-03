@@ -117,8 +117,8 @@ export const WELCOME_NOTICE_ACK_FIELD = 'welcomeNoticeVersion'
 export const WELCOME_NOTICE_VERSION = '2026-09-28.1'
 export const WELCOME_NOTICE_COPY = {
   zh: {
-    title: '欢迎使用灵犀办公',
-    body: '灵犀办公是面向公司内部的 AI 办公助手，可帮助你制作文档、整理资料和完成工作任务。使用公司账号登录，或填写公司 API Key，即可开始使用。如需帮助或反馈问题，请联系 AI 工程团队。',
+    title: '欢迎使用海智伙伴',
+    body: '海智伙伴是面向公司内部的 AI 办公助手，可帮助你制作文档、整理资料和完成工作任务。使用公司账号登录，或填写公司 API Key，即可开始使用。如需帮助或反馈问题，请联系 AI 工程团队。',
     continueLabel: '继续',
   },
 } as const

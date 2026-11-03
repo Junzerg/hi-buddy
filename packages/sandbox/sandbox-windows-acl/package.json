@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-sandbox-windows-acl",
-  "description": "Windows ACL write-restriction sandbox backend (restricted-token spawn with capability-SID write allowlist) for the Lingxi Office sandbox seam",
+  "description": "Windows ACL write-restriction sandbox backend (restricted-token spawn with capability-SID write allowlist) for the HiBuddy sandbox seam",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

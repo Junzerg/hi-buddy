@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-fs-local",
-  "description": "Local-filesystem implementation of the Lingxi Office filesystem seam (ctx.fs)",
+  "description": "Local-filesystem implementation of the HiBuddy filesystem seam (ctx.fs)",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

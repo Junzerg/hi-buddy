@@ -484,7 +484,7 @@ describe('web e2e: settings modal and General preferences', () => {
       const loading = page.getByText('Loading plugins…', { exact: true })
       await loading.waitFor({ timeout: 10_000 })
       const boot = page.locator('[data-dsh-boot]')
-      await boot.getByText('灵犀办公', { exact: true }).waitFor()
+      await boot.getByText('海智伙伴', { exact: true }).waitFor()
       expect(await boot.textContent()).not.toMatch(/harness/i)
       const state = await loading.evaluate((element) => {
         const boot = element.parentElement?.parentElement
@@ -928,8 +928,8 @@ describe('web e2e: settings modal and General preferences', () => {
     try {
       reload = page.reload({ waitUntil: 'domcontentloaded' })
       const boot = page.locator('[data-dsh-boot]')
-      await boot.getByText('Lingxi Office', { exact: true }).waitFor({ timeout: 10_000 })
-      expect(await boot.textContent()).not.toMatch(/harness|灵犀办公/i)
+      await boot.getByText('HiBuddy', { exact: true }).waitFor({ timeout: 10_000 })
+      expect(await boot.textContent()).not.toMatch(/harness|海智伙伴/i)
     } finally {
       bundles.resolve(undefined)
       await reload

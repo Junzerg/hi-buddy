@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-util-values",
-  "description": "Duplicate-install-safe value primitives for Lingxi Office",
+  "description": "Duplicate-install-safe value primitives for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

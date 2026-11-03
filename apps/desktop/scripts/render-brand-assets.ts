@@ -1,4 +1,4 @@
-/** Regenerate desktop, installer, and browser artwork from the Lingxi Office vector masters. */
+/** Regenerate desktop, installer, and browser artwork from the HiBuddy vector masters. */
 import { readFile, writeFile } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { execFileSync } from 'node:child_process'

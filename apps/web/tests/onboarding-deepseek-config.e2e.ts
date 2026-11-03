@@ -164,7 +164,7 @@ describe.skipIf(MODE === 'record')('web e2e: first-run DeepSeek credential setup
       ;(window as unknown as { __takeoverSightings: string[] }).__takeoverSightings = sightings
       setInterval(() => {
         if (document.querySelector(
-          '[role="dialog"][aria-label="欢迎使用灵犀办公"], '
+          '[role="dialog"][aria-label="欢迎使用海智伙伴"], '
           + '[role="dialog"][aria-label="开始使用"], '
           + '[role="dialog"][aria-label="添加一个 API Key 开始使用"]',
         ) !== null) {

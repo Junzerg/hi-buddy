@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-skill",
-  "description": "Agent skill provider registry for Lingxi Office",
+  "description": "Agent skill provider registry for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

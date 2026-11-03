@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Webhook runtime",
-    "description": "Create Lingxi Office sessions in a workspace through Webhook rules without waiting for completion."
+    "description": "Create HiBuddy sessions in a workspace through Webhook rules without waiting for completion."
   }
 }

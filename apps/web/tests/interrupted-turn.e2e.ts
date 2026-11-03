@@ -64,7 +64,7 @@ describe.skipIf(MODE === 'record')('web e2e: turn interrupted by a DSH stop', ()
     expect(await search.isVisible()).toBe(false)
     const notice = page.getByRole('status').filter({ hasText: 'Task stopped' })
     await notice.waitFor({ timeout: 15_000 })
-    expect(await notice.textContent()).toContain('The Lingxi Office process exited before this turn finished')
+    expect(await notice.textContent()).toContain('The HiBuddy process exited before this turn finished')
     expect(await notice.textContent()).not.toContain('INTERRUPTED')
     expect(await page.locator('[data-turn-process="1"]').textContent()).toBe('Stopped')
 

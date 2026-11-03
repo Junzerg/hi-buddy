@@ -106,8 +106,8 @@ function mount(
 describe('WelcomeNotice', () => {
   it('uses the exact owner copy in both GUI locales', () => {
     expect(WELCOME_NOTICE_COPY.en).toEqual({
-      title: 'Welcome to Lingxi Office',
-      body: 'Lingxi Office is your company workspace for creating documents, organizing information, and completing tasks with AI. Sign in with your company account or enter a company API key to get started. Contact the AI engineering team for help and feedback.',
+      title: 'Welcome to HiBuddy',
+      body: 'HiBuddy is your company workspace for creating documents, organizing information, and completing tasks with AI. Sign in with your company account or enter a company API key to get started. Contact the AI engineering team for help and feedback.',
       continueLabel: 'Continue',
     })
     expect(en.welcomeBody).toBe(WELCOME_NOTICE_COPY.en.body)

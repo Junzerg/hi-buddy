@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "Codex 钩子",
-    "description": "在灵犀办公拦截点执行 Codex hooks.json 中配置的钩子。"
+    "description": "在海智伙伴拦截点执行 Codex hooks.json 中配置的钩子。"
   }
 }

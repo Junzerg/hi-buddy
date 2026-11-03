@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-spill-local",
-  "description": "Local-filesystem implementation of the Lingxi Office spill storage seam (private session-scoped files)",
+  "description": "Local-filesystem implementation of the HiBuddy spill storage seam (private session-scoped files)",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

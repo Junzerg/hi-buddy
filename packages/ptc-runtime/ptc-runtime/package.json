@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-ptc-runtime",
-  "description": "Abstract PTC execution seam (ctx.ptcRuntime) for Lingxi Office",
+  "description": "Abstract PTC execution seam (ctx.ptcRuntime) for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

@@ -22,7 +22,7 @@
 - button "Thinking"
 - text: Lingxi {{clock}}
 - paragraph: DONE
-- status: Task stoppedThe Lingxi Office process exited before this turn finished (for example, it was killed, crashed, or timed out while shutting down), so the turn was closed when Lingxi Office restarted. Unfinished tool calls have unknown outcomes.
+- status: Task stoppedThe HiBuddy process exited before this turn finished (for example, it was killed, crashed, or timed out while shutting down), so the turn was closed when HiBuddy restarted. Unfinished tool calls have unknown outcomes.
 - button "Copy"
 - button "Branch into a new conversation" [disabled]
 - text: Available only on the last message of a completed turn {{clock}}

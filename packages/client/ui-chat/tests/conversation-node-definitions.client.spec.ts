@@ -2980,7 +2980,7 @@ it('retains a sign-out cancellation notice when reopening a partial turn', () =>
     at(7, 'turn/end', { turn: 1, reason: { kind: 'aborted', reason: { kind: 'hook', reason: 'deepseek-account/signed-out' } } }),
   ], true)
   expect(node(snapshot(value), 'turn-error')?.data).toMatchObject({
-    code: 'ACCOUNT_SIGNED_OUT', message: 'Stopped because you signed out of Lingxi Office.',
+    code: 'ACCOUNT_SIGNED_OUT', message: 'Stopped because you signed out of HiBuddy.',
   })
 })
 
@@ -2989,7 +2989,7 @@ it('reports a turn closed after its process exited as a stopped turn', () => {
     at(7, 'turn/end', { turn: 1, reason: { kind: 'interrupted' } }),
   ], true)
   expect(node(snapshot(value), 'turn-error')?.data).toMatchObject({
-    code: 'INTERRUPTED', message: 'The Lingxi Office process exited before this turn finished.',
+    code: 'INTERRUPTED', message: 'The HiBuddy process exited before this turn finished.',
   })
 })
 

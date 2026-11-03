@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-webhook-github",
-  "description": "Signed GitHub HTTP webhook adapter for the Lingxi Office webhook runtime",
+  "description": "Signed GitHub HTTP webhook adapter for the HiBuddy webhook runtime",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

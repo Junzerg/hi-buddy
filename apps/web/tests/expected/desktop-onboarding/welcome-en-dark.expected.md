@@ -1,6 +1,6 @@
-- region "Welcome to Lingxi Office":
-  - heading "Welcome to Lingxi Office" [level=1]:
+- region "Welcome to HiBuddy":
+  - heading "Welcome to HiBuddy" [level=1]:
     - text: Welcome to
-    - emphasis: Lingxi Office
-  - paragraph: Lingxi Office works in a local folder and uses tools to read and write files on your computer. It can help you research and organize information, create documents and spreadsheets, write code, troubleshoot issues, and more.
+    - emphasis: HiBuddy
+  - paragraph: HiBuddy works in a local folder and uses tools to read and write files on your computer. It can help you research and organize information, create documents and spreadsheets, write code, troubleshoot issues, and more.
   - button "Get started"

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-storage",
-  "description": "Storage hub (ctx.storage): named backend registry plus mounted data-form facilities for Lingxi Office",
+  "description": "Storage hub (ctx.storage): named backend registry plus mounted data-form facilities for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

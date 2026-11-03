@@ -215,7 +215,7 @@ describe.skipIf(MODE === 'record')('web e2e: App-only desktop onboarding', () =>
   }
 
   it.each([
-    ['zh-CN', '灵犀办公'], ['en-US', 'Lingxi Office'],
+    ['zh-CN', '海智伙伴'], ['en-US', 'HiBuddy'],
   ])('shows the localized product name in %s onboarding', async (language, name) => {
     page = await desktopPage(language)
     onTestFailed(() => saveFailureShot(page, `product-branding-${language}-failure`))
@@ -225,7 +225,7 @@ describe.skipIf(MODE === 'record')('web e2e: App-only desktop onboarding', () =>
     const copy = await onboarding.textContent()
     expect(copy).toContain(name)
     expect(copy).not.toMatch(/deep\s*seek|harness|\bDSH\b/i)
-    expect(copy).not.toContain('LingXi Office')
+    expect(copy).not.toContain('HiBuddy')
     await page.close()
   })
 

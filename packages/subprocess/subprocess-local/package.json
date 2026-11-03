@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-subprocess-local",
-  "description": "Local-subprocess implementation of the Lingxi Office subprocess seam",
+  "description": "Local-subprocess implementation of the HiBuddy subprocess seam",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

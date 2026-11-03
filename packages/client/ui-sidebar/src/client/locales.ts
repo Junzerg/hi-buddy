@@ -2,7 +2,7 @@
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
-  'brand.name': '灵犀办公',
+  'brand.name': '海智伙伴',
   'session.new': '新建任务',
   'session.new.label': '新建任务',
   'topbar.search': '搜索',
@@ -23,7 +23,7 @@ export const zh = {
   'library.title': '资料库 · 规划中',
   'library.description': '资料库功能规划中，后续将在此统一管理资料与任务产物。',
   'assistant.title': '助理（远程任务） · 功能敬请期待',
-  'assistant.description': '在 IM 上发一条消息，云桌面端的灵犀自动执行任务并回传结果。第一版暂未开放，入口保留。',
+  'assistant.description': '在 IM 上发一条消息，云桌面端的海智伙伴自动执行任务并回传结果。第一版暂未开放，入口保留。',
   'project.title': '项目工作台 · 第二版规划中',
   'project.description': '项目把指令、专家、技能与资料统一组织，成员在项目中发起的任务自动继承共享配置。概念已确认，放第二版实现。',
   'more.title': '更多 · 敬请期待',
@@ -36,7 +36,7 @@ export type SidebarKey = keyof typeof zh
 
 /** English dictionary, checked complete against the zh key set. */
 export const en = {
-  'brand.name': 'Lingxi Office',
+  'brand.name': 'HiBuddy',
   'session.new': 'New task',
   'session.new.label': 'New task',
   'topbar.search': 'Search',
@@ -57,7 +57,7 @@ export const en = {
   'library.title': 'Library · Planned',
   'library.description': 'The library is planned to bring your reference materials and task outputs together.',
   'assistant.title': 'Assistant (remote tasks) · Coming soon',
-  'assistant.description': 'Send a message via IM to have Lingxi on your cloud desktop run the task and return the results. This feature is not available in the first version.',
+  'assistant.description': 'Send a message via IM to have HiBuddy on your cloud desktop run the task and return the results. This feature is not available in the first version.',
   'project.title': 'Project workspace · Planned for version 2',
   'project.description': 'Projects bring instructions, experts, skills, and materials together. Tasks started in a project inherit its shared configuration. Planned for version 2.',
   'more.title': 'More · Coming soon',

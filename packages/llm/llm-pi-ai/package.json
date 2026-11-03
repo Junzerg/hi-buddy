@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-llm-pi-ai",
-  "description": "pi-ai-backed DeepSeek adapter for the Lingxi Office LLM seam (design-verification twin of dsh-llm-deepseek)",
+  "description": "pi-ai-backed DeepSeek adapter for the HiBuddy LLM seam (design-verification twin of dsh-llm-deepseek)",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-terminal-bash",
-  "description": "Persistent shell PTY backend over the Lingxi Office subprocess terminal primitive",
+  "description": "Persistent shell PTY backend over the HiBuddy subprocess terminal primitive",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

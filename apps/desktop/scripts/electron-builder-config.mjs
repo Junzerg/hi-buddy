@@ -112,7 +112,7 @@ export function createElectronBuilderConfig(
   return {
     appId,
     electronLanguages: ['en', 'zh-CN'],
-    protocols: [{ name: 'Lingxi Office', schemes: ['dsh'] }],
+    protocols: [{ name: 'HiBuddy', schemes: ['dsh'] }],
     extraMetadata: {
       dshDesktopAppId: appId,
       dshDesktopUpdateChannel: update?.channel ?? 'nightly',
@@ -120,7 +120,7 @@ export function createElectronBuilderConfig(
       ...buildVersion === productVersion ? {} : { version: buildVersion },
       ...packaged === undefined ? {} : { dshBuildCommit: packaged.commit, dshBuildDirty: packaged.dirty },
     },
-    productName: 'Lingxi Office',
+    productName: 'HiBuddy',
     // The default copyright uses author.name; this line names the product instead.
     copyright: `Copyright © ${new Date().getFullYear()} \${productName}`,
     // Unsigned builds carry their own suffix so a shared file can never pass for a release artifact.
@@ -172,8 +172,8 @@ export function createElectronBuilderConfig(
       // macOS matches the application locale against this bundle, not Electron Framework resources.
       extendInfo: {
         CFBundleLocalizations: ['en', 'zh_CN'],
-        CFBundleDisplayName: 'Lingxi Office',
-        NSMicrophoneUsageDescription: 'Lingxi Office uses your microphone to transcribe speech into message drafts.',
+        CFBundleDisplayName: 'HiBuddy',
+        NSMicrophoneUsageDescription: 'HiBuddy uses your microphone to transcribe speech into message drafts.',
       },
       // Ad-hoc signing keeps the modified Electron executable runnable without a Developer ID.
       identity: unsigned ? '-' : macOSSigning?.signingIdentity,
@@ -264,8 +264,8 @@ export function createElectronBuilderConfig(
       target: ['AppImage'],
     },
     nsis: {
-      shortcutName: 'Lingxi Office',
-      uninstallDisplayName: 'Lingxi Office',
+      shortcutName: 'HiBuddy',
+      uninstallDisplayName: 'HiBuddy',
       installerSidebar: join(buildPaths.root, 'installer-ui', 'uninstaller-sidebar.bmp'),
       uninstallerSidebar: join(buildPaths.root, 'installer-ui', 'uninstaller-sidebar.bmp'),
       include: fileURLToPath(new URL('./installer.nsh', import.meta.url)),

@@ -1,6 +1,6 @@
 {
   "name": "@deepseek-ai/dsh-agent-loop",
-  "description": "The concrete agent loop plugin for Lingxi Office",
+  "description": "The concrete agent loop plugin for HiBuddy",
   "version": "0.2.1-rc.3",
   "publishConfig": {
     "access": "public"

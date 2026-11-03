@@ -1,6 +1,6 @@
 {
-  "name": "Lingxi Office",
-  "short_name": "Lingxi Office",
+  "name": "HiBuddy",
+  "short_name": "HiBuddy",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
