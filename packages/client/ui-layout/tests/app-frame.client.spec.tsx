@@ -100,7 +100,7 @@ function mountFrame(windowWidth = frameWidth) {
       useResource={useResource}
       useWorkspaces={sel => sel(workspaceState)}
       {...allowAllAccess}
-      t={key => key === 'brand.localBuild' ? 'LXO Local Build' : key}
+      t={key => key === 'brand.localBuild' ? 'LXO（内测版）' : key}
     />
   )
   const utils = render(element())
@@ -149,7 +149,7 @@ afterEach(() => {
 describe('AppFrame', () => {
   it('localizes the title without a configured build title', () => {
     mountFrame()
-    expect(document.title).toBe('LXO Local Build')
+    expect(document.title).toBe('LXO（内测版）')
   })
 
   it('follows the selected durable Session title', () => {

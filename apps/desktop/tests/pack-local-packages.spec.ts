@@ -35,7 +35,7 @@ function fixture(profile: 'local' | 'official' = 'local'): string {
   }))
   write(root, 'packages/client/probe/lib/index.js', 'export const probe = true\n')
   write(root, 'packages/client/probe/lib/client.js', 'export const client = true\n')
-  write(root, 'apps/web/dist/index.html', '<title>HiBuddy Local Build</title>\n')
+  write(root, 'apps/web/dist/index.html', '<title>HiBuddy（内测版）</title>\n')
   writeClientBuildRecord(root, resolveClientBuildEnvironment(metadata, profile))
   return root
 }

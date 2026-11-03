@@ -31,7 +31,7 @@ export const zh = {
   'collapse': '收起',
   'expand': '展开',
   'back': '返回',
-  'brand.localBuild': '海智伙伴 本地构建',
+  'brand.localBuild': '海智伙伴（内测版）',
   'workspace.defaultName': '默认工作区',
   'unknown': '未知',
   'none': '无',
