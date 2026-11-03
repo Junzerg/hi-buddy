@@ -171,18 +171,15 @@ ManifestDPIAware true
   Pop $0
 !macroend
 
-!macro customCheckAppRunning
-  !ifdef BUILD_UNINSTALLER
-    InitPluginsDir
-    File "/oname=$PLUGINSDIR\window-frame.dll" "${INSTALLER_BUILD_DIR}\window-frame.dll"
-  !endif
-  System::Call '$PLUGINSDIR\window-frame.dll::InstallerFindProcess(w "$INSTDIR\${APP_EXECUTABLE_FILENAME}") i.R0 ?c'
+; The same full-path check and bounded exit wait apply to current and pre-rename installations.
+!macro InstallerCheckExecutableRunning EXECUTABLE
+  System::Call '$PLUGINSDIR\window-frame.dll::InstallerFindProcess(w "$INSTDIR\${EXECUTABLE}") i.R0 ?c'
   ${If} $R0 == 0
     ${If} ${isUpdated}
       StrCpy $R1 0
       ${DoWhile} $R0 == 0
         Sleep 250
-        System::Call '$PLUGINSDIR\window-frame.dll::InstallerFindProcess(w "$INSTDIR\${APP_EXECUTABLE_FILENAME}") i.R0 ?c'
+        System::Call '$PLUGINSDIR\window-frame.dll::InstallerFindProcess(w "$INSTDIR\${EXECUTABLE}") i.R0 ?c'
         IntOp $R1 $R1 + 1
         ${If} $R1 >= 40
           ${ExitDo}
@@ -200,6 +197,18 @@ ManifestDPIAware true
     SetErrorLevel 2
     Quit
   ${EndIf}
+!macroend
+
+!macro customCheckAppRunning
+  !ifdef BUILD_UNINSTALLER
+    InitPluginsDir
+    File "/oname=$PLUGINSDIR\window-frame.dll" "${INSTALLER_BUILD_DIR}\window-frame.dll"
+  !endif
+  !insertmacro InstallerCheckExecutableRunning "${APP_EXECUTABLE_FILENAME}"
+  !insertmacro InstallerCheckExecutableRunning "${LEGACY_APP_EXECUTABLE_FILENAME}"
+  !if "${APP_EXECUTABLE_FILENAME}" != "HiBuddy.exe"
+    !insertmacro InstallerCheckExecutableRunning "HiBuddy.exe"
+  !endif
 !macroend
 
 !macro customInstallerDirectoryFailed

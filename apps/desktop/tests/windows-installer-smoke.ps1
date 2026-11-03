@@ -248,7 +248,24 @@ try {
     foreach ($compatibleName in @('Lingxi Office.exe', 'HiBuddy.exe')) {
         $compatiblePath = Join-Path $installPath $compatibleName
         if ($compatiblePath -ne $appPath) { Move-Item -LiteralPath $appPath -Destination $compatiblePath }
+        $app = Start-Process -FilePath $compatiblePath -PassThru -WindowStyle Hidden
+        $processes.Add($app)
+        [void](Wait-Control $app 'Installer test application is running.' -Dialog)
+        Run-Silent '/S --updated' 2
+        if ($app.HasExited) { throw "Upgrade stopped the running $compatibleName" }
+        if (-not (Test-Path -LiteralPath $compatiblePath)) { throw 'Rejected upgrade changed the installed executable' }
+        Dismiss $app 'Installer test application is running.'
+        if (-not $app.WaitForExit(10000)) { throw 'Compatible test application did not exit' }
+
+        $otherCompatiblePath = Join-Path $otherPath $compatibleName
+        Copy-Item -LiteralPath $compatiblePath -Destination $otherCompatiblePath -Force
+        $otherProcess = Start-Process -FilePath $otherCompatiblePath -PassThru -WindowStyle Hidden
+        $processes.Add($otherProcess)
+        [void](Wait-Control $otherProcess 'Installer test application is running.' -Dialog)
         Run-Silent '/S --updated' 0
+        if ($otherProcess.HasExited) { throw "Upgrade stopped unrelated $compatibleName" }
+        Dismiss $otherProcess 'Installer test application is running.'
+        if (-not $otherProcess.WaitForExit(10000)) { throw 'Unrelated compatible test application did not exit' }
         if (-not (Test-Path -LiteralPath $appPath)) { throw "Upgrade from $compatibleName did not install the current executable" }
         if ($compatiblePath -ne $appPath -and (Test-Path -LiteralPath $compatiblePath)) { throw "Upgrade left $compatibleName behind" }
         $registration = Get-ItemProperty ('HKCU:\Software\' + $RegistryKey)
