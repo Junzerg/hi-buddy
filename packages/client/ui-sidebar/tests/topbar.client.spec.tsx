@@ -90,9 +90,10 @@ describe('WorkbenchTopbar', () => {
     expect(screen.getByText('季度报告')).toBeTruthy()
   })
 
-  it('leaves search unwired and toggles the right sidebar', () => {
+  it('hides unfinished search and toggles the right sidebar', () => {
     const { openSession, toggleRightbar } = mount()
-    fireEvent.click(screen.getByRole('button', { name: '搜索' }))
+    expect(screen.queryByRole('button', { name: '搜索' })).toBeNull()
+    expect(document.querySelector('[data-topbar-search]')?.hasAttribute('hidden')).toBe(true)
     expect(openSession).not.toHaveBeenCalled()
     expect(toggleRightbar).not.toHaveBeenCalled()
     const expand = screen.getByRole('button', { name: '展开侧栏' })

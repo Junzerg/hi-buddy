@@ -86,7 +86,7 @@ function equalPages(left: readonly MainPageTitle[], right: readonly MainPageTitl
 
 /**
  * The center column's top bar.
- * Search is a visual placeholder; a later plugin owns that action.
+ * Search stays hidden until its action is available.
  * @param props - frame state, task and panel sources, and sidebar copy.
  * @returns the bar.
  */
@@ -122,7 +122,7 @@ export function WorkbenchTopbar({
   const rightbarLabel = t(rightbarShown ? 'topbar.collapse' : 'topbar.expand')
   return (
     <header className={css.bar} data-window-drag data-workbench-topbar="">
-      <button type="button" className={css.button} data-topbar-search="">
+      <button type="button" className={css.button} data-topbar-search="" hidden>
         <IconSearchOutlineRegular size={14} />
         {t('topbar.search')}
       </button>

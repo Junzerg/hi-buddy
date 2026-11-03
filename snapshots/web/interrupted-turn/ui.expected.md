@@ -1,5 +1,4 @@
 - banner:
-  - button "Search"
   - text: Use the read tool twice
   - button "Task overview"
   - button "Expand sidebar"

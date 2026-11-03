@@ -30,6 +30,10 @@
   cursor: pointer;
 }
 
+.button[hidden] {
+  display: none;
+}
+
 @media (hover: hover) {
   .button:hover {
     background: var(--dsw-specific-task-row-hover);

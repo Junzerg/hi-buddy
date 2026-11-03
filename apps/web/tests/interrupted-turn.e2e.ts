@@ -59,6 +59,9 @@ describe.skipIf(MODE === 'record')('web e2e: turn interrupted by a DSH stop', ()
 
   it('shows the stopped summary and the interruption notice', async () => {
     onTestFailed(() => saveFailureShot(page, 'web-e2e-interrupted-turn'))
+    const search = page.locator('[data-topbar-search]')
+    expect(await search.count()).toBe(1)
+    expect(await search.isVisible()).toBe(false)
     const notice = page.getByRole('status').filter({ hasText: 'Task stopped' })
     await notice.waitFor({ timeout: 15_000 })
     expect(await notice.textContent()).toContain('The Lingxi Office process exited before this turn finished')
