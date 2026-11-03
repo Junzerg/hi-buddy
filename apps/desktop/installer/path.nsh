@@ -117,7 +117,7 @@ FunctionEnd
 !macroend
 !insertmacro InstallerValidatePathFunction ""
 
-; A new installation requires an empty directory; updates require the registered executable.
+; A new installation requires an empty directory; updates require a registered current or pre-rename executable.
 Function InstallerPreflight
     Call InstallerValidatePath
     ${If} $InstallerError != ""
@@ -125,9 +125,15 @@ Function InstallerPreflight
     ${EndIf}
     StrCpy $INSTDIR $InstallerPath
     ReadRegStr $0 HKCU "${INSTALL_REGISTRY_KEY}" "InstallLocation"
-    ${If} $0 != $INSTDIR
-    ${OrIfNot} ${FileExists} "$INSTDIR\${APP_EXECUTABLE_FILENAME}"
-    ${AndIfNot} ${FileExists} "$INSTDIR\${LEGACY_APP_EXECUTABLE_FILENAME}"
+    StrCpy $1 "0"
+    ${If} $0 == $INSTDIR
+        ${If} ${FileExists} "$INSTDIR\${APP_EXECUTABLE_FILENAME}"
+        ${OrIf} ${FileExists} "$INSTDIR\HiBuddy.exe"
+        ${OrIf} ${FileExists} "$INSTDIR\${LEGACY_APP_EXECUTABLE_FILENAME}"
+            StrCpy $1 "1"
+        ${EndIf}
+    ${EndIf}
+    ${If} $1 != "1"
         FindFirst $0 $1 "$INSTDIR\*.*"
         ${DoWhile} $1 != ""
             ${If} $1 != "."

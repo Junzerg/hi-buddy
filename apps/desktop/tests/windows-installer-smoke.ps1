@@ -245,6 +245,15 @@ try {
     $registration = Get-ItemProperty ('HKCU:\Software\' + $RegistryKey)
     if ($registration.InstallLocation.TrimEnd('\') -ne $installPath) { throw 'Silent update changed InstallLocation' }
     $results.Add('silent-update-retains-directory-and-ignores-unrelated-process')
+    foreach ($compatibleName in @('Lingxi Office.exe', 'HiBuddy.exe')) {
+        $compatiblePath = Join-Path $installPath $compatibleName
+        if ($compatiblePath -ne $appPath) { Move-Item -LiteralPath $appPath -Destination $compatiblePath }
+        Run-Silent '/S --updated' 0
+        if (-not (Test-Path -LiteralPath $appPath)) { throw "Upgrade from $compatibleName did not install the current executable" }
+        if ($compatiblePath -ne $appPath -and (Test-Path -LiteralPath $compatiblePath)) { throw "Upgrade left $compatibleName behind" }
+        $registration = Get-ItemProperty ('HKCU:\Software\' + $RegistryKey)
+        if ($registration.InstallLocation.TrimEnd('\') -ne $installPath) { throw "Upgrade from $compatibleName changed InstallLocation" }
+    }
     $process = Start-Process -FilePath $Installer -ArgumentList '/S --updated --force-run' -PassThru -WindowStyle Hidden
     $processes.Add($process)
     $timer = [Diagnostics.Stopwatch]::StartNew()
@@ -279,6 +288,13 @@ try {
     New-Item -ItemType Directory -Path $foreign | Out-Null
     Set-Content -LiteralPath (Join-Path $foreign 'keep.txt') -Value 'preserved'
     Run-Silent ('/S /D=' + $foreign) 2
+    foreach ($compatibleName in @('Lingxi Office.exe', 'HiBuddy.exe')) {
+        $foreignExecutable = Join-Path $foreign $compatibleName
+        Copy-Item -LiteralPath $appPath -Destination $foreignExecutable
+        Run-Silent ('/S /D=' + $foreign) 2
+        if (-not (Test-Path -LiteralPath $foreignExecutable)) { throw 'Rejected installation changed a foreign executable' }
+        Remove-Item -LiteralPath $foreignExecutable
+    }
     if ((Get-Content -LiteralPath (Join-Path $foreign 'keep.txt')) -ne 'preserved') { throw 'Foreign directory changed' }
     $results.Add('invalid-destination-rejection')
 } catch {
