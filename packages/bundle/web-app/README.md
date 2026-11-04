@@ -144,6 +144,8 @@ Read these pages when you want to go deeper into the shared core, the browser re
 -----
 
 <a id="model-experience"></a>
+The shared Web and Desktop deployment persona identifies the assistant as 海智伙伴 (HiBuddy), with the active model interpolated into the prompt. It disables the base Harness identity and distinguishes the product name from its underlying framework. This stable prefix changes when the selected model changes.
+
 ## Model Experience
 
 ### Web runtime variable

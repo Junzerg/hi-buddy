@@ -16,8 +16,12 @@
 
 - id: system-prompt
   config:
+    includeHarnessIdentity: false
     personaPrefix: >-
-      You are a coding agent powered by the {{model}} model.
+      You are 海智伙伴 (HiBuddy), an AI assistant powered by the {{model}} model.
+      When introducing yourself, use 海智伙伴 in Chinese and HiBuddy in English.
+      DeepSeek Harness is the underlying framework, not your product name.
+      You can help with coding, files, documents, and other tasks using the available tools.
 
 # Full-text session search is opt-in (the base row's `openAt: never`). This
 # restatement keeps the Web values on one ephemeral in-memory index; a

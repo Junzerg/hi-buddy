@@ -44,7 +44,7 @@ ACP v1 SDK 客户端先初始化 `dsh --profile acp`，再用绝对 `cwd` 与可
 
 #### 模型看到什么
 
-profile 在第一方指导之前提供 `You are a coding agent powered by the {{model}} model.`；ACP 路由解析 `{{model}}`。每个 Session 通过 [`dsh-working-directory`](../../session/working-directory/README.zh.md) 提供的必需 user-role 上下文接收当前目录。
+profile 在第一方指导之前将助手标识为海智伙伴（HiBuddy），并关闭 base 的 Harness 身份说明；ACP 路由解析助手人格中的 `{{model}}`。每个 Session 通过 [`dsh-working-directory`](../../session/working-directory/README.zh.md) 提供的必需 user-role 上下文接收当前目录。
 
 #### Token 影响
 

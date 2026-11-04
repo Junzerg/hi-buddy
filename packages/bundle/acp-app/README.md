@@ -44,7 +44,7 @@ The complete supported method matrix, MCP trust model, update mapping, and stop 
 
 #### What the model sees
 
-The profile supplies `You are a coding agent powered by the {{model}} model.` before first-party guidance; the ACP route resolves `{{model}}`. Each Session receives its current directory in required user-role context from [`dsh-working-directory`](../../session/working-directory/README.md).
+The profile identifies the assistant as 海智伙伴 (HiBuddy) before first-party guidance and disables the base Harness identity; the ACP route resolves `{{model}}` in the assistant persona. Each Session receives its current directory in required user-role context from [`dsh-working-directory`](../../session/working-directory/README.md).
 
 #### Token effect
 

@@ -163,6 +163,8 @@ patch 叠加在 `dsh-base` 之上：继承投影缓存与共享 PTC 运行时，
 -----
 
 <a id="model-experience"></a>
+部署人格以海智伙伴（HiBuddy）标识助手，并关闭 base 的 Harness 身份说明。它包含所选模型名称以及可用的编程、文件和文档处理能力。
+
 ## 模型体验
 
 无，因为 runner 把任务作为普通用户消息提交，提示词与工具由组合出的 base 与 headless 行提供。

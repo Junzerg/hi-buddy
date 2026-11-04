@@ -46,11 +46,11 @@ Python 运行时向本 profile 提供显式下载的创作资源和 Office sidec
 
 #### 模型看到什么
 
-profile 继承 base 系统提示词，包括 `You are an AI agent powered by DeepSeek Harness.` 身份说明，并添加与 Web 和 headless profile 相同、按当前模型插值的 coding persona。每个 Session 通过 [`dsh-working-directory`](../../session/working-directory/README.zh.md) 提供的必需 user-role 上下文接收当前目录。默认文件工具 schema 包含 `read`、`write` 和 `edit`，不包含 `str_replace_editor`。模型还会收到 `present`、`ask_user_question`、定时任务工具、共用文件引用说明和时间上下文。子 agent 不能使用定时任务工具。[`time-context`](../../context/time-context/README.zh.md) 配置项接受回退时区。Skills 使用上述配置的资源。
+profile 与 Web 和 headless profile 共用海智伙伴（HiBuddy）身份和按当前模型插值的助手人格，并关闭 base 的 Harness 身份说明。每个 Session 通过 [`dsh-working-directory`](../../session/working-directory/README.zh.md) 提供的必需 user-role 上下文接收当前目录。默认文件工具 schema 包含 `read`、`write` 和 `edit`，不包含 `str_replace_editor`。模型还会收到 `present`、`ask_user_question`、定时任务工具、共用文件引用说明和时间上下文。子 agent 不能使用定时任务工具。[`time-context`](../../context/time-context/README.zh.md) 配置项接受回退时区。Skills 使用上述配置的资源。
 
 #### Token 影响
 
-此 profile 添加一句 coding persona、所挂载的工具定义与说明，以及记录在日志中的运行时上下文和时间消息。
+此 profile 添加助手人格说明、所挂载的工具定义与说明，以及记录在日志中的运行时上下文和时间消息。
 
 #### KV Cache 影响
 

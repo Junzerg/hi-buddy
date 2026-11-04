@@ -163,6 +163,8 @@ Read these pages when you want to go deeper into the shared core, the sibling GU
 -----
 
 <a id="model-experience"></a>
+The deployment persona uses 海智伙伴 (HiBuddy) as the assistant identity and disables the base Harness identity. It includes the selected model name and the available coding, file, and document capabilities.
+
 ## Model Experience
 
 None, as the runner submits the task as an ordinary user message and the composed base and headless rows own the prompts and tools.
