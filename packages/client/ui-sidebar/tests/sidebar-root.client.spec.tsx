@@ -181,7 +181,7 @@ describe('SidebarRoot shell', () => {
 
     expect(screen.getByText('HiBuddy（内测版）')).toBeTruthy()
     expect(screen.getByText('1.2.3-rc.4').getAttribute('title')).toBe('1.2.3-rc.4-0123456-dirty')
-    expect(container.querySelectorAll('svg[viewBox="70 235 1110 780"] path')).toHaveLength(6)
+    expect(container.querySelector('svg[viewBox="0 0 256 256"] path')?.getAttribute('d')).toContain('M15 53')
   })
 
   it.each([

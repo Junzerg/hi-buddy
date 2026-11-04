@@ -9,13 +9,15 @@ Function InstallerGuiInit
     System::Call 'user32::ReleaseDC(p $HWNDPARENT, p r0)'
     System::Call 'kernel32::MulDiv(i 600, i $InstallerDpi, i 96) i.s'
     Pop $InstallerSize
+    System::Call 'kernel32::MulDiv(i ${INSTALLER_WINDOW_HEIGHT}, i $InstallerDpi, i 96) i.s'
+    Pop $InstallerHeight
     System::Call 'user32::GetSystemMetrics(i 0) i.r0'
     System::Call 'user32::GetSystemMetrics(i 1) i.r1'
     IntOp $0 $0 - $InstallerSize
     IntOp $0 $0 / 2
-    IntOp $1 $1 - $InstallerSize
+    IntOp $1 $1 - $InstallerHeight
     IntOp $1 $1 / 2
-    System::Call 'user32::SetWindowPos(p $HWNDPARENT, p 0, i r0, i r1, i $InstallerSize, i $InstallerSize, i 0x34)'
+    System::Call 'user32::SetWindowPos(p $HWNDPARENT, p 0, i r0, i r1, i $InstallerSize, i $InstallerHeight, i 0x34)'
     System::Call '$PLUGINSDIR\window-frame.dll::InstallerApplyFrame(p $HWNDPARENT) i.r0 ?c'
     ${If} $0 < 0
         MessageBox MB_OK|MB_ICONSTOP "$(INSTALLER_UI_ERROR)"

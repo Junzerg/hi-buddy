@@ -2,7 +2,7 @@ import { Fragment, memo, useMemo } from 'react'
 import { fileMediaUrl } from '@deepseek-ai/dsh-util-workspace-path'
 import type { PropsRenderSlots } from '@deepseek-ai/dsh-client-ui-slots'
 import type { ReactNode } from 'react'
-import { JsonBlock, MarkdownText } from '@deepseek-ai/dsh-client-ui-primitives'
+import { BrandLogo, JsonBlock, MarkdownText } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { MarkdownFileMentions, MarkdownPathImages } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ChatNodeOwnerProps, ChatViewSlotProps, UseDisclosure, UsePresentation, UseGroupAction } from '../contract/slots.ts'
 import type { AssistantBlock } from '../contract/snapshot.ts'
@@ -179,7 +179,7 @@ function AssistantIdentity({ running, time, elapsedMs, t }: {
       : time === undefined ? null : formatMessageClock(time, t, day)
   return (
     <div className={css.head}>
-      <span className={css.avatar} aria-hidden>{t('message.assistant.mark')}</span>
+      <span className={css.avatar} aria-hidden><BrandLogo size={22} /></span>
       <span className={css.name}>{t('message.assistant.name')}</span>
       {label !== null && <span className={css.time}>{label}</span>}
     </div>

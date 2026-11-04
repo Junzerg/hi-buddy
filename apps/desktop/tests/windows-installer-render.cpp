@@ -41,7 +41,7 @@ int wmain(int argc, wchar_t** argv) {
     type.hCursor = LoadCursorW(nullptr, IDC_ARROW);
     if (!RegisterClassW(&type)) return 3;
     HWND window = CreateWindowW(type.lpszClassName, interactive ? argv[6] : L"Installer rendering test",
-        WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX, 100, 100, MulDiv(600, dpi, 96), MulDiv(600, dpi, 96),
+        WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX, 100, 100, MulDiv(600, dpi, 96), MulDiv(420, dpi, 96),
         nullptr, nullptr, type.hInstance, nullptr);
     if (!window || FAILED(InstallerApplyFrame(window))) return 4;
     HWND stock = CreateWindowW(L"STATIC", L"", WS_CHILD | WS_VISIBLE, 0, 0, 1, 1, window, nullptr, type.hInstance, nullptr);
@@ -93,7 +93,7 @@ int wmain(int argc, wchar_t** argv) {
         BITMAPINFO info = {};
         info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
         info.bmiHeader.biWidth = MulDiv(600, dpi, 96);
-        info.bmiHeader.biHeight = -MulDiv(600, dpi, 96);
+        info.bmiHeader.biHeight = -MulDiv(420, dpi, 96);
         info.bmiHeader.biPlanes = 1;
         info.bmiHeader.biBitCount = 32;
         void* pixels = nullptr;
@@ -112,7 +112,7 @@ int wmain(int argc, wchar_t** argv) {
         DeleteDC(dc);
         return pixel;
     };
-    const COLORREF normalColor = dark ? RGB(21, 21, 23) : RGB(255, 255, 255);
+    const COLORREF normalColor = dark ? RGB(14, 27, 44) : RGB(255, 255, 255);
     const auto colorref = [](DWORD argb) { return RGB((argb >> 16) & 255, (argb >> 8) & 255, argb & 255); };
     const COLORREF hoverColor = colorref(hoverArgb);
     const COLORREF pressedColor = colorref(pressedArgb);

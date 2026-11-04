@@ -1,4 +1,4 @@
-/** Render Web installation icons from the shared six-petal desktop vector artwork. */
+/** Render Web installation icons from the shared HiBuddy desktop artwork. */
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -22,7 +22,7 @@ const SOURCE_DENSITY = 72
 /** Samples per output pixel along each axis before reduction. */
 const RENDER_SCALE = 4
 
-/** Scale keeping all six petals inside the launcher mask safe zone. */
+/** Scale keeping the mark inside the launcher mask safe zone. */
 export const MASKABLE_ARTWORK_SCALE = 0.82
 
 /** Radius a platform mask is guaranteed to show, as a fraction of the icon edge. */
@@ -56,7 +56,7 @@ export const APP_ICON_VARIANTS: readonly AppIconVariant[] = [
   { file: 'apple-touch-icon.png', size: 180, kind: 'tile' },
 ]
 
-/** White launcher tile behind the transparent flower artwork. */
+/** White launcher tile behind the transparent brand artwork. */
 function croppedRoot(): string {
   return '<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">'
     + '<rect width="1024" height="1024" fill="#FFFFFF"/>'
@@ -80,14 +80,14 @@ function reparent(source: string): string {
 /**
  * Rewrite the tile source so the icon canvas is exactly the tile.
  * @param source - complete `icon.svg` document.
- * @returns an opaque white tile containing the full flower.
+ * @returns an opaque white tile containing the full brand mark.
  */
 export function tileDocument(source: string): string {
   return reparent(source)
 }
 
 /**
- * Scale the flower about the center of an opaque launcher tile.
+ * Scale the brand mark about the center of an opaque launcher tile.
  * @param source - complete `icon.svg` document.
  * @returns an SVG document whose artwork survives a circular mask whole.
  */

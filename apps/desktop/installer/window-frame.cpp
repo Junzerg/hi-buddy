@@ -146,12 +146,12 @@ static LRESULT CALLBACK HiddenPageProc(HWND window, UINT message, WPARAM wparam,
 
 static void FillProgress(Graphics& graphics, Brush& brush, REAL width) {
     if (width <= 0) return;
-    if (width < 4) { graphics.FillRectangle(&brush, 64.0f, 482.0f, width, 6.0f); return; }
+    if (width < 4) { graphics.FillRectangle(&brush, 64.0f, 310.0f, width, 6.0f); return; }
     GraphicsPath path;
-    path.AddArc(64.0f, 482.0f, 4.0f, 4.0f, 180.0f, 90.0f);
-    path.AddArc(64.0f + width - 4, 482.0f, 4.0f, 4.0f, 270.0f, 90.0f);
-    path.AddArc(64.0f + width - 4, 484.0f, 4.0f, 4.0f, 0.0f, 90.0f);
-    path.AddArc(64.0f, 484.0f, 4.0f, 4.0f, 90.0f, 90.0f);
+    path.AddArc(64.0f, 310.0f, 4.0f, 4.0f, 180.0f, 90.0f);
+    path.AddArc(64.0f + width - 4, 310.0f, 4.0f, 4.0f, 270.0f, 90.0f);
+    path.AddArc(64.0f + width - 4, 312.0f, 4.0f, 4.0f, 0.0f, 90.0f);
+    path.AddArc(64.0f, 312.0f, 4.0f, 4.0f, 90.0f, 90.0f);
     path.CloseFigure();
     graphics.FillPath(&brush, &path);
 }
@@ -164,7 +164,7 @@ static UINT CaptionCommand(const ProgressPage& page, LPARAM position) {
 }
 
 static void PaintCaptionButtons(Graphics& graphics, const ProgressPage& page) {
-    SolidBrush background(page.dark ? Color(255, 21, 21, 23) : Color(255, 255, 255, 255));
+    SolidBrush background(page.dark ? Color(255, 14, 27, 44) : Color(255, 255, 255, 255));
     graphics.FillRectangle(&background, 504, 0, 96, 48);
     SolidBrush ink(page.dark ? Color(255, 255, 255, 255) : Color(255, 15, 17, 21));
     FontFamily family(L"Microsoft YaHei UI");
@@ -264,8 +264,8 @@ static LRESULT CALLBACK ProgressProc(HWND window, UINT message, WPARAM wparam, L
             graphics.SetSmoothingMode(SmoothingModeAntiAlias);
             graphics.SetPixelOffsetMode(PixelOffsetModeHalf);
             PaintCaptionButtons(graphics, *page);
-            SolidBrush background(page->dark ? Color(255, 21, 21, 23) : Color(255, 255, 255, 255));
-            graphics.FillRectangle(&background, 48, 480, 504, 56);
+            SolidBrush background(page->dark ? Color(255, 14, 27, 44) : Color(255, 255, 255, 255));
+            graphics.FillRectangle(&background, 48, 308, 504, 56);
             const int stage = static_cast<int>(reinterpret_cast<INT_PTR>(GetPropW(GetParent(window), L"HarnessInstaller.Stage")));
             const double fraction = reinterpret_cast<UINT_PTR>(GetPropW(GetParent(window), L"HarnessInstaller.ExtractProgress")) / 100.0;
             page->progress.Advance(stage, fraction, GetTickCount64());
@@ -273,7 +273,8 @@ static LRESULT CALLBACK ProgressProc(HWND window, UINT message, WPARAM wparam, L
             SolidBrush track(page->dark ? Color(255, 97, 102, 107) : Color(255, 233, 236, 242));
             SolidBrush ink(page->dark ? Color(255, 255, 255, 255) : Color(255, 15, 17, 21));
             FillProgress(graphics, track, 472.0f);
-            FillProgress(graphics, ink, 472.0f * static_cast<REAL>(page->progress.value) / 100);
+            SolidBrush accent(Color(255, 22, 113, 206));
+            FillProgress(graphics, accent, 472.0f * static_cast<REAL>(page->progress.value) / 100);
             FontFamily family(L"Microsoft YaHei UI");
             Font font(&family, 14, FontStyleRegular, UnitPixel);
             StringFormat centered;
@@ -282,7 +283,7 @@ static LRESULT CALLBACK ProgressProc(HWND window, UINT message, WPARAM wparam, L
             WCHAR caption[160];
             wsprintfW(caption, page->captions[page->progress.CaptionStage()], percent);
             SetWindowTextW(window, caption);
-            graphics.DrawString(caption, -1, &font, RectF(48, 512, 504, 22), &centered, &ink);
+            graphics.DrawString(caption, -1, &font, RectF(48, 340, 504, 22), &centered, &ink);
         }
         BitBlt(dc, paint.rcPaint.left, paint.rcPaint.top,
                paint.rcPaint.right - paint.rcPaint.left, paint.rcPaint.bottom - paint.rcPaint.top,
@@ -325,10 +326,11 @@ extern "C" __declspec(dllexport) HWND __cdecl InstallerShowProgress(HWND parent,
         delete page; return nullptr;
     }
     const int size = MulDiv(600, dpi, 96);
+    const int height = MulDiv(420, dpi, 96);
     BITMAPINFO info = {};
     info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
     info.bmiHeader.biWidth = size;
-    info.bmiHeader.biHeight = -size;
+    info.bmiHeader.biHeight = -height;
     info.bmiHeader.biPlanes = 1;
     info.bmiHeader.biBitCount = 32;
     info.bmiHeader.biCompression = BI_RGB;
@@ -339,23 +341,23 @@ extern "C" __declspec(dllexport) HWND __cdecl InstallerShowProgress(HWND parent,
     page->previousBitmap = SelectObject(page->bufferDc, page->bufferBitmap);
     if (!page->previousBitmap) { delete page; return nullptr; }
     // Opaque pixels are shared by GDI+ drawing and the window's GDI blit.
-    page->buffer = new Bitmap(size, size, size * 4, PixelFormat32bppPARGB, static_cast<BYTE*>(pixels));
+    page->buffer = new Bitmap(size, height, size * 4, PixelFormat32bppPARGB, static_cast<BYTE*>(pixels));
     if (!page->buffer || page->buffer->GetLastStatus() != Ok) { delete page; return nullptr; }
     {
         // Static artwork stays in the buffer for this page's lifetime.
         Graphics graphics(page->buffer);
         graphics.ScaleTransform(dpi / 96.0f, dpi / 96.0f);
-        graphics.Clear(page->dark ? Color(255, 21, 21, 23) : Color(255, 255, 255, 255));
+        graphics.Clear(page->dark ? Color(255, 14, 27, 44) : Color(255, 255, 255, 255));
         graphics.SetSmoothingMode(SmoothingModeAntiAlias);
         graphics.SetInterpolationMode(InterpolationModeHighQualityBicubic);
         graphics.SetPixelOffsetMode(PixelOffsetModeHalf);
-        graphics.DrawImage(page->brand, Rect(0, 174, 600, 196));
+        graphics.DrawImage(page->brand, Rect(0, 58, 600, 196));
         PaintCaptionButtons(graphics, *page);
     }
     delete page->brand;
     page->brand = nullptr;
     HWND window = CreateWindowExW(0, type.lpszClassName, L"", WS_CHILD,
-        0, 0, MulDiv(600, dpi, 96), MulDiv(600, dpi, 96), parent, nullptr, module, page);
+        0, 0, MulDiv(600, dpi, 96), MulDiv(420, dpi, 96), parent, nullptr, module, page);
     if (!window) { delete page; return nullptr; }
     // Keep the stock page available until the replacement is fully constructed.
     HWND stockPage = GetParent(source);

@@ -7,6 +7,7 @@ Var InstallerDialog
 Var InstallerPhase
 Var InstallerDpi
 Var InstallerSize
+Var InstallerHeight
 Var InstallerImage
 Var InstallerButton
 Var InstallerStatus
@@ -38,7 +39,7 @@ Function InstallerCreate
     ${If} $InstallerDialog == error
         Abort
     ${EndIf}
-    !insertmacro InstallerPlace $InstallerDialog 0 0 ${INSTALLER_WINDOW_SIZE} ${INSTALLER_WINDOW_SIZE}
+    !insertmacro InstallerPlace $InstallerDialog 0 0 ${INSTALLER_WINDOW_SIZE} ${INSTALLER_WINDOW_HEIGHT}
     !insertmacro InstallerControlColors $HWNDPARENT
     !insertmacro InstallerControlColors $InstallerDialog
     !insertmacro InstallerPixelFont $InstallerFont ${INSTALLER_BUTTON_FONT_SIZE} 500
@@ -94,12 +95,12 @@ Function InstallerCreate
 
     ${NSD_CreateButton} 0 0 0 0 "$(INSTALLER_CHOOSE_PATH)"
     Pop $InstallerChoose
-    !insertmacro InstallerPlace $InstallerChoose 232 438 136 28
+    !insertmacro InstallerPlace $InstallerChoose 232 266 136 28
     ${NSD_OnClick} $InstallerChoose InstallerExpandPath
     ${NSD_OnNotify} $InstallerChoose InstallerPaintButton
     ${NSD_CreateBitmap} 0 0 0 0 ""
     Pop $InstallerEditFrame
-    !insertmacro InstallerPlace $InstallerEditFrame 64 434 384 34
+    !insertmacro InstallerPlace $InstallerEditFrame 64 262 384 34
     Call InstallerDrawEditFrame
     ${NSD_CreateText} 0 0 0 0 "$InstallerPath"
     Pop $InstallerEdit
@@ -121,7 +122,7 @@ Function InstallerCreate
     System::Call 'gdi32::SelectObject(p r4, p r5)'
     System::Call 'user32::ReleaseDC(p $InstallerEdit, p r4)'
     System::Call 'kernel32::MulDiv(i 76, i $InstallerDpi, i 96) i.r0'
-    System::Call 'kernel32::MulDiv(i 434, i $InstallerDpi, i 96) i.r1'
+    System::Call 'kernel32::MulDiv(i 262, i $InstallerDpi, i 96) i.r1'
     System::Call 'kernel32::MulDiv(i 360, i $InstallerDpi, i 96) i.r2'
     System::Call 'kernel32::MulDiv(i 34, i $InstallerDpi, i 96) i.r3'
     IntOp $3 $3 - $7
@@ -134,7 +135,7 @@ Function InstallerCreate
     ${NSD_OnChange} $InstallerEdit InstallerPathChanged
     ${NSD_CreateButton} 0 0 0 0 "$(INSTALLER_BROWSE)"
     Pop $InstallerBrowse
-    !insertmacro InstallerPlace $InstallerBrowse 456 434 80 34
+    !insertmacro InstallerPlace $InstallerBrowse 456 262 80 34
     ${NSD_OnClick} $InstallerBrowse InstallerBrowsePath
     ${NSD_OnNotify} $InstallerBrowse InstallerPaintButton
     ${NSD_CreateCheckbox} 0 0 0 0 "$(INSTALLER_LAUNCH)"
@@ -154,7 +155,7 @@ Function InstallerCreate
     IntOp $2 $2 + $7
     IntOp $0 $InstallerSize - $2
     IntOp $0 $0 / 2
-    System::Call 'kernel32::MulDiv(i 438, i $InstallerDpi, i 96) i.r1'
+    System::Call 'kernel32::MulDiv(i 266, i $InstallerDpi, i 96) i.r1'
     System::Call 'kernel32::MulDiv(i 32, i $InstallerDpi, i 96) i.r3'
     System::Call 'user32::MoveWindow(p $InstallerLaunch, i r0, i r1, i r2, i r3, i 1)'
     !insertmacro InstallerControlColors $InstallerLaunch
@@ -273,7 +274,7 @@ Function InstallerValidateEditedPath
     ${NSD_GetText} $InstallerEdit $InstallerPath
     Call InstallerValidatePath
     ${NSD_SetText} $InstallerStatus "$InstallerError"
-    !insertmacro InstallerPlace $InstallerStatus 48 542 504 42
+    !insertmacro InstallerPlace $InstallerStatus 48 366 504 42
     ShowWindow $InstallerStatus 5
 FunctionEnd
 

@@ -35,10 +35,10 @@ exports[`sidebar shell snapshots > renders the expanded column (wordmark, capsul
               >
                 <svg
                   aria-hidden="true"
-                  data-content="655b25d2"
+                  data-content="a6d7a67b"
                   fill="none"
-                  height="16.864864864864863"
-                  viewBox="70 235 1110 780"
+                  height="24"
+                  viewBox="0 0 256 256"
                   width="24"
                 />
               </span>
@@ -325,10 +325,10 @@ exports[`sidebar shell snapshots > renders the expanded column in the default lo
               >
                 <svg
                   aria-hidden="true"
-                  data-content="655b25d2"
+                  data-content="a68762bb"
                   fill="none"
-                  height="16.864864864864863"
-                  viewBox="70 235 1110 780"
+                  height="24"
+                  viewBox="0 0 256 256"
                   width="24"
                 />
               </span>
@@ -615,10 +615,10 @@ exports[`sidebar shell snapshots > renders the fixed Windows sidebar > windows e
               >
                 <svg
                   aria-hidden="true"
-                  data-content="655b25d2"
+                  data-content="eab0880b"
                   fill="none"
-                  height="16.864864864864863"
-                  viewBox="70 235 1110 780"
+                  height="24"
+                  viewBox="0 0 256 256"
                   width="24"
                 />
               </span>

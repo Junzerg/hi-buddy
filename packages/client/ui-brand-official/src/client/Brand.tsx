@@ -4,7 +4,7 @@ import { BrandLogo } from '@deepseek-ai/dsh-client-ui-primitives'
 /**
  * Render the official mark with the presentation requested by its host surface.
  * @param props - Host-supplied mark presentation.
- * @returns the six-petal flower.
+ * @returns the designer-supplied HiBuddy mark.
  */
 export function OfficialBrandMark(props: SidebarBrandMarkOwnerProps) {
   return <BrandLogo {...props} />

@@ -29,8 +29,7 @@ function mount(language = 'zh-CN', takeNotice = vi.fn<() => Promise<WelcomeNotic
   const copy = () => {
     const heading = document.querySelector('main')!.getAttribute('aria-labelledby')!
     return [
-      document.title, document.querySelector('img')!.alt, document.getElementById(heading)!.textContent,
-      ...heading === 'welcome-heading' ? [document.querySelector('#welcome-description')!.textContent] : [],
+      document.title, document.querySelector('img')!.alt, ...heading === 'welcome-heading' ? [] : [document.getElementById(heading)!.textContent],
       ...[...document.querySelectorAll('button')].filter(item => item.closest('[hidden]') === null)
         .map(item => `${item.textContent || item.getAttribute('aria-label')}${item.disabled ? ' [disabled]' : ''}`),
       '',
@@ -43,8 +42,8 @@ describe('desktop welcome presentation', () => {
   it.each(['zh-CN', 'en'])('renders the %s IAM login entry without alternative access', async (language) => {
     const view = mount(language)
     expect(view.document.documentElement.lang).toBe(language)
-    expect(view.document.querySelector('img')!.getAttribute('src')).toBe('assets/welcome-brand.svg')
-    expect(view.document.querySelector('.brand span')!.textContent).toBe(view.api.messages.welcomeBrand)
+    expect(view.document.querySelector('img')!.getAttribute('src')).toBe('assets/welcome-banner.png')
+    expect(view.document.querySelector('#tagline')).toBeNull()
     expect(view.document.querySelector('input')).toBeNull()
     expect(view.document.querySelector('#api-key')).toBeNull()
     expect(view.document.querySelector('#skip-key')).toBeNull()

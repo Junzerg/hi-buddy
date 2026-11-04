@@ -1,26 +1,27 @@
-; Figma logical pixels, independent of the Windows display scale.
+; Logical pixels, independent of the Windows display scale.
 !define INSTALLER_WINDOW_SIZE 600
-!define INSTALLER_BRAND_Y 174
+!define INSTALLER_WINDOW_HEIGHT 420
+!define INSTALLER_BRAND_Y 58
 !define INSTALLER_BRAND_HEIGHT 196
-!define INSTALLER_BUTTON_X 240
-!define INSTALLER_BUTTON_Y 490
-!define INSTALLER_BUTTON_WIDTH 120
-!define INSTALLER_BUTTON_HEIGHT 44
+!define INSTALLER_BUTTON_X 160
+!define INSTALLER_BUTTON_Y 310
+!define INSTALLER_BUTTON_WIDTH 280
+!define INSTALLER_BUTTON_HEIGHT 48
 !define INSTALLER_BUTTON_DIAMETER 20
 !define INSTALLER_PROGRESS_X 64
-!define INSTALLER_PROGRESS_Y 482
+!define INSTALLER_PROGRESS_Y 310
 !define INSTALLER_PROGRESS_WIDTH 472
 !define INSTALLER_PROGRESS_HEIGHT 6
 !define INSTALLER_PROGRESS_DIAMETER 4
-!define INSTALLER_STATUS_Y 512
+!define INSTALLER_STATUS_Y 340
 !define INSTALLER_STATUS_HEIGHT 22
 !define INSTALLER_FONT "Microsoft YaHei UI"
 !define INSTALLER_BUTTON_FONT_SIZE 16
 !define INSTALLER_STATUS_FONT_SIZE 14
 ; GDI+ ARGB values; GDI text uses COLORREF below.
-!define INSTALLER_PRIMARY 0xFF0F1115
-!define INSTALLER_PRIMARY_HOVER 0xFF2D3135
-!define INSTALLER_PRIMARY_PRESSED 0xFF000000
+!define INSTALLER_PRIMARY 0xFF1671CE
+!define INSTALLER_PRIMARY_HOVER 0xFF105EAF
+!define INSTALLER_PRIMARY_PRESSED 0xFF0B4D93
 !define INSTALLER_CONTROL_HOVER 0xFFEEF0F2
 !define INSTALLER_CONTROL_PRESSED 0xFFD4DBE9
 !define INSTALLER_DARK_CONTROL_HOVER 0xFF303034
@@ -46,7 +47,7 @@ Var InstallerBorder
 ; SetCtlColors accepts only compile-time colors; choose between the two native palettes.
 !macro InstallerControlColors HANDLE
     ${If} $InstallerTheme == "dark"
-        SetCtlColors ${HANDLE} FFFFFF 151517
+        SetCtlColors ${HANDLE} FFFFFF 0E1B2C
     ${Else}
         SetCtlColors ${HANDLE} 0F1115 FFFFFF
     ${EndIf}
@@ -66,18 +67,18 @@ Function InstallerResolveTheme
         ${EndIf}
     ${EndIf}
     ${If} $InstallerTheme == "dark"
-        StrCpy $InstallerBgHex "151517"
+        StrCpy $InstallerBgHex "0E1B2C"
         StrCpy $InstallerTextHex "FFFFFF"
-        StrCpy $InstallerBgArgb 0xFF151517
-        StrCpy $InstallerBgColorref 0x171515
+        StrCpy $InstallerBgArgb 0xFF0E1B2C
+        StrCpy $InstallerBgColorref 0x2C1B0E
         StrCpy $InstallerTextColorref 0xFFFFFF
-        StrCpy $InstallerPrimary 0xFFF9FAFB
-        StrCpy $InstallerPrimaryHover 0xFFE9ECF2
-        StrCpy $InstallerPrimaryPressed 0xFFD4DBE9
+        StrCpy $InstallerPrimary ${INSTALLER_PRIMARY}
+        StrCpy $InstallerPrimaryHover ${INSTALLER_PRIMARY_HOVER}
+        StrCpy $InstallerPrimaryPressed ${INSTALLER_PRIMARY_PRESSED}
         StrCpy $InstallerControlHover ${INSTALLER_DARK_CONTROL_HOVER}
         StrCpy $InstallerControlPressed ${INSTALLER_DARK_CONTROL_PRESSED}
         StrCpy $InstallerTrack 0xFF61666B
-        StrCpy $InstallerButtonText 0x15110F
+        StrCpy $InstallerButtonText 0xFFFFFF
         StrCpy $InstallerBorder 0xFF61666B
     ${Else}
         StrCpy $InstallerBgHex "FFFFFF"

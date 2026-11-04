@@ -1,14 +1,4 @@
-/** Vector geometry generated from ui-brand-official/artwork/mark.svg by apps/desktop/scripts/render-brand-assets.ts. */
-
-/** Native coordinates of the six-petal mark. */
-export const FLOWER_VIEWBOX = { x: 70, y: 235, width: 1110, height: 780 } as const
-
-/** Solid fills and smooth contours of the six connected petals. */
-export const FLOWER_PETALS = [
-  { fill: '#EF2428', d: 'M625 632C689 597 784 528 929 505C994 441 1051 333 1032 281C1004 221 852 268 768 326C699 374 652 428 600 480C600 540 600 590 625 632Z' },
-  { fill: '#F36F0A', d: 'M625 632C650 564 625 480 581 422C497 314 361 227 268 258C225 270 210 300 219 344C231 411 271 473 315 507C428 508 527 571 625 632Z' },
-  { fill: '#F2CC0C', d: 'M625 632C509 696 407 755 315 753C257 819 207 919 222 968C241 1030 389 988 476 932C565 874 615 795 625 736C612 700 616 661 625 632Z' },
-  { fill: '#058DD8', d: 'M625 632C703 684 805 737 932 751C994 813 1054 924 1031 972C1009 1022 859 990 770 932C679 871 635 797 625 736C610 697 618 662 625 632Z' },
-  { fill: '#DF1E6B', d: 'M625 632C497 544 390 506 309 507C213 507 114 555 85 613C67 651 111 695 167 720C300 794 439 746 625 632Z' },
-  { fill: '#CA10CA', d: 'M625 632C753 546 858 502 938 505C1047 508 1135 547 1167 615C1190 656 1132 705 1071 730C939 785 793 745 625 632Z' },
-] as const
+/** Vector artwork generated from ui-brand-official/artwork/mark.svg. */
+export const BRAND_VIEWBOX = { x: 0, y: 0, width: 256, height: 256 } as const
+export const BRAND_PATH = 'M15 53a33 33 0 0 1 66 0v41h93V53a33 33 0 0 1 66 0v150a33 33 0 0 1-66 0v-41H81v41a33 33 0 0 1-66 0Z'
+export const BRAND_GRADIENT = { 'start':81,'end':174,'colors':['#004890','#0E9F6E'] } as const

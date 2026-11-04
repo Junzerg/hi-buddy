@@ -115,9 +115,9 @@ it('ships fixed-color favicons selected by document media queries', async () => 
   const light = await readFile(join(DIST_ROOT, 'favicon.svg'), 'utf8')
   const dark = await readFile(join(DIST_ROOT, 'favicon-dark.svg'), 'utf8')
   expect(light).not.toContain('<style>')
-  for (const fill of ['#EF2428', '#F36F0A', '#F2CC0C', '#058DD8', '#DF1E6B', '#CA10CA']) {
-    expect(light).toContain(`fill="${fill}"`)
-  }
+  expect(light).toContain('stop-color="#004890"')
+  expect(light).toContain('stop-color="#0E9F6E"')
+  expect(light).not.toContain('<image')
   expect(dark).toBe(light)
 })
 
@@ -146,7 +146,7 @@ it('preserves fractional coverage along the Apple icon curves', async () => {
           const value = minimumChannel(x, y)
           if (value <= 85 || value >= 200) continue
           // Neighboring ink and background distinguish edge coverage from the
-          // petal interiors, which remain opaque in both renderings.
+          // mark interiors, which remain opaque in both renderings.
           const neighbors: number[] = []
           for (let dy = -1; dy <= 1; dy += 1) {
             for (let dx = -1; dx <= 1; dx += 1) neighbors.push(minimumChannel(x + dx, y + dy))

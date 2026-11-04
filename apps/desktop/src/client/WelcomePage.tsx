@@ -126,14 +126,8 @@ export function Welcome({ api }: { api: WelcomeApi }) {
     {expiryNotice && <Toast text={m.welcomeSessionExpired} onDone={() => { setExpiryNotice(false) }} />}
     <div className="titlebar" aria-hidden="true" />
     <main className="welcome" aria-labelledby={heading}>
-      <div className="brand">
-        <img src="assets/welcome-brand.svg" alt={m.welcomeBrand} width="48" height="48" />
-        <span aria-hidden="true">{m.welcomeBrand}</span>
-      </div>
-      <div id="tagline" className="tagline" hidden={page !== 'entry'}>
-        <h1 id="welcome-heading"><span>{m.welcomeTaglineBefore}</span><em>{m.welcomeTaglineBrand}</em><span>{m.welcomeTaglineAfter}</span></h1>
-        <p id="welcome-description">{m.welcomeDescription}</p>
-      </div>
+      <img id="welcome-heading" className="brand" hidden={page !== 'entry'}
+        src="assets/welcome-banner.png" alt={m.welcomeBrand} width="1353" height="600" />
       <section id="auth-page" className={`key-heading ${waiting ? 'auth-waiting' : phase === 'expired' ? 'auth-expired' : ''}`}
         hidden={page !== 'account'} aria-live="polite">
         <h1 id="auth-status">{title}</h1>
