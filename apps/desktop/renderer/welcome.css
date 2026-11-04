@@ -1,20 +1,23 @@
 @import url('./assets/window-material.css');
 
-/* Figma 2121:39336 / 2138:44626, Platform modes. Native material supplies the blur. */
+/* Opaque surfaces keep the welcome page legible over native window materials. */
 body {
   color-scheme: light dark;
   --dsw-alias-label-primary: #0f1115;
   --dsw-alias-label-secondary: #61666b;
   --dsw-alias-label-tertiary: #81858c;
   --dsw-alias-label-primary-inverted: #fff;
-  --dsw-alias-brand-primary: var(--dsw-alias-label-primary);
-  --dsw-alias-button-primary-hover: #43454a;
+  --dsw-alias-brand-primary: #1671ce;
+  --dsw-alias-button-primary-hover: #105eaf;
   --dsw-alias-button-elevated-fill: #fff;
   --dsw-alias-button-floating-hover: #f1f3f5;
   --dsw-alias-border-l2: #0000001a;
   --dsw-alias-border-l4: #00000029;
   --dsw-alias-label-caption: #adb2b8;
-  --welcome-tint: var(--dsw-desktop-window-tint);
+  --welcome-tint: #ffffff;
+  --welcome-button-fill: #1671ce;
+  --welcome-button-hover: #105eaf;
+  --welcome-button-label: #ffffff;
   --ds-transition-duration: 0.2s;
   --ds-transition-duration-slow: 0.3s;
   --ds-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
@@ -27,8 +30,10 @@ body {
     --dsw-alias-label-primary: #f9fafb;
     --dsw-alias-label-secondary: #cfd3d6;
     --dsw-alias-label-tertiary: #adb2b8;
-    --dsw-alias-label-primary-inverted: #353638;
-    --dsw-alias-button-primary-hover: #ebeef2;
+    --dsw-alias-label-primary-inverted: #ffffff;
+    --welcome-tint: #141b26;
+    --welcome-button-hover: #197bdc;
+    --dsw-alias-button-primary-hover: #197bdc;
     --dsw-alias-button-elevated-fill: #43454a;
     --dsw-alias-button-floating-hover: #353638;
     --dsw-alias-border-l2: #ffffff1f;
@@ -66,7 +71,7 @@ body {
   background: var(--welcome-tint);
   color: var(--dsw-alias-label-primary);
   font-family: var(--dsw-font-family-brand);
-  font-weight: 300;
+  font-weight: 400;
   user-select: none;
   -webkit-font-smoothing: antialiased;
 }
@@ -80,10 +85,10 @@ body {
   display: grid;
   flex: 1;
   min-height: 0;
-  grid-template-rows: 40px minmax(0, 1fr) 104px;
+  grid-template-rows: 64px minmax(0, 1fr) 104px;
   justify-items: center;
   align-items: center;
-  padding: 24px 48px 76px;
+  padding: 48px 32px 64px;
 }
 
 .welcome > .tagline,
@@ -94,11 +99,18 @@ body {
 }
 
 .brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.brand img {
   display: block;
   flex: none;
-  width: 100%;
-  height: 40px;
-  user-select: none;
   -webkit-user-drag: none;
 }
 
@@ -106,16 +118,22 @@ body {
   margin: 0;
   color: var(--dsw-alias-label-secondary);
   font-size: 24px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 40px;
   text-align: center;
-  white-space: nowrap;
+  text-wrap: balance;
 }
 
 .tagline h1,
 .tagline p {
   margin: 0;
   font: inherit;
+}
+
+.tagline p {
+  margin-top: 16px;
+  font-size: 17px;
+  line-height: 28px;
 }
 
 .tagline em {
@@ -126,7 +144,13 @@ body {
   font-weight: 500;
 }
 
-:lang(en) .tagline em {
+:lang(en) .tagline p {
+  margin-top: 16px;
+  font-size: 17px;
+  line-height: 28px;
+}
+
+.tagline em {
   font-size: inherit;
 }
 
@@ -139,14 +163,14 @@ body {
   flex: none;
   flex-direction: column;
   gap: 16px;
-  width: 240px;
+  width: 280px;
 }
 
 .actions button {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 44px;
+  height: 48px;
   padding: 8px 16px;
   border: 1px solid transparent;
   border-radius: 10px;
@@ -175,12 +199,12 @@ body {
 }
 
 .primary {
-  background: var(--dsw-alias-brand-primary);
-  color: var(--dsw-alias-label-primary-inverted);
+  background: var(--welcome-button-fill);
+  color: var(--welcome-button-label);
 }
 
 .primary:hover:not(:disabled) {
-  background: var(--dsw-alias-button-primary-hover);
+  background: var(--welcome-button-hover);
 }
 
 .actions .secondary {
@@ -204,7 +228,7 @@ body {
   background: transparent;
   color: var(--dsw-alias-label-secondary);
   font-family: var(--dsw-font-family-brand);
-  font-weight: 300;
+  font-weight: 400;
   font-size: 14px;
   line-height: 20px;
 }
@@ -257,7 +281,7 @@ body {
   margin: 0;
   color: var(--dsw-alias-label-secondary);
   font-size: 16px;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 22px;
   letter-spacing: 0.02em;
 }

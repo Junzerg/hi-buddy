@@ -44,6 +44,7 @@ describe('desktop welcome presentation', () => {
     const view = mount(language)
     expect(view.document.documentElement.lang).toBe(language)
     expect(view.document.querySelector('img')!.getAttribute('src')).toBe('assets/welcome-brand.svg')
+    expect(view.document.querySelector('.brand span')!.textContent).toBe(view.api.messages.welcomeBrand)
     expect(view.document.querySelector('input')).toBeNull()
     expect(view.document.querySelector('#api-key')).toBeNull()
     expect(view.document.querySelector('#skip-key')).toBeNull()

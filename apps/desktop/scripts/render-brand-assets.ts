@@ -45,8 +45,7 @@ for (const dark of [false, true]) {
 }
 await sharp(Buffer.from(svg('<rect width="164" height="314" fill="#F3F5F8"/>' + markAt(22, 115, 120), 164, 314)))
   .png().toFile(fileURLToPath(new URL('installer/assets/uninstaller-sidebar.png', desktopRoot)))
-const welcome = svg('<style>:root{--brand-ink:#0F1115;--brand-inverse:#FFFFFF}@media(prefers-color-scheme:dark){:root{--brand-ink:#F9FAFB;--brand-inverse:#353638}}</style>'
-  + markAt(148, 8, 34) + nameAt(196, 8, 136, 'var(--brand-ink)', 'var(--brand-inverse)'), 472, 40)
+const welcome = svg(markAt(4, (64 - 56 * height / width) / 2, 56), 64, 64)
 await writeFile(new URL('renderer/assets/welcome-brand.svg', desktopRoot), welcome)
 await writeFile(new URL('../../../packages/client/ui-primitives/src/brand-artwork.ts', import.meta.url),
   '/** Vector geometry generated from ui-brand-official/artwork/mark.svg by apps/desktop/scripts/render-brand-assets.ts. */\n'
