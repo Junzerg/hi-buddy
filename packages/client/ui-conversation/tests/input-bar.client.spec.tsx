@@ -2132,18 +2132,18 @@ it('lets a toolbar activity replace accessories without replacing the draft edit
   expect(view.getByRole('button', { name: 'model choice' })).toBeTruthy()
 })
 
-it('omits context usage under the docked composer while an activity can still expand', () => {
+it('shows context usage under the docked composer and hides it while an activity expands', () => {
   const { view } = bench({ draft: 'draft', contextPressure: { pressureTokens: 32_000, contextWindow: 128_000 },
     activityEntry: owner => <>
       <button onClick={() => { owner.onActiveChange(true) }}>microphone</button>
       <button onClick={() => { owner.onActiveChange(false) }}>close activity</button>
     </>,
   })
-  expect(view.queryByRole('button', { name: '上下文已用 25%' })).toBeNull()
+  expect(view.getByRole('button', { name: '上下文已用 25%' }).closest('[data-composer-tools]')).toBeTruthy()
   fireEvent.click(view.getByRole('button', { name: 'microphone' }))
   expect(view.queryByRole('button', { name: '上下文已用 25%' })).toBeNull()
   expect(view.getByRole('button', { name: '发送消息' })).toBeTruthy()
   fireEvent.click(view.getByRole('button', { name: 'close activity' }))
-  expect(view.queryByRole('button', { name: '上下文已用 25%' })).toBeNull()
+  expect(view.getByRole('button', { name: '上下文已用 25%' })).toBeTruthy()
   expect(view.getByRole('button', { name: '发送消息' })).toBeTruthy()
 })

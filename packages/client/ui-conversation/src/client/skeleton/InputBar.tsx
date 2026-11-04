@@ -556,9 +556,14 @@ export const InputBar = memo(function InputBar({
           {renderSlot('conversation.input.plan', { locked })}
           {renderSlot('conversation.input.permission', { locked })}
           {renderSlot('conversation.input.model', { locked: modelSeatLocked })}
+          {activity ? null : (
+            <div className={css.composerContext}>
+              <ContextMeter useProjection={useProjection} t={t} />
+            </div>
+          )}
         </div>
       )}
-      {variant === 'composer' ? null : (
+      {variant === 'hero' && (
         <div className={css.dock} data-composer-dock>
           {activity ? null : <ContextMeter useProjection={useProjection} t={t} />}
         </div>

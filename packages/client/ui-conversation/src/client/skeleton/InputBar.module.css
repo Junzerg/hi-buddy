@@ -329,6 +329,16 @@
   min-width: 0;
 }
 
+.composerContext {
+  display: flex;
+  align-items: center;
+  margin-inline-start: auto;
+}
+
+.composerContext:empty {
+  display: none;
+}
+
 /* Prototype `.cm-tools`: 12.5px secondary text and short padding under the card.
    The plan chip keeps its own treatment. */
 .heroWorkspaceRow button[class*='workspace'],

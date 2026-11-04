@@ -68,7 +68,7 @@ Generic command rows retain the ordinary command glyph in every lifecycle state;
 
 A completed Turn shows an expandable usage row only when the loaded window includes `turn/start` and every started model attempt reports safe, exact usage. The row omits unavailable optional buckets. Incomplete or contradictory accounting hides the complete disclosure instead of presenting a partial total.
 
-Settings → General → Performance & usage appears after Send behavior while busy and before Session Log upload, and stores `ui-chat.performanceUsage` as `detailed` (default) or `compact`. The docked composer does not show turn counts, output speed, token totals, or context occupancy. Compact hides the per-Turn usage row. Detailed shows it. Neither mode shows elapsed time in the completed-turn footer. The preference changes presentation only; accounting and Session events remain intact.
+Settings → General → Performance & usage appears after Send behavior while busy and before Session Log upload, and stores `ui-chat.performanceUsage` as `detailed` (default) or `compact`. The docked composer shows context occupancy below the input card, without turn counts, output speed, or token totals. Compact hides the per-Turn usage row. Detailed shows it. Neither mode shows elapsed time in the completed-turn footer. The preference changes presentation only; accounting and Session events remain intact.
 
 The chat composer does not mount `conversation.composer.dock`. Per-Turn token usage stays on the completed message.
 
