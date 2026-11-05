@@ -8,7 +8,7 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-Review draft. This workflow serves maintainers of the company fork. Integrate upstream capabilities and fixes while preserving the approved company behaviors in the customization register. Changes to implementation are allowed; changes to product requirements need a recorded decision.
+This workflow serves maintainers of the company fork. Integrate upstream capabilities and fixes while preserving the approved company behaviors in the customization register. Changes to implementation are allowed; changes to product requirements need a recorded decision.
 
 ## Contents
 
@@ -32,6 +32,8 @@ Upstream baseline versions and intranet release versions are separate. Release t
 <a id="workflow"></a>
 
 ## Integration workflow
+
+Proceed interactively in batches: baseline and isolated workspace; metadata, dependencies and languages; core and IAM; desktop and intranet distribution; individual UI regions; integrated acceptance and landing. Define each batch before starting and deliver its results, validation evidence and open decisions afterward; advance only after user confirmation. A preview does not resolve conflicts, and checks without a runnable environment remain pending.
 
 1. Inspect the worktree and refresh remote references. `dev/junzerg` is the intranet development branch. Other `dev/*` branches require separate authorization; `origin/master` and non-`dev/*` branches may be consulted or merged when relevant. Preserve unrelated work.
 

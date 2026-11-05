@@ -8,11 +8,19 @@ description: "上游同步时需要保留的公司行为、代码入口与验收
 
 ## 概述
 
-基于当前代码整理的审阅草案。各项记录现有定制意图；所列验收尚未针对拟合并的上游版本执行。保留的是行为要求，不是整份文件。
+本清单记录已讨论确认的公司定制原则；所列验收尚未针对拟合并的上游版本执行。保留的是行为要求，不是整份文件。
 
 ## 目录
 
 - [有效要求](#requirements)
+- [HAIER-002：布局合并原则](#layout)
+- [HAIER-003：会话合并原则](#conversation)
+- [HAIER-004：身份认证合并原则](#identity)
+- [HAIER-005：公司服务入口合并原则](#company-services)
+- [HAIER-006：内网发布合并原则](#distribution)
+- [HAIER-007：语言合并原则](#languages)
+- [HAIER-008：开发验证合并原则](#development)
+- [HAIER-009：升级兼容合并原则](#upgrade)
 - [维护方式](#maintenance)
 
 <a id="requirements"></a>
@@ -22,8 +30,8 @@ description: "上游同步时需要保留的公司行为、代码入口与验收
 | 编号 | 保留要求 | 代码入口 | 验收方式 |
 |---|---|---|---|
 | HAIER-001 | HiBuddy／海智伙伴名称、公司图形资源与“内测版”构建标记。 | [桌面文案](../../apps/desktop/src/locale.ts)、[Web 品牌](../../packages/client/ui-brand-official/src/client/index.ts) | 检查两种支持语言下的启动页、窗口及菜单、账号、安装器和更新界面。 |
-| HAIER-002 | 公司三栏布局、中间顶栏与当前侧栏控制方式。 | [布局框架](../../packages/client/ui-layout/src/client/AppFrame.tsx) | 检查空白页和会话页、折叠展开、尺寸调整与窄窗口；上游新增操作仍有入口。 |
-| HAIER-003 | 当前聊天区、输入区呈现与任务交互。 | [会话区](../../packages/client/ui-conversation/src/client/skeleton/ConversationSession.tsx)、[输入区](../../packages/client/ui-conversation/src/client/skeleton/InputBar.tsx) | 验证发送、排队、取消与继续，检查工具结果及长会话。 |
+| HAIER-002 | 公司三栏布局、中间顶栏与整体视觉风格，允许评估上游窄屏改进。 | [布局框架](../../packages/client/ui-layout/src/client/AppFrame.tsx) | 检查空白页和会话页、折叠展开、尺寸调整与窄窗口；上游新增操作仍有入口。 |
+| HAIER-003 | 公司聊天区与输入区的呈现风格，以及持续接入上游会话和任务能力的原则。 | [会话区](../../packages/client/ui-conversation/src/client/skeleton/ConversationSession.tsx)、[输入区](../../packages/client/ui-conversation/src/client/skeleton/InputBar.tsx) | 验证发送、排队、取消与继续，检查工具结果及长会话。 |
 | HAIER-004 | 公司 IAM 强制登录与公司账号身份持久化。 | [登录标记](../../packages/client/ui-settings-account/src/login-config.ts)、[公司适配器](../../packages/credentials/deepseek-account-platform/src/company.ts)、[账号菜单](../../packages/client/ui-settings-account/src/client/AccountMenu.tsx) | 在强制登录模式下验证登录前工作区访问、成功登录、失败重试、重启和退出登录。 |
 | HAIER-005 | 公司反馈目的地以及有意保留的设置、操作可见性。 | [账号菜单](../../packages/client/ui-settings-account/src/client/AccountMenu.tsx)、[联系配置](../../packages/client/ui-settings-account/src/contact-config.ts) | 验证公司联系流程；逐项审查上游新增入口，不盲目恢复已隐藏入口。 |
 | HAIER-006 | 内网更新渠道、版本历史和公司登录路由。 | [内网发布参考](../../apps/desktop/packaging/INTRANET.md) | 沿用其发布检查；内网安装及更新证据由用户在内网执行后提供。 |
@@ -31,9 +39,71 @@ description: "上游同步时需要保留的公司行为、代码入口与验收
 | HAIER-008 | 公司登录模拟器与本地 Web、Desktop 服务隔离。 | [模拟器](../haier-simulator/README.zh.md)、[Web 启动器](../../scripts/dev-web.ts) | 验证本地登录和并行启动，不混用服务或端口。 |
 | HAIER-009 | 旧版公司程序名称升级兼容，以及限定安装路径的进程检查。 | [安装器生命周期](../../apps/desktop/installer/lifecycle.nsh) | 在 Windows 验证覆盖旧公司版本升级、安装路径匹配和全新安装。 |
 
+<a id="layout"></a>
+
+## HAIER-002：布局合并原则
+
+- 保留公司三栏布局、中间顶栏和整体视觉风格。
+- 吸收上游功能、无障碍及布局修复，保证已接入功能的入口可用。
+- 允许评估接入上游窄屏自动折叠和抽屉；保留宽屏桌面布局，明显改变现有布局或操作习惯时，提供预览确认。
+
+<a id="conversation"></a>
+
+## HAIER-003：会话合并原则
+
+- 保留公司聊天区和输入区的整体呈现风格，不把当前组件结构或具体操作位置作为固定要求。
+- 持续接入上游会话、消息输入、附件、工具执行和任务控制能力及修复；本地呈现调整不能削弱权限约束、状态反馈或错误恢复能力。
+- 优先适配上游接口和状态模型，将公司呈现接入新的实现。若功能接入与现有产品要求冲突，明确记录影响和取舍；明显改变操作习惯时提供预览确认。
+
+<a id="identity"></a>
+
+## HAIER-004：身份认证合并原则
+
+- 保留公司 IAM 登录、公司账号身份与模型网关接入。在公司强制登录模式下，上游账号或配置变化不能绕过登录要求，也不能静默切换到其他服务。
+- 跟随上游认证接口、凭据管理和会话生命周期演进，适配公司登录流程；保留认证校验、凭据保护与退出登录语义，应用密钥继续由服务端保管。
+- 升级涉及已保存身份、凭据或公司配置时，明确兼容或迁移方式并验证；不能以清空用户数据代替适配。
+
+<a id="company-services"></a>
+
+## HAIER-005：公司服务入口合并原则
+
+- 公司分发中的反馈和联系入口指向公司支持渠道，不因上游合并恢复为上游默认渠道。
+- 保留公司对设置和服务入口的产品取舍，不固定当前菜单结构，也不把已隐藏入口直接视为应恢复的缺失功能。
+- 上游新增能力按公司使用场景评估入口；隐藏入口不等于禁止底层能力。若接入要求改变现有公司策略，记录影响并确认取舍。
+
+<a id="distribution"></a>
+
+## HAIER-006：内网发布合并原则
+
+- 保留公司内网分发、更新渠道和版本历史，吸收上游安装及更新修复；不得因默认配置变化将已安装客户端导向上游分发服务。
+- 分别记录上游基线与公司发布版本，保证构建、发布和回退可追溯。具体部署规则以[内网发布参考](../../apps/desktop/packaging/INTRANET.md)为准，代码合并与内网发布分别验收。
+
+<a id="languages"></a>
+
+## HAIER-007：语言合并原则
+
+- 公司发布继续支持中文和英文，上游新增功能应同步补齐这两种语言的文案与元数据。
+- 语言裁剪不应阻碍接入上游功能或国际化基础设施；允许调整资源组织方式，不因合并自动扩大发布语言范围。
+
+<a id="development"></a>
+
+## HAIER-008：开发验证合并原则
+
+- 保留内网外验证公司登录与网关接入的能力，模拟器随实际使用的接口变化更新，并继续通过应用的真实入口验证。
+- 开发环境与生产配置、凭据和数据保持隔离。模拟器通过不等于真实 IAM、模型或桌面安装验证通过，内网验收仍按相应要求执行。
+
+<a id="upgrade"></a>
+
+## HAIER-009：升级兼容合并原则
+
+- 吸收上游安装器与迁移修复时，保留从已发布公司版本升级的能力，兼容旧产品标识并保护已有用户数据和配置。
+- 升级操作限定于目标安装，不因旧程序名称匹配而影响其他安装。技术标识或数据格式必须变化时，明确迁移与恢复方式，并验证旧版升级和全新安装。
+
 <a id="maintenance"></a>
 
 ## 维护方式
+
+清单记录公司定制的原则与保留边界，不逐项固定按钮、尺寸或状态行为。具体交互以代码和测试为依据；实际合并涉及产品取舍时，记入当次同步记录。
 
 产品要求变化时，在同一变更中更新对应编号及验收条件。代码迁移不改变编号。要求存在分歧或调查不完整时，在同步记录中列出，不静默弱化要求。
 

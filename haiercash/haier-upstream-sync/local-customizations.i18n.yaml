@@ -9,14 +9,38 @@
   en: 254e682ae9c3a65c
   zh: 34586d7c6525b420
 /haier-customization-register/summary:
-  en: 340380efbff1d186
-  zh: 2f27f4a766af4246
+  en: 37448eac56c27958
+  zh: 8c029e075407ea70
 /haier-customization-register/contents:
-  en: 2fbebc316bdd42d3
-  zh: 2b229c6053b5e40d
+  en: 5f00b9cb9374e5f7
+  zh: d2d9a70dc44ecb44
 /haier-customization-register/active-requirements:
-  en: 2236ba175b455a90
-  zh: 639f6288072b4049
+  en: d38ebce39e10d923
+  zh: 58ce599e69987e07
+/haier-customization-register/haier-002-layout-integration-principles:
+  en: 60fa576f1d346d66
+  zh: e68d47bbecfe0670
+/haier-customization-register/haier-003-conversation-integration-principles:
+  en: d4f154316e3b57b9
+  zh: 429cd3e418d4af97
+/haier-customization-register/haier-004-identity-integration-principles:
+  en: e8d772384850aa39
+  zh: daf64751a4366608
+/haier-customization-register/haier-005-company-service-entry-principles:
+  en: e57b60ee6427e7c3
+  zh: 58a5af3328353f19
+/haier-customization-register/haier-006-intranet-distribution-integration-principles:
+  en: 0f4bdc65b745dadd
+  zh: 72a16342334e3cda
+/haier-customization-register/haier-007-language-integration-principles:
+  en: 58dedbac7759cc4b
+  zh: 0b6105b7eab58cee
+/haier-customization-register/haier-008-development-verification-integration-principles:
+  en: 1eff2512a48f50bb
+  zh: 5bd7617c87c34ed2
+/haier-customization-register/haier-009-upgrade-compatibility-integration-principles:
+  en: 2b6004b4c8f00159
+  zh: f97eddd1f5b602a8
 /haier-customization-register/maintenance:
-  en: 002c893efe703279
-  zh: 5658a63d20d6ba9f
+  en: fba36414918bf0d4
+  zh: f09b46c165aaf6f3
