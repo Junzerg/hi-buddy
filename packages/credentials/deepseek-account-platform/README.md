@@ -42,6 +42,8 @@ Company account snapshots expose `authenticationMethod: iam` when the stored gra
 
 `completeApiKeySignIn` and IAM completion discover models on the registered `company-gateway` provider (`openai-completions`, `http://ai-gateway.haierxj.cn/v1`), preserve an available company default or select the first model, and store the key and account grant only after activation succeeds. Empty catalogs fail; activation failures clear synchronized access. Sign-out waits for admitted synchronization, removes `COMPANY_GATEWAY_API_KEY` even if changed, clears company models and the company default, then removes the grant and publishes signed-out state. Cleanup failures remain visible and may be retried. Startup removes an orphaned company key without an account grant. The built-in route requires a signed-in grant for model listing and inference; stored or ambient keys cannot authorize signed-out requests. Provider metadata remains available for subsequent login.
 
+Failed company activation includes a credential-free `attempt.errorStage`: `configuration`, `model-discovery`, `model-selection`, `credential-reset`, `model-settings`, `default-model`, `credential-save`, `grant-save`, or `rollback`. Account subscriptions and the sign-in failure log expose the same stage; raw exceptions and response bodies are not included. A `rollback` failure means cleanup did not complete.
+
 The profile projection maps `id_profile.picture` to `avatarUrl`, using null when no picture is configured.
 
 Token resolution refuses requests while local sign-out is in progress. Successful local removal publishes `deepseek-account/signed-out` before returning the signed-out snapshot; remote revocation remains independent.

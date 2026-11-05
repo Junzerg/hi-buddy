@@ -28,6 +28,9 @@ export interface SignInAttemptView {
   readonly authorizeUrl?: string
   readonly expiresAt?: number
   readonly errorCode?: SignInErrorCode
+  /** Failed company activation operation; fixed labels only, without credentials or response bodies. */
+  readonly errorStage?: 'configuration' | 'model-discovery' | 'model-selection' | 'credential-reset'
+    | 'model-settings' | 'default-model' | 'credential-save' | 'grant-save' | 'rollback'
 }
 /** Browser destinations derived from the Host's platform configuration; never carry tokens. */
 export interface AccountLinks {

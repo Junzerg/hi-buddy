@@ -8024,7 +8024,7 @@ export const TYPE_API: readonly TypeApiEntry[] = [
   },
   {
     name: 'SignInAttemptView',
-    declaration: 'export interface SignInAttemptView {\n    readonly id: SignInAttemptId;\n    readonly phase: \'initializing\' | \'waiting-browser\' | \'exchanging\' | \'committing\' | \'succeeded\' | \'cancelled\' | \'expired\' | \'failed\';\n    readonly authorizeUrl?: string;\n    readonly expiresAt?: number;\n    readonly errorCode?: SignInErrorCode;\n}',
+    declaration: 'export interface SignInAttemptView {\n    readonly id: SignInAttemptId;\n    readonly phase: \'initializing\' | \'waiting-browser\' | \'exchanging\' | \'committing\' | \'succeeded\' | \'cancelled\' | \'expired\' | \'failed\';\n    readonly authorizeUrl?: string;\n    readonly expiresAt?: number;\n    readonly errorCode?: SignInErrorCode;\n    readonly errorStage?: \'configuration\' | \'model-discovery\' | \'model-selection\' | \'credential-reset\' | \'model-settings\' | \'default-model\' | \'credential-save\' | \'grant-save\' | \'rollback\';\n}',
   },
   {
     name: 'SignInErrorCode',

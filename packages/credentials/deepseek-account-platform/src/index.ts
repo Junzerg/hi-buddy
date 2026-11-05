@@ -91,6 +91,7 @@ interface Attempt {
   callback?: ServerResponse
   initialProfile?: { token: string; value: AccountDetails['profile'] }
   completionUrl?: string
+  errorStage?: SignInAttemptView['errorStage']
 }
 
 /** The platform implementation owns login state and its opaque stored grant. */
@@ -478,8 +479,9 @@ export class PlatformAccount extends DeepSeekAccount {
       } else attempt.callback?.writeHead(204, { 'cache-control': 'no-store' }).end()
     }).catch((error: unknown) => {
       const code = error instanceof PlatformAuthError ? error.code : 'protocol'
-      console.error('[deepseek-account] sign-in failed', { errorCode: code })
-      this.update(attempt, { phase: code === 'expired' ? 'expired' : 'failed', errorCode: code })
+      const diagnostic = { errorCode: code, ...attempt.errorStage === undefined ? {} : { errorStage: attempt.errorStage } }
+      console.error('[deepseek-account] sign-in failed', diagnostic)
+      this.update(attempt, { phase: code === 'expired' ? 'expired' : 'failed', ...diagnostic })
       this.finishFailedCallback(attempt)
     }).then(async () => {
       // begin() may report cancellation before the HTTP work observes its signal.
@@ -511,12 +513,14 @@ export class PlatformAccount extends DeepSeekAccount {
     return this.queueCompanyKey(apiKey)
   }
 
+  /** IAM callers track activation operations through onStage; manual key submission omits that observer. */
   private queueCompanyKey(apiKey: string, commit = async (): Promise<void> => {
     await this.ctx.credentials.modifyRecord(KEY, () => Promise.resolve({
       kind: 'grant', payload: { version: 1, token: apiKey, issuer: this.origin },
     }))
-  }): Promise<void> {
+  }, onStage?: (stage: NonNullable<SignInAttemptView['errorStage']>) => void): Promise<void> {
     const completion = this.keyCompletion.then(async () => {
+      onStage?.('configuration')
       if (this.closed) throw new PlatformAuthError('protocol')
       if (!/^[\x21-\x7e]+$/.test(apiKey)) throw new PlatformAuthError('protocol')
       const llm = this.ctx.get('llm')
@@ -527,26 +531,38 @@ export class PlatformAccount extends DeepSeekAccount {
       const value = namespace?.value as { providers?: Record<string, { api?: string; baseURL?: string; apiKeyEnv?: string }> } | undefined
       const provider = value?.providers?.[COMPANY_PROVIDER]
       if (provider?.api !== 'openai-completions' || !provider.baseURL || provider.apiKeyEnv !== COMPANY_KEY_REF) throw new PlatformAuthError('protocol')
+      onStage?.('model-discovery')
       const models = await llm.discoverModels('llm-pi-ai', { api: provider.api, baseURL: provider.baseURL, apiKey }, AbortSignal.timeout(this.requestTimeout))
       const first = models[0]
       if (first === undefined) throw new PlatformAuthError('protocol')
+      onStage?.('model-selection')
       const current = defaults.currentSelection()
       const model = current.provider === COMPANY_PROVIDER ? models.find(item => item.id === current.model) ?? first : first
       try {
+        onStage?.('credential-reset')
         await this.ctx.credentials.unset(credentialRef(COMPANY_KEY_REF))
+        onStage?.('model-settings')
         await settings.update('llm-pi-ai', { providers: { [COMPANY_PROVIDER]: { models: models.map(item => ({
           id: item.id, name: item.name ?? item.id,
           ...item.contextWindow === undefined ? {} : { contextWindow: item.contextWindow },
           ...item.maxTokens === undefined ? {} : { maxTokens: item.maxTokens },
         })) } } })
+        onStage?.('default-model')
         await defaults.saveSelection({ provider: COMPANY_PROVIDER, model: model.id })
         const selected = defaults.currentSelection()
         if (selected.provider !== COMPANY_PROVIDER || selected.model !== model.id) throw new PlatformAuthError('storage')
+        onStage?.('credential-save')
         await this.ctx.credentials.set(credentialRef(COMPANY_KEY_REF), apiKey)
+        onStage?.('grant-save')
         await commit()
       } catch (error) {
-        await this.clearCompanyAccess()
-        await this.ctx.credentials.deleteRecord(KEY)
+        try {
+          await this.clearCompanyAccess()
+          await this.ctx.credentials.deleteRecord(KEY)
+        } catch (cleanupError) {
+          onStage?.('rollback')
+          throw cleanupError
+        }
         throw error
       }
     })
@@ -686,7 +702,8 @@ export class PlatformAccount extends DeepSeekAccount {
         const companyProfile = companyAccountProfile(identity)
         await this.queueCompanyKey(identity.apiKey, () => session.commit({
           kind: 'grant', payload: { version: 1, token: identity.apiKey, issuer: this.origin, companyProfile },
-        }))
+        }), (stage) => { attempt.errorStage = stage })
+        attempt.errorStage = undefined
         attempt.initialProfile = { token: identity.apiKey, value: { status: 'ready', value: companyProfile } }
         this.cacheProfile(identity.apiKey, { status: 'ready', value: companyProfile })
         if (attempt.loginSource === 'desktop') attempt.completionUrl = 'dsh://open'

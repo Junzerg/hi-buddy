@@ -14,7 +14,49 @@ import { companyAccountProfile, companyAuthorizeUrl, exchangeCompanyIdentity, ex
 const cleanups: Array<() => Promise<unknown>> = []
 afterEach(async () => {
   vi.unstubAllGlobals()
+  vi.restoreAllMocks()
   while (cleanups.length) await cleanups.pop()?.()
+})
+
+it.each(['model-discovery', 'model-settings', 'default-model', 'credential-save', 'rollback'] as const)
+('reports the failed IAM activation stage without exposing exception secrets: %s', async (stage) => {
+  const f = await keyFixture()
+  const failure = new Error('private-key fixture-code private-response')
+  if (stage === 'model-discovery') f.discover.mockRejectedValueOnce(failure)
+  if (stage === 'model-settings') f.update.mockRejectedValueOnce(failure)
+  if (stage === 'default-model') f.save.mockRejectedValueOnce(failure)
+  if (stage === 'credential-save') vi.spyOn(f.ctx.credentials, 'set').mockRejectedValueOnce(failure)
+  if (stage === 'rollback') f.update.mockRejectedValue(failure)
+  const logs = vi.spyOn(console, 'error').mockImplementation(() => {})
+  const send = globalThis.fetch
+  vi.stubGlobal('fetch', (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
+    if (input === f.accountConfig.companyLoginEndpoint) {
+      return Promise.resolve(Response.json({ apiKey: 'private-key', account: 'employee', email: 'employee@example.test' }))
+    }
+    return send(input, init)
+  })
+  const lifetime = new AbortController()
+  cleanups.push(async () => { lifetime.abort() })
+  const account = f.ctx.deepseekAccount
+  const wait = async (phase: string) => {
+    for await (const view of account.watch(lifetime.signal)) {
+      if (view.attempt?.phase === phase) return view
+      if (view.attempt?.phase === 'failed') throw new Error('sign-in failed before the expected phase')
+    }
+    throw new Error(`missing phase ${phase}`)
+  }
+  await account.startSignIn({ version: 'test', locale: 'en', timezoneOffsetSeconds: 0 }, f.ctx.webServer.getOrigin(), 'desktop')
+  const waiting = await wait('waiting-browser')
+  const authorize = new URL(waiting.attempt!.authorizeUrl!)
+  const callback = new URL(authorize.searchParams.get('redirect_uri')!)
+  callback.search = new URLSearchParams({ code: 'fixture-code', state: authorize.searchParams.get('state')! }).toString()
+  await fetch(callback, { redirect: 'manual' })
+  const failed = await wait('failed')
+  expect(failed).toMatchObject({ status: 'signed-out', attempt: { phase: 'failed', errorCode: 'protocol', errorStage: stage } })
+  expect(JSON.stringify(failed)).not.toContain('private-key')
+  expect(logs).toHaveBeenCalledWith('[deepseek-account] sign-in failed', { errorCode: 'protocol', errorStage: stage })
+  expect(JSON.stringify(logs.mock.calls)).not.toContain(failure.message)
+  expect(await f.ctx.credentials.resolve(credentialRef(COMPANY_KEY_REF))).toBeUndefined()
 })
 
 it('constructs authorization from the original callback origin without exposing deployment secrets', () => {
