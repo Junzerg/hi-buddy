@@ -69,7 +69,7 @@ fetch('/versions/releases.json', { cache: 'no-store', signal: AbortSignal.timeou
   });
   const win = safe.find(item => new URL(item.url, location.origin).pathname.endsWith('.exe'));
   if (win) windows.replaceChildren(releaseLink(win, '下载 Windows 64 位')); else status(windows, 'Windows 安装包暂未发布');
-  const mac = ['arm64', 'x64'].map(arch => safe.find(item => item.arch === arch && new URL(item.url, location.origin).pathname.endsWith('.dmg'))).filter(Boolean);
-  if (mac.length) macos.replaceChildren(...mac.map(item => releaseLink(item, item.arch === 'arm64' ? '下载 Apple Silicon 版' : '下载 Intel 版')));
+  const mac = safe.find(item => item.arch === 'arm64' && new URL(item.url, location.origin).pathname.endsWith('.dmg'));
+  if (mac) macos.replaceChildren(releaseLink(mac, '下载 Apple Silicon 版'));
   else status(macos, 'macOS 安装包即将上线');
 }).catch(() => { for (const container of [windows, macos]) status(container, '暂时无法读取版本，请前往全部版本页面重试'); });

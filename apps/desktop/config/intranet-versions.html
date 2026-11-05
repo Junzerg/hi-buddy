@@ -4,35 +4,66 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>HiBuddy · 内网下载</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="icon" href="/site/brand.svg" type="image/svg+xml">
   <style>
+    :root { color-scheme: light; --ink: #172923; --muted: #64736d; --green: #007e63; --mint: #e7faf2; --line: #dfebe5; }
     * { box-sizing: border-box; }
-    body { margin: 0; background: #f5f7fa; color: #192536; font: 16px/1.6 system-ui, sans-serif; }
-    main { max-width: 800px; margin: 64px auto; padding: 0 24px; }
-    header { margin-bottom: 36px; }
-    h1 { margin: 0 0 8px; font-size: 36px; letter-spacing: -1px; }
-    p { color: #526174; }
-    article { background: white; padding: 24px; margin: 16px 0; border: 1px solid #dde3eb; border-radius: 16px; }
-    h2, h3 { margin: 0 0 8px; font-size: 21px; overflow-wrap: anywhere; }
-    .platforms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
-    .platforms article { margin: 16px 0 0; }
-    a:hover { background: #194aa9; }
-    @media (max-width: 640px) { .platforms { grid-template-columns: 1fr; } }
-    #history { margin-top: 36px; }
-    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 20px; }
-    button { padding: 10px 16px; border: 1px solid #dde3eb; border-radius: 8px; background: white; color: #192536; font: inherit; cursor: pointer; }
-    button:disabled { color: #697586; background: #edf0f4; cursor: default; }
-    a { display: inline-block; padding: 10px 20px; background: #215bcc; color: white; border-radius: 8px; text-decoration: none; }
-    a:focus-visible, button:focus-visible, #history-title:focus-visible { outline: 3px solid #192536; outline-offset: 4px; }
-    small { color: #526174; }
-    @media (max-width: 480px) { main { margin-top: 32px; } h1 { font-size: 30px; } }
+    body { margin: 0; background: #fff; color: var(--ink); font: 16px/1.7 'PingFang SC','Microsoft YaHei','Noto Sans CJK SC',sans-serif; -webkit-font-smoothing: antialiased; }
+    ::selection { background: #b4ead7; color: #143b2d; }
+    a { color: inherit; text-decoration: none; }
+    .site-header { height: 80px; padding: 0 44px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); }
+    .brand { display: inline-flex; gap: 9px; align-items: center; font: 750 25px Arial,sans-serif; letter-spacing: -1px; }
+    .brand img { width: 38px; height: 38px; }
+    .home-link { font-size: 14px; color: var(--green); padding: 12px 0; }
+    main { max-width: 1160px; margin: auto; padding: 64px 36px 32px; }
+    .intro { display: flex; justify-content: space-between; align-items: center; gap: 32px; margin-bottom: 48px; }
+    h1 { margin: 0 0 16px; font-size: clamp(36px,5vw,64px); font-weight: 650; line-height: 1.2; letter-spacing: -.03em; }
+    .intro p { margin: 0; color: var(--muted); }
+    .intro-mark { width: 120px; height: 120px; margin-right: 24px; }
+    h2 { margin: 0; font-size: 30px; line-height: 1.3; font-weight: 650; letter-spacing: -.02em; }
+    h3 { margin: 0; overflow-wrap: anywhere; font-size: 20px; font-weight: 600; }
+    .platforms { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; }
+    .platforms > section { padding: 32px; border-radius: 16px; background: var(--mint); min-width: 0; }
+    .platforms > section:first-child { color: white; background: #173e33; }
+    .platforms > section > h2 { padding-bottom: 24px; }
+    .platforms article { padding: 24px 0 0; border-top: 1px solid #c4dfd2; }
+    .platforms article + article { margin-top: 24px; }
+    .platforms > section:first-child article { border-color: #46675b; }
+    article p { margin: 8px 0 20px; color: var(--muted); font-size: 14px; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .platforms > section:first-child p { color: #c6ded2; }
+    .download { display: inline-flex; align-items: center; justify-content: center; gap: 18px; padding: 12px 22px; border-radius: 8px; color: #fff; background: var(--green); font-size: 15px; font-weight: 600; transition: background .15s; }
+    .download::after { content: ''; width: 16px; height: 16px; background: currentColor; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/contain no-repeat; }
+    .download:hover { background: #006650; }
+    .platforms > section:first-child .download { background: #e7faf2; color: #173e33; }
+    .platforms > section:first-child .download:hover { background: #b4ead7; }
+    #history { margin-top: 64px; }
+    #history > h2 { font-size: 26px; padding-bottom: 20px; border-bottom: 1px solid var(--line); }
+    #history article { display: grid; grid-template-columns: minmax(0,1fr) auto; column-gap: 24px; padding: 22px 0; border-bottom: 1px solid var(--line); align-items: center; }
+    #history h3 { font-size: 16px; font-variant-numeric: tabular-nums; }
+    #history article p { grid-column: 1; margin: 4px 0 0; }
+    #history .download { grid-column: 2; grid-row: 1 / 3; background: transparent; color: var(--green); padding: 10px 0 10px 16px; font-size: 14px; }
+    #history .download:hover { color: #004e3e; text-decoration: underline; text-underline-offset: 4px; }
+    nav { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 24px; font-size: 14px; }
+    button { min-height: 44px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 8px; background: white; color: var(--ink); font: inherit; cursor: pointer; }
+    button:hover:not(:disabled) { background: var(--mint); }
+    button:disabled { color: var(--muted); background: #f4f7f5; cursor: default; }
+    a:focus-visible, button:focus-visible, #history-title:focus-visible { outline: 3px solid #008a72; outline-offset: 5px; }
+    .platforms > section:first-child a:focus-visible { outline-color: #b4ead7; }
+    .installation-note { margin: 32px 0 0; color: var(--muted); font-size: 14px; }
+    footer { max-width: 1160px; margin: 32px auto 0; padding: 24px 36px 32px; display: flex; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+    @media (max-width: 700px) { .site-header { height: 68px; padding: 0 24px; } main { padding: 40px 24px 24px; } .intro { margin-bottom: 32px; } .intro-mark { display: none; } .platforms { grid-template-columns: 1fr; gap: 20px; } .platforms > section { padding: 28px; } #history { margin-top: 44px; } #history article { grid-template-columns: 1fr; gap: 0; } #history .download { grid-column: 1; grid-row: auto; justify-self: start; padding: 10px 0 0; } footer { padding: 24px; flex-wrap: wrap; } }
+    @media (prefers-reduced-motion: reduce) { .download { transition: none; } }
   </style>
 </head>
 <body>
+  <header class="site-header"><a class="brand" href="/" aria-label="HiBuddy 首页"><img src="/site/brand.svg" width="38" height="38" alt=""><span>HiBuddy</span></a><a class="home-link" href="/">返回首页</a></header>
   <main>
-    <header><small>内网软件下载</small><h1>HiBuddy</h1><p>选择适合你电脑的 Windows 或 macOS 安装包。</p></header>
+    <header class="intro"><div><h1>下载 HiBuddy</h1><p>选择适合你电脑的 Windows 或 macOS 安装包。</p></div><img class="intro-mark" src="/site/brand.svg" width="120" height="120" alt=""></header>
     <section id="releases" aria-live="polite"><p>正在加载版本列表…</p></section>
-    <p><small>首次使用请下载安装包并运行。更新前请保存工作。</small></p>
+    <p class="installation-note">首次使用请下载安装包并运行。更新前请保存工作。</p>
   </main>
+  <footer><span>海智伙伴 · HiBuddy</span><span>公司内部使用</span></footer>
   <script>
     const releases = document.getElementById('releases');
     fetch('./releases.json', { cache: 'no-store' }).then(response => {
@@ -49,14 +80,15 @@
         const arch = platform === 'windows' ? 'x64' : item.arch;
         if (platform === 'macos' && !['arm64', 'x64'].includes(arch)) throw new Error('macOS 安装包缺少架构');
         return { ...item, platform, arch, href: url.href };
-      });
+      }).filter(item => item.platform === 'windows' || item.arch === 'arm64');
       function createCard(item, latest = false) {
         const card = document.createElement('article');
         const title = document.createElement('h3');
-        title.textContent = `${latest ? '最新版本 · ' : ''}${item.version}`;
+        title.textContent = latest ? (item.platform === 'windows' ? 'Windows 64 位' : 'Apple Silicon（M 系列）') : item.version;
         const info = document.createElement('p');
-        info.textContent = `${item.platform === 'windows' ? 'Windows 64 位' : item.arch === 'arm64' ? 'macOS · Apple Silicon（M 系列）' : 'macOS · Intel'} · ${(item.bytes / 1024 / 1024).toFixed(1)} MB`;
+        info.textContent = latest ? `最新版本 · ${item.version} · ${(item.bytes / 1024 / 1024).toFixed(1)} MB` : `${item.platform === 'windows' ? 'Windows 64 位' : 'macOS · Apple Silicon（M 系列）'} · ${(item.bytes / 1024 / 1024).toFixed(1)} MB`;
         const link = document.createElement('a');
+        link.className = 'download';
         link.href = item.href;
         link.textContent = item.platform === 'windows' ? '下载 Windows 安装包' : '下载 macOS DMG';
         link.setAttribute('download', '');
@@ -73,7 +105,7 @@
         heading.textContent = label;
         section.setAttribute('aria-labelledby', heading.id);
         section.append(heading);
-        for (const arch of platform === 'windows' ? ['x64'] : ['arm64', 'x64']) {
+        for (const arch of platform === 'windows' ? ['x64'] : ['arm64']) {
           const item = entries.find(entry => entry.platform === platform && entry.arch === arch);
           if (item) { latest.add(item); section.append(createCard(item, true)); }
         }
