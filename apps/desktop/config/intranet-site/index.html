@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="HiBuddy，AI 工程部门打造的桌面 AI 工作伙伴。整理资料、分析表格、制作文档，让想法成为工作成果。公司内部下载与使用指南。">
+  <meta name="robots" content="noindex, nofollow">
+  <title>HiBuddy · 你的 AI 工作伙伴</title>
+  <link rel="icon" href="/site/brand.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/site/style.css">
+  <script src="/site/app.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">跳到正文</a>
+  <header class="header">
+    <a class="brand" href="/" aria-label="HiBuddy 首页"><img src="/site/brand.svg" width="38" height="38" alt=""><span>HiBuddy</span></a>
+    <nav aria-label="主导航"><a href="#scenarios">使用场景</a><a href="#workspace">产品体验</a><a href="#start">快速上手</a></nav>
+    <a class="button button-small" href="#download">下载 HiBuddy <span aria-hidden="true">↓</span></a>
+  </header>
+  <main id="main">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title"><img src="/site/brand.svg" width="110" height="110" alt="">HiBuddy</h1>
+      <p class="hero-line">你的 AI 工作伙伴，让想法成为成果。</p>
+      <p class="hero-description">AI 工程部门打造的桌面 AI 工作台。说出需求，从整理资料、分析表格，<br class="desktop-break">到撰写文档、准备汇报，和 HiBuddy 一起把工作向前推进。</p>
+      <div class="hero-actions"><a class="button" href="#download">立即下载 HiBuddy <span aria-hidden="true">↓</span></a><a class="text-link" href="#scenarios">看看它能做什么 <span aria-hidden="true">↗</span></a></div>
+      <p class="availability">Windows 与 macOS 桌面端 · 公司内部使用</p>
+      <div class="product-stage" id="workspace">
+        <div class="stage-glow" aria-hidden="true"></div>
+        <figure class="product-window">
+          <div class="window-toolbar"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><span>HiBuddy 工作台</span><span class="window-label">桌面体验</span></div>
+          <img class="product-image" src="/site/workspace.png" width="1440" height="960" alt="HiBuddy 工作台界面：侧栏中的任务列表与中央工作区" fetchpriority="high">
+          <figcaption>HiBuddy 实际界面 · 本地演示环境</figcaption>
+        </figure>
+        <div class="stage-caption"><span>从一句话开始</span><span>在工作区里执行</span><span>把结果交给你</span></div>
+      </div>
+    </section>
+    <section class="scenarios section" id="scenarios" aria-labelledby="scenarios-title">
+      <div class="section-heading"><h2 id="scenarios-title">工作里的大小事，<br>都有个好搭子。</h2><p>把具体的任务交给 HiBuddy。<br>从手头的资料出发，一步步完成你的工作。</p></div>
+      <div class="scenario-tabs" role="tablist" aria-label="办公场景">
+        <button role="tab" id="tab-documents" aria-controls="scenario-panel" aria-selected="true" data-scenario="documents">文档写作</button>
+        <button role="tab" id="tab-data" aria-controls="scenario-panel" aria-selected="false" tabindex="-1" data-scenario="data">表格分析</button>
+        <button role="tab" id="tab-slides" aria-controls="scenario-panel" aria-selected="false" tabindex="-1" data-scenario="slides">汇报准备</button>
+        <button role="tab" id="tab-code" aria-controls="scenario-panel" aria-selected="false" tabindex="-1" data-scenario="code">代码协作</button>
+      </div>
+      <div class="scenario-panel" id="scenario-panel" role="tabpanel" aria-labelledby="tab-documents" tabindex="0">
+        <div class="scenario-copy"><p class="scenario-kind" id="scenario-kind">文档写作</p><h3 id="scenario-title">把零散资料，<br>写成一份好文档。</h3><p id="scenario-description">整理材料、梳理结构、起草内容。让思路落到文档里，把时间留给判断与完善。</p><div class="prompt"><span>试着这样说</span><p id="scenario-prompt">“根据这份会议记录，整理会议纪要，列出待办事项、负责人和待确认的问题。”</p><button id="copy-prompt" type="button">复制这段指令</button><span id="copy-status" role="status"></span></div></div>
+        <div class="example-stage"><div class="example-sheet"><div class="sheet-top"><img src="/site/brand.svg" width="32" height="32" alt=""><span id="example-type">会议纪要.docx</span><span>内容示例</span></div><div id="example-content"><h4>让每一次讨论，都有下一步</h4><p class="sheet-subtitle">项目沟通会议纪要</p><div class="document-rule"></div><h5>讨论结论</h5><p>明确本阶段的交付范围，优先完成核心流程验证。</p><h5>待办事项</h5><ul><li>整理需求清单，确认验收标准</li><li>补齐测试数据，验证关键场景</li><li>同步待确认事项，安排下一次评审</li></ul><div class="sheet-note">待确认：评审时间与参与人员</div></div></div></div>
+      </div>
+    </section>
+    <section class="workspace-story section" aria-labelledby="story-title"><div class="story-copy"><h2 id="story-title">熟悉的工作，<br>多一种做法。</h2><p>不用把任务拆成无数次复制粘贴。选择工作区，把相关文件和目标交给 HiBuddy，在对话中继续补充要求。</p><a class="text-link" href="#start">从第一个任务开始 <span aria-hidden="true">↗</span></a></div><div class="workflow"><div><span class="step-number">1</span><h3>带上你的资料</h3><p>选择工作区，准备需要处理的文件。</p></div><div><span class="step-number">2</span><h3>说清你要的结果</h3><p>描述目标、格式和要求，随时补充上下文。</p></div><div><span class="step-number">3</span><h3>查看成果，继续完善</h3><p>检查生成的内容和文件，再提出修改意见。</p></div></div></section>
+    <section class="company-section"><div class="section company-inner"><h2>为公司的每一位同事，<br>把 AI 做得更好用。</h2><div class="company-details"><div><h3>公司账号，直接登录</h3><p>使用公司 IAM 账号登录，接入统一的模型服务。</p></div><div><h3>熟悉的电脑，熟悉的文件</h3><p>支持 Windows 与 macOS，在自己的工作区中处理任务。</p></div><div><h3>AI 工程部门，持续打磨</h3><p>从真实办公需求出发，持续完善产品体验。使用建议与问题可反馈给 AI 工程部门。</p></div></div></div></section>
+    <section class="section start-section" id="start" aria-labelledby="start-title"><h2 id="start-title">准备好，和 HiBuddy 一起工作。</h2><div class="start-steps"><div><span>01</span><h3>下载安装</h3><p>选择与你电脑匹配的版本。Mac 请区分 Apple Silicon 与 Intel 芯片。</p></div><div><span>02</span><h3>登录公司账号</h3><p>连接公司网络，打开客户端，通过公司 IAM 完成登录。</p></div><div><span>03</span><h3>交给它一个任务</h3><p>选择工作区，从一份文档或一张表格开始，把目标说具体。</p></div></div></section>
+    <section class="download-section" id="download" aria-labelledby="download-title"><div class="section"><div class="download-heading"><img src="/site/brand.svg" width="64" height="64" alt=""><h2 id="download-title">HiBuddy，开工吧。</h2><p>下载桌面客户端，开始你的第一个 AI 办公任务。</p></div><h3 class="download-group-title">桌面端</h3><div class="downloads" id="desktop-downloads" aria-live="polite"><article class="download-card"><h4>Windows</h4><p>64 位桌面客户端</p><div id="windows-download"><p class="release-status">正在读取版本…</p></div></article><article class="download-card"><h4>macOS</h4><p>Apple Silicon 与 Intel</p><div id="macos-download"><p class="release-status">正在读取版本…</p></div></article></div><div class="download-footer"><a href="/versions/">全部版本与历史下载 <span aria-hidden="true">↗</span></a><span>安装前请保存正在进行的工作</span></div><div class="mobile-download"><div><h3>工作伙伴，也将随身同行。</h3><p>移动端规划中，敬请期待。</p></div><div class="mobile-platform"><span>iOS</span><span class="coming">敬请期待</span></div><div class="mobile-platform"><span>Android</span><span class="coming">敬请期待</span></div></div></div></section>
+    <section class="section faq" aria-labelledby="faq-title"><h2 id="faq-title">你可能想知道</h2><div><details><summary>使用 HiBuddy，需要连接公司网络吗？</summary><p>登录、模型对话和内网下载需要相应公司服务可达。若能登录但无法加载模型或回复，请联系 AI 工程部门检查模型网关的连通性。</p></details><details><summary>Mac 应该下载哪个版本？</summary><p>打开苹果菜单中的“关于本机”。芯片为 M 系列时选择 Apple Silicon，处理器为 Intel 时选择 Intel 版本。</p></details><details><summary>安装时遇到系统安全提示怎么办？</summary><p>请保留完整提示，并向 AI 工程部门反馈。未公证测试包与正式签名包的处理方式不同；下载页提供可用版本，不代表所有历史安装包均已签名或公证。</p></details><details><summary>如何反馈问题或提出新需求？</summary><p>联系 AI 工程部门，提供系统版本、HiBuddy 版本、操作步骤和问题截图。反馈时请隐去账号凭据与敏感业务信息。</p></details></div></section>
+  </main>
+  <footer class="footer section"><a class="brand" href="/"><img src="/site/brand.svg" width="38" height="38" alt=""><span>HiBuddy</span></a><p>AI 工程部门出品 · 公司内部使用</p><a href="#main">回到顶部 ↑</a></footer>
+</body>
+</html>

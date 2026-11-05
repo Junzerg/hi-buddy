@@ -1,5 +1,5 @@
 /** Assemble static Nginx files from a completed Windows intranet build. */
-import { copyFile, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
+import { copyFile, cp, mkdir, readFile, rename, writeFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { basename, join, resolve } from 'node:path'
 import { load } from 'js-yaml'
@@ -34,12 +34,13 @@ if (!Array.isArray(records) || records.some(item => !item || !valid(item.version
   throw new Error('Existing releases.json has invalid release records')
 }
 const record = { version: feed.version, url: `/versions/${feed.version}/lingxi-office-${feed.version}.exe`, bytes: installer.length }
-const previous = records.find(item => item.version === record.version)
+const previous = records.find(item => item.version === record.version && item.url.endsWith('.exe'))
 if (previous) throw new Error('This version is already staged; use a new build version')
 await writeFile(join(updates, file.url), installer)
 await writeFile(join(updates, `${file.url}.blockmap`), blockmap)
 await mkdir(join(versions, feed.version), { recursive: true })
 await writeFile(join(versions, feed.version, `lingxi-office-${feed.version}.exe`), installer)
+await cp(new URL('../config/intranet-site/', import.meta.url), join(destination, 'site'), { recursive: true })
 await copyFile(new URL('../config/intranet-versions.html', import.meta.url), join(versions, 'index.html'))
 await copyFile(new URL('../config/intranet-nginx.conf', import.meta.url), join(destination, 'intranet-nginx.conf'))
 await copyFile(new URL('../config/intranet.Dockerfile', import.meta.url), join(destination, 'Dockerfile'))
