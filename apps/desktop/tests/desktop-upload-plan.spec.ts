@@ -50,7 +50,7 @@ async function fixture(
   await writeFile(join(appRoot, 'package.json'), `${JSON.stringify({ version })}\n`)
 
   const [os, arch] = target.split('-') as ['mac' | 'win', 'arm64' | 'x64']
-  const base = `lingxi-office-${version}-${os}-${arch}`
+  const base = `${os === 'win' ? 'HiBuddy' : 'lingxi-office'}-${version}-${os}-${arch}`
   const origin = environment === 'test'
     ? TEST_ORIGIN
     : 'https://download.deepseek.com'
@@ -155,7 +155,7 @@ describe('desktop upload plan', () => {
     expect(plan.version).toBe('1.2.3-alpha.4')
     expect(plan.artifacts).toHaveLength(1)
     expect(plan.artifacts[0]).toMatchObject({
-      path: join(paths.artifactsRoot, 'lingxi-office-1.2.3-alpha.4-win-x64.exe'),
+      path: join(paths.artifactsRoot, 'HiBuddy-1.2.3-alpha.4-win-x64.exe'),
       key: 'desktop/dsh-latest-windows-x64.exe', channelMetadata: false,
     })
   })
@@ -168,7 +168,7 @@ describe('desktop upload plan', () => {
       DOWNLOAD_TEST_RELEASE_ID: RELEASE_ID, DOWNLOAD_TEST_COS_BUCKET: TEST_BUCKET,
     })
     if (failure === 'checksum') {
-      const path = join(paths.artifactsRoot, 'lingxi-office-1.2.3-win-x64.exe')
+      const path = join(paths.artifactsRoot, 'HiBuddy-1.2.3-win-x64.exe')
       await writeFile(path, Buffer.alloc((await readFile(path)).length))
     }
     await expect(createDesktopUploadPlan('win-x64', { ...paths, latest: true }))
@@ -189,14 +189,14 @@ describe('desktop upload plan', () => {
     const paths = await fixture('win-x64', '1.2.3', 'production')
     const plan = await createDesktopUploadPlan('win-x64', paths)
     expect(plan.artifacts.map(artifact => artifact.key)).toEqual([
-      'dsh-desk/bin/win-x64/lingxi-office-1.2.3-win-x64.exe',
-      'dsh-desk/bin/win-x64/lingxi-office-1.2.3-win-x64.exe.blockmap',
+      'dsh-desk/bin/win-x64/HiBuddy-1.2.3-win-x64.exe',
+      'dsh-desk/bin/win-x64/HiBuddy-1.2.3-win-x64.exe.blockmap',
       'dsh-desk/feeds/win-x64/nightly.yml',
     ])
     expect(load(plan.artifacts[2]!.contents!)).toMatchObject({
       version: '1.2.3',
       files: [{
-        url: 'https://download.deepseek.com/dsh-desk/bin/win-x64/lingxi-office-1.2.3-win-x64.exe',
+        url: 'https://download.deepseek.com/dsh-desk/bin/win-x64/HiBuddy-1.2.3-win-x64.exe',
         sha512: digest('signed NSIS executable fixture'),
       }],
     })
@@ -266,8 +266,8 @@ describe('desktop upload plan', () => {
     const paths = await fixture('win-x64', '2.0.0', 'production')
     const plan = await createDesktopUploadPlan('win-x64', paths)
     expect(plan.artifacts.map(artifact => artifact.filename)).toEqual([
-      'lingxi-office-2.0.0-win-x64.exe',
-      'lingxi-office-2.0.0-win-x64.exe.blockmap',
+      'HiBuddy-2.0.0-win-x64.exe',
+      'HiBuddy-2.0.0-win-x64.exe.blockmap',
       'nightly.yml',
     ])
     expect(plan).toMatchObject({
@@ -278,7 +278,7 @@ describe('desktop upload plan', () => {
 
   it.each(['missing', 'empty'])('rejects a %s Windows blockmap before publishing its feed', async (condition) => {
     const paths = await fixture('win-x64')
-    const path = join(paths.artifactsRoot, 'lingxi-office-1.2.3-win-x64.exe.blockmap')
+    const path = join(paths.artifactsRoot, 'HiBuddy-1.2.3-win-x64.exe.blockmap')
     if (condition === 'missing') await rm(path)
     else await writeFile(path, '')
     await expect(createDesktopUploadPlan('win-x64', paths)).rejects.toThrow(/missing or empty artifact.*\.exe\.blockmap/u)

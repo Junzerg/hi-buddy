@@ -9,7 +9,7 @@ import { extract } from 'tar'
 import { mergeReleases, compareVersions } from '../scripts/merge-intranet-releases.mjs'
 
 const version = '0.2.1-rc.3.20261105.1'
-const win = { version, url: `/versions/${version}/lingxi-office-${version}.exe`, bytes: 3 }
+const win = { version, url: `/versions/${version}/HiBuddy-${version}.exe`, bytes: 3 }
 const mac = { version, url: `/versions/${version}/lingxi-office-${version}-mac-arm64.dmg`, bytes: 3, arch: 'arm64' }
 
 test('merge preserves Windows and Mac at one version and refuses replacement or downgrade', () => {
@@ -25,13 +25,13 @@ test('merge preserves Windows and Mac at one version and refuses replacement or 
   assert.equal(compareVersions('0.2.1-alpha', '0.2.1-beta'), -1)
 })
 
-test('real overlay commands merge both platforms, retain Windows feed, and detect missing installers', async t => {
+for (const prefix of ['HiBuddy', 'lingxi-office']) test(`real overlay accepts ${prefix}, merges both platforms, and detects missing installers`, async t => {
   const root = await mkdtemp(join(tmpdir(), 'hibuddy-release-test-'))
   t.after(() => rm(root, { recursive: true, force: true }))
   const source = join(root, 'artifacts'), site = join(root, 'site')
   await mkdir(source); await mkdir(site)
   const bytes = Buffer.from('installer fixture')
-  const filename = `lingxi-office-${version}-win-x64-unsigned.exe`
+  const filename = `${prefix}-${version}-win-x64-unsigned.exe`
   await writeFile(join(source, filename), bytes)
   await writeFile(join(source, `${filename}.blockmap`), 'blockmap fixture')
   const feed = `version: ${version}\nfiles:\n  - url: ${filename}\n    sha512: ${createHash('sha512').update(bytes).digest('base64')}\n`
@@ -57,7 +57,7 @@ test('real overlay commands merge both platforms, retain Windows feed, and detec
   await writeFile(macInstaller, Buffer.alloc(bytes.length))
   assert.throws(merge, /SHA-256 mismatch/)
   await writeFile(macInstaller, bytes)
-  await rm(join(site, 'versions', version, `lingxi-office-${version}.exe`))
+  await rm(join(site, 'versions', version, `HiBuddy-${version}.exe`))
   assert.throws(merge, /ENOENT/)
   assert.throws(() => pack('mac-arm64', macTar), /Output already exists/)
 })

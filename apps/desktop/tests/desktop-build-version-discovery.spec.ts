@@ -45,7 +45,7 @@ describe('desktop build version discovery', () => {
     const artifactsRoot = await artifactsWith([
       `lingxi-office-${PRERELEASE}.${DATE}.1-win-x64.exe`,
       `lingxi-office-${PRERELEASE}.${DATE}.2-win-x64.exe`,
-      `lingxi-office-${PRERELEASE}.${DATE}.10-win-x64.exe`,
+      `HiBuddy-${PRERELEASE}.${DATE}.10-win-x64.exe`,
     ])
     await expect(suggestDesktopBuildVersion({ productVersion: PRERELEASE, target: 'win-x64', environment: {}, date: DATE, artifactsRoot }))
       .resolves.toBe(`${PRERELEASE}.${DATE}.11`)

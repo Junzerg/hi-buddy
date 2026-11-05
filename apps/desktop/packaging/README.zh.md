@@ -154,7 +154,7 @@ bash apps/desktop/scripts/macos-runner-service.sh status "$HOME/dsh-ci/runner"
 
 发布目录包含用于构建 Nginx 分发镜像的 `Dockerfile`。在服务器解压后的发布目录中运行 `docker build --build-arg NGINX_IMAGE=<existing-nginx-image:tag> -t lingxi-office-distribution:<version> .`，随后运行 `docker run -d --name lingxi-office-distribution --restart unless-stopped -p 18765:18765 lingxi-office-distribution:<version>`。使用未占用的容器名称和宿主机端口；已有 Nginx 容器可以继续运行。离线构建要求指定的基础镜像已在本机。镜像包含所有已准备的版本，因此后续发布需保留历史发布目录并重新构建镜像。
 
-静态下载页面将列表中的最新版本固定在顶部，历史版本每页显示五个，仅在需要时显示翻页按钮。页面使用同一 Nginx 端口的 `/versions` 路径，安装包链接使用 `/versions/<version>/lingxi-office-<version>.exe`。打包后运行 `node apps/desktop/scripts/prepare-intranet-site.mjs apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts apps/desktop/.desktop-build/intranet-site`，验证安装包哈希并准备页面、版本列表、更新文件和安装包。将生成的 `versions/` 和 `updates/` 目录传到 `/srv/lingxi-office/`；先传安装包，后传更新元数据。保留本地发布目录以维护版本列表。服务器只需要 Nginx，无需运行 Node.js 服务进程。
+静态下载页面将列表中的最新版本固定在顶部，历史版本每页显示五个，仅在需要时显示翻页按钮。页面使用同一 Nginx 端口的 `/versions` 路径，安装包链接使用 `/versions/<version>/HiBuddy-<version>.exe`。打包后运行 `node apps/desktop/scripts/prepare-intranet-site.mjs apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts apps/desktop/.desktop-build/intranet-site`，验证安装包哈希并准备页面、版本列表、更新文件和安装包。将生成的 `versions/` 和 `updates/` 目录传到 `/srv/lingxi-office/`；先传安装包，后传更新元数据。保留本地发布目录以维护版本列表。服务器只需要 Nginx，无需运行 Node.js 服务进程。
 
 Windows x64 未签名安装包如需在应用内更新，将 [intranet.env.example](../config/intranet.env.example) 复制为 `apps/desktop/.env.windows`，不选择机器 preset。`DSH_DESKTOP_INTRANET_UPDATE_URL` 指定 HTTP(S) 更新目录；该模式启用普通版本检查和下载，省略强制更新策略和测试登录。该模式拒绝签名构建和 macOS 构建，不支持 COS 上传工具。HTTP 和未签名程序依赖内网及服务器的访问控制；文件哈希用于检测损坏，不能验证发布者身份。
 
@@ -273,7 +273,7 @@ Windows 安装器在启动时和选定目标目录后检查应用是否正在运
 
 目录改名、空目标目录删除和旧版恢复遇到 Windows 错误 5、32 或 33 时最多尝试十次，每次等待递增 250 毫秒（每个操作合计等待 11.25 秒）。其他错误立即停止。替换失败时，安装器将 Windows 错误、相关路径和恢复结果写入解压报告旁的 `directory-failure-<时间戳>.log`。如果恢复失败，安装器会清理未被占用的暂存文件并保留备份。上报此失败后，退出清理不再重试恢复。请保留报告所列的备份目录，并在重新安装前联系支持人员。静默安装保存相同的诊断，不显示弹窗。
 
-解压失败时，安装器会把 7-Zip 的结果和完整错误输出写入更新缓存目录 `%LOCALAPPDATA%\<按包名派生>-updater\installer-logs\extract-failure-<时间戳>.log`（当前为 `@deepseek-aidsh-desktop-updater`），并在弹窗中显示首条错误行和 **复制错误信息** 按钮；静默安装只写入报告。未签名的 Windows 构建（`DSH_DESKTOP_UNSIGNED=1`）会将安装包命名为 `lingxi-office-<版本>-win-x64-unsigned.exe`，以免被误当作发布产物。
+解压失败时，安装器会把 7-Zip 的结果和完整错误输出写入更新缓存目录 `%LOCALAPPDATA%\<按包名派生>-updater\installer-logs\extract-failure-<时间戳>.log`（当前为 `@deepseek-aidsh-desktop-updater`），并在弹窗中显示首条错误行和 **复制错误信息** 按钮；静默安装只写入报告。未签名的 Windows 构建（`DSH_DESKTOP_UNSIGNED=1`）会将安装包命名为 `HiBuddy-<版本>-win-x64-unsigned.exe`，以免被误当作发布产物。
 
 Windows 打包将 7-Zip 过滤器固定为 `BCJ`，以兼容内置的 NSIS 解码器。这样可以保留 x64 安装包中由依赖携带的 ARM64 二进制文件；自动 ARM64 过滤会生成该解码器无法解压的条目。
 

@@ -25,7 +25,7 @@ try {
     if (feed?.version !== version || !Array.isArray(feed.files)) throw new Error('nightly.yml does not match the requested version')
     filename = feed.files.find(item => typeof item.url === 'string' && item.url.endsWith('-win-x64-unsigned.exe'))?.url
     if (!filename || basename(filename) !== filename) throw new Error('Feed must reference a local unsigned Windows installer')
-    if (filename !== `lingxi-office-${version}-win-x64-unsigned.exe`) throw new Error('Windows filename does not match the requested version')
+    if (![ `HiBuddy-${version}-win-x64-unsigned.exe`, `lingxi-office-${version}-win-x64-unsigned.exe` ].includes(filename)) throw new Error('Windows filename does not match the requested version')
   } else {
     const names = await readdir(source)
     const matches = names.filter(name => name === `lingxi-office-${version}-mac-${arch}.dmg` || name === `lingxi-office-${version}-mac-${arch}-unsigned.dmg`)
@@ -34,7 +34,7 @@ try {
   }
   const installer = await readFile(join(source, filename))
   if (!installer.length) throw new Error('Installer is empty')
-  const publishedName = target === 'win-x64' ? `lingxi-office-${version}.exe` : filename
+  const publishedName = target === 'win-x64' ? `HiBuddy-${version}.exe` : filename
   const record = { version, url: `/versions/${version}/${publishedName}`, bytes: installer.length,
     ...(target !== 'win-x64' ? { arch } : {}), sha256: createHash('sha256').update(installer).digest('hex') }
   await mkdir(join(work, 'versions', version), { recursive: true })
