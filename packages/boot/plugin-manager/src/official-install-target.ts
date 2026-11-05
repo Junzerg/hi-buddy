@@ -30,7 +30,7 @@ export function officialBundleInstallTarget(name: string, installAnchor: string,
   const root = resolve(dirname(anchor), '../..')
   if (anchor !== join(root, 'apps', 'cli', 'package.json')
     || !existsSync(join(root, 'package.json'))
-    || manifestAt(join(root, 'package.json')).name !== '@deepseek-ai/dsh-root') {
+    || manifestAt(join(root, 'package.json')).name !== 'hi-buddy') {
     throw new Error(`Official bundle ${name}: source HiBuddy installation ${anchor} requires its complete workspace checkout`)
   }
   const matches = globSync('packages/*/*/package.json', { cwd: root })

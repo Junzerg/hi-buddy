@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Lingxi Office is a DeepSeek Harness fork for the desktop application and intranet distribution.
+hi-buddy is a DeepSeek Harness fork for the desktop application and intranet distribution.
 
 ## Working agreements
 

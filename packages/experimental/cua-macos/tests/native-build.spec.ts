@@ -46,9 +46,9 @@ async function fixture(diagnostics = true) {
 it('recognizes only the repository-owned package location as a source build', async () => {
   const f = await fixture()
   expect(await isSourcePackage(f.spec.packageRoot)).toBe(false)
-  for (const value of [null, 2, {}, { name: 'another-project' }, { name: '@deepseek-ai/dsh-root' }]) {
+  for (const value of [null, 2, {}, { name: 'another-project' }, { name: 'hi-buddy' }]) {
     await writeFile(join(f.root, 'package.json'), JSON.stringify(value))
-    expect(await isSourcePackage(f.spec.packageRoot)).toBe(typeof value === 'object' && value !== null && 'name' in value && value.name === '@deepseek-ai/dsh-root')
+    expect(await isSourcePackage(f.spec.packageRoot)).toBe(typeof value === 'object' && value !== null && 'name' in value && value.name === 'hi-buddy')
   }
   expect(await isSourcePackage(join(f.root, 'node_modules/@deepseek-ai/dsh-cua'))).toBe(false)
   await writeFile(join(f.root, 'package.json'), '{')
@@ -77,7 +77,7 @@ it('publishes exact bytes and leaves an unchanged executable inode intact', asyn
 
 it('checks source builds on activation and maps Intel architecture to the compiler target', async () => {
   const f = await fixture()
-  await writeFile(join(f.root, 'package.json'), '{"name":"@deepseek-ai/dsh-root"}')
+  await writeFile(join(f.root, 'package.json'), '{"name":"hi-buddy"}')
   const path = await prepareNativeExecutable({ ...f.spec, architecture: 'x64' })
   expect(f.spawn.mock.calls[0]![0].argv).toContain('x86_64')
   expect(path).toContain(join('native', '.build', 'prepared', 'x64'))

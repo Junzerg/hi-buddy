@@ -14,7 +14,7 @@ function fixture() {
   const root = realpathSync(temporary)
   const anchor = join(root, 'apps', 'cli', 'package.json')
   mkdirSync(dirname(anchor), { recursive: true })
-  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: '@deepseek-ai/dsh-root' }))
+  writeFileSync(join(root, 'package.json'), JSON.stringify({ name: 'hi-buddy' }))
   writeFileSync(anchor, JSON.stringify({ name: '@deepseek-ai/dsh', version, dependencies: { '@deepseek-ai/dsh-app-boot': 'workspace:*' } }))
   const directory = join(root, 'packages', 'relocated', 'native-provider')
   mkdirSync(join(directory, 'lib'), { recursive: true })

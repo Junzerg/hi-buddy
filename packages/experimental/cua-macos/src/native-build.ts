@@ -51,7 +51,7 @@ export async function isSourcePackage(packageRoot: string): Promise<boolean> {
   if (join(root, 'packages/experimental/cua-macos') !== packageRoot) return false
   try {
     const manifest: unknown = JSON.parse(await readFile(join(root, 'package.json'), 'utf8'))
-    return typeof manifest === 'object' && manifest !== null && 'name' in manifest && manifest.name === '@deepseek-ai/dsh-root'
+    return typeof manifest === 'object' && manifest !== null && 'name' in manifest && manifest.name === 'hi-buddy'
   } catch (error) {
     if ((error as NodeJS.ErrnoException).code === 'ENOENT') return false
     throw error

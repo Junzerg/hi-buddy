@@ -1,6 +1,8 @@
-# DeepSeek Harness
+# hi-buddy
 
 [English](README.md) | 中文
+
+hi-buddy 是 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) 的分支，用于桌面应用和内网分发。
 
 DeepSeek Harness（`dsh`）是由 [DeepSeek AI](https://deepseek.com) 开发的开源 agent harness（智能体框架）。
 
@@ -35,8 +37,8 @@ npx @deepseek-ai/dsh web
 如需从仓库源码运行：
 
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone git@github.com:Junzerg/hi-buddy.git
+cd hi-buddy
 pnpm install
 pnpm run build
 pnpm dsh web

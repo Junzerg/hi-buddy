@@ -42,7 +42,7 @@ async function fixture(reload: 'live' | 'startup' = 'live', overlay = false, pre
   const anchor = sourceInstallation ? join(home, 'apps', 'cli', 'package.json') : join(home, 'package.json')
   if (sourceInstallation) {
     mkdirSync(join(home, 'apps', 'cli'), { recursive: true })
-    writeFileSync(join(home, 'package.json'), '{"name":"@deepseek-ai/dsh-root"}')
+    writeFileSync(join(home, 'package.json'), '{"name":"hi-buddy"}')
   }
   writeFileSync(anchor, JSON.stringify(sourceInstallation
     ? { name: '@deepseek-ai/dsh', dependencies: { '@deepseek-ai/dsh-app-boot': 'workspace:*' } }
