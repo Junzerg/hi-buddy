@@ -1,0 +1,60 @@
+{
+  "batch": "4e",
+  "status": "awaiting_user_review",
+  "scope": "会话区与输入栏：接口与滚动修复，保留公司布局和隐藏策略。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 77,
+    "resolved": 10,
+    "remaining": 67
+  },
+  "paths": [
+    "packages/client/ui-chat/README.i18n.yaml",
+    "packages/client/ui-chat/README.md",
+    "packages/client/ui-chat/README.zh.md",
+    "packages/client/ui-chat/tests/turn-tail-spacing.client.spec.ts",
+    "packages/client/ui-conversation/README.i18n.yaml",
+    "packages/client/ui-conversation/README.md",
+    "packages/client/ui-conversation/README.zh.md",
+    "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css",
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/tests/skeleton.client.spec.tsx",
+    "packages/client/ui-conversation/tests/composer-seat-styles.client.spec.ts",
+    "packages/client/ui-conversation/src/client/skeleton/ConversationHeader.tsx",
+    "packages/client/ui-conversation/src/client/skeleton/ConversationSession.tsx",
+    "packages/client/ui-conversation/src/client/locales.ts"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-chat/README.i18n.yaml",
+    "packages/client/ui-chat/README.md",
+    "packages/client/ui-chat/README.zh.md",
+    "packages/client/ui-chat/tests/turn-tail-spacing.client.spec.ts",
+    "packages/client/ui-conversation/README.i18n.yaml",
+    "packages/client/ui-conversation/README.md",
+    "packages/client/ui-conversation/README.zh.md",
+    "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css",
+    "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+    "packages/client/ui-conversation/tests/skeleton.client.spec.tsx"
+  ],
+  "decisions": [
+    "保留公司空白首页零高度页头、新任务模式选择隐藏、思考卡片样式和输入栏工具排列。",
+    "保留发送按钮的 30px 公司样式，接入发送等待状态、进度提示和焦点恢复。",
+    "保留更多视图仅在有折叠项时显示，恢复提示中的当前视图名称及中英文文案。",
+    "接入上游滚动跟随、完成折叠、输入区层级与页头溢出修复；将上下文占位规则适配至公司现有工具行。"
+  ],
+  "validation": {
+    "initial": "113 files: 112 passed, 1 failed; 1825 passed, 1 failed tests. Failure exposed removal of current-view name in More tooltip.",
+    "retest": "After restoring current-view label and locales, skeleton.client.spec.tsx: 39 tests passed.",
+    "combined": "113 files / 1826 tests passed, reusing unchanged passing results with final skeleton retest.",
+    "translation": "2 named README pairs consistent.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "全应用启动、全仓类型检查与浏览器回放仍待其他冲突处理完成；不将局部通过等同全部功能验收。",
+    "遵照用户要求未另做预览；最终完整应用仍需人工验收。",
+    "未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理账户菜单与通用设置，保留公司账号体系和未适配入口的隐藏策略。"
+}

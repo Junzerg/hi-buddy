@@ -1,8 +1,9 @@
 // @vitest-environment jsdom
+import { contextMenuHook } from '@deepseek-ai/dsh-client-test-runtime'
 import type { GlobalStandardProps, PropsRuntime } from '@deepseek-ai/dsh-client-ui-slots'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createContext, useContext, type ReactNode } from 'react'
-import { act, cleanup, fireEvent, render, within } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import type { Context } from '@deepseek-ai/cordis'
 import type { SessionListState, SessionSnapshot } from '@deepseek-ai/dsh-api-session-controller/client'
 import type { WorkspaceSnapshot, WorkspaceView } from '@deepseek-ai/dsh-api-workspace-controller/client'
@@ -234,7 +235,7 @@ function mount(
           useTrajectory={useTrajectory}
           useSessions={props.useSessions}
           usePanelInfo={props.usePanelInfo}
-          useResource={useResource}
+          useContextMenu={contextMenuHook()} useResource={useResource}
           useSessionStatus={useSessionStatus}
           useSessionRetainInfo={() => undefined}
           useWorkspaces={props.useWorkspaces}
@@ -264,7 +265,7 @@ function mount(
           useTrajectory={useTrajectory}
           useSessions={props.useSessions}
           usePanelInfo={props.usePanelInfo}
-          useResource={useResource}
+          useContextMenu={contextMenuHook()} useResource={useResource}
           useSessionStatus={useSessionStatus}
           useSessionRetainInfo={() => undefined}
           useWorkspaces={props.useWorkspaces}
@@ -288,7 +289,7 @@ function mount(
         <InputBar
           sessionId={SID}
           SessionProvider={({ children }) => children}
-          useResource={useResource}
+          useContextMenu={contextMenuHook()} useResource={useResource}
           useSession={useSession}
           useConversation={useConversation}
           useSessions={props.useSessions}
@@ -352,6 +353,7 @@ function mount(
       useTrajectory,
       useSessions: bindSnapshotSelector(sessions),
       usePanelInfo: selector => selector({ activePanelId: null }),
+      useContextMenu: contextMenuHook(),
       useResource,
       useSessionStatus,
       useSessionRetainInfo: () => undefined,
@@ -385,6 +387,7 @@ function mount(
     useSessions: bindSnapshotSelector(sessions),
     useSessionStatus,
     useSessionRetainInfo: () => undefined,
+    useContextMenu: contextMenuHook(),
     useResource,
     useWorkspaces: bindSnapshotSelector(workspaces),
     ...allowAllAccess,
@@ -493,7 +496,7 @@ describe('ConversationRoot resident composer', () => {
     act(() => { b.wiring.setDraft('ordinary revised') })
     expect(b.store.store.getSnapshot().draft).toEqual({ text: 'ordinary revised', references: [] })
     fireEvent.keyDown(box, { key: 'Enter' })
-    expect(b.sink).toHaveBeenCalledWith('ordinary revised', [], 'queue', expect.any(AbortSignal))
+    expect(b.sink).toHaveBeenCalledWith('ordinary revised', [], 'queue', expect.any(AbortSignal), expect.any(Function))
     // The current crumb is plain text (a drag surface on darwin), not a button.
     expect(b.view.queryByRole('button', { name: 'Child' })).toBeNull()
     expect(b.view.getByText('Child').tagName).toBe('SPAN')
@@ -731,6 +734,29 @@ describe('ConversationRoot resident composer', () => {
     expect(b.view.queryByRole('menu')).toBeNull()
   })
 
+  it('offers a View tab tooltip only when the label is expected to overflow', () => {
+    const b = mount(sessionSnapshotOf(), undefined, undefined, {
+      viewTabs: [
+        { id: 'chat', label: 'Chat' },
+        { id: 'short', label: '轨迹' },
+        { id: 'long-cjk', label: '很长的视图名称' },
+        { id: 'long-latin', label: 'A very long view name' },
+      ],
+      headerOnly: true,
+    })
+    const tooltipFor = (label: string): string | null => {
+      const span = within(b.view.getByRole('tab', { name: label })).getByText(label)
+      fireEvent.pointerEnter(span)
+      const tooltip = screen.queryByRole('tooltip', { hidden: true })?.textContent ?? null
+      fireEvent.pointerLeave(span)
+      return tooltip
+    }
+    expect(tooltipFor('Chat')).toBeNull()
+    expect(tooltipFor('轨迹')).toBeNull()
+    expect(tooltipFor('很长的视图名称')).toBe('很长的视图名称')
+    expect(tooltipFor('A very long view name')).toBe('A very long view name')
+  })
+
   it('reuses the width budget on View roster and selection changes without a window resize listener', () => {
     let width = 480
     const readWidth = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(() => width)
@@ -749,16 +775,18 @@ describe('ConversationRoot resident composer', () => {
     expect(external()).toEqual(['Chat', 'Trajectory', 'Timeline'])
     expect(b.actionsOwner().entries.find(entry => entry.id === 'inspector')?.active).toBe(true)
     expect(b.view.getByRole('button', { name: '更多会话视图 · Inspector' })).toBeTruthy()
-    const reads = readWidth.mock.calls.length
+    const row = b.view.getByRole('tablist').parentElement!
+    const rowReads = () => readWidth.mock.contexts.filter(element => element === row).length
+    const reads = rowReads()
     width = 1000
     fireEvent(window, new Event('resize'))
     act(() => { b.store.actions.setView('timeline') })
-    expect(readWidth).toHaveBeenCalledTimes(reads)
+    expect(rowReads()).toBe(reads)
     expect(external()).toEqual(['Chat', 'Trajectory', 'Timeline'])
     viewTabs.splice(1, 1)
     act(() => { b.store.actions.setView('chat') })
     expect(external()).toEqual(['Chat', 'Timeline', 'Inspector'])
-    expect(readWidth).toHaveBeenCalledTimes(reads)
+    expect(rowReads()).toBe(reads)
     expect(b.view.queryByRole('button', { name: /更多会话视图/ })).toBeNull()
     expect(b.setPinned).not.toHaveBeenCalled()
   })

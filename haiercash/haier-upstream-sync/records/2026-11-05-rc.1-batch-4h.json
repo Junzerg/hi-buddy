@@ -1,0 +1,55 @@
+{
+  "batch": "4h",
+  "status": "awaiting_user_review",
+  "scope": "工作区列表、浏览器与关联装配测试。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 56,
+    "resolved": 7,
+    "remaining": 49
+  },
+  "paths": [
+    "packages/client/ui-workspace/README.i18n.yaml",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.tsx",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx",
+    "packages/client/ui-workspace/tests/browser-styles.client.spec.ts",
+    "packages/client/ui-workspace/tests/workspace-browser.client.spec.tsx",
+    "packages/client/ui-workspace/README.md",
+    "packages/client/ui-workspace/README.zh.md",
+    "packages/extensions/cordis-client-runner/src/client/slot-catalog.ts"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-workspace/README.i18n.yaml",
+    "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+    "packages/client/ui-workspace/src/client/rows/Rows.tsx",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css",
+    "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx",
+    "packages/client/ui-workspace/tests/browser-styles.client.spec.ts",
+    "packages/client/ui-workspace/tests/workspace-browser.client.spec.tsx"
+  ],
+  "decisions": [
+    "接入统一任务/工作区菜单接口、WorkspaceDialogs、搜索焦点与触屏可用性修复。",
+    "保留任务文案、公司行高与选中颜色、区头排列；上游侧栏变量适配为现有公司间距。",
+    "保留收起搜索入口隐藏，通过快捷键展开；测试沿用真实快捷键入口，不恢复隐藏按钮。",
+    "重新生成插槽目录以反映工作区接口及位置。"
+  ],
+  "validation": {
+    "initial": "55 files: 53 passed, 2 failed; 1014 passed, 11 failed tests. Failures were upstream style and search expectations incompatible with company presentation.",
+    "retests": "browser-styles: 14 passed; final workspace-browser: 119 passed. Tests preserve hidden launcher and exercise keyboard search and rail sequencing.",
+    "combined": "55 files / 1025 tests passed using unchanged passing tests and final scoped retests.",
+    "unblocked": "Prior account/general apply, settings shell, shortcut composition and shipped reader-boot hidden-Plugins checks now pass.",
+    "translation": "Workspace README pair consistent.",
+    "catalog": "Generation and freshness verification passed against current source.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "其他源文件仍有冲突，全部处理后须再次生成目录并进行全应用验证。",
+    "未完成全仓类型检查、浏览器回放与最终人工验收；本批不等同全部二开功能验收。",
+    "未额外预览、提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理主题与公共组件兼容，继续保留公司视觉标记和入口策略。"
+}

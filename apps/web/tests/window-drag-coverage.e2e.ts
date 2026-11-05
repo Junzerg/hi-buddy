@@ -107,10 +107,10 @@ async function collectedRegions(page: Page, selector: string): Promise<Collected
       const hits = interactive
         ? samples.filter(([x, y]) => {
           const top = document.elementFromPoint(x, y)
-          // A pane's programmatic focus target also contains its window-drag strip.
-          // The strip owns those pixels; controls inside it still need their own subtraction.
-          const strip = top?.closest('[data-dockkit-strip][data-window-drag]')
-          if (element.matches('[data-dockkit-pane][tabindex="-1"]')
+          // Panes and the navigation dialog contain their own window-drag rows.
+          // Those rows own their pixels; controls inside still subtract themselves.
+          const strip = top?.closest('[data-window-drag]')
+          if (element.matches('[data-dockkit-pane][tabindex="-1"], [data-shortcut-modal="sidebar"][role="dialog"]')
             && strip != null && element.contains(strip)) return false
           return top !== null && (top === element || element.contains(top))
         })

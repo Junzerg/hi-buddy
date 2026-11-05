@@ -60,7 +60,7 @@ async function bench(track?: TrackProductEvent) {
     const activePanelId = usePanelInfo(info => info.activePanelId)
     return (
       <>
-        <aside>{renderSlot('sidebar', { collapsed: false, width: 236 })}</aside>
+        <aside>{renderSlot('sidebar', { collapsed: false, width: 236, drawer: false })}</aside>
         <main>{renderSlot('main', {}, { entryKey: activePanelId ?? 'conversation' })}</main>
       </>
     )

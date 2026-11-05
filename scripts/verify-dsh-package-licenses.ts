@@ -61,7 +61,7 @@ export function inspectDshPackageLicenses(root: string): DshPackageLicenseReport
   for (const file of workspaceManifestPaths(root)) {
     const manifest = readManifest(root, file)
     const name = manifest.name
-    if (typeof name !== 'string' || !DSH_PACKAGE_NAME.test(name)) continue
+    if (typeof name !== 'string' || (name !== 'hi-buddy' && !DSH_PACKAGE_NAME.test(name))) continue
 
     packageCount++
     if (manifest.license !== 'MIT') {

@@ -1,0 +1,34 @@
+{
+  "batch": "brand-sync",
+  "status": "awaiting_user_review",
+  "paths": [
+    "AGENTS.md",
+    "README.i18n.yaml",
+    "README.md",
+    "README.zh.md",
+    "package.json",
+    "packages/boot/plugin-manager/src/official-install-target.ts",
+    "packages/boot/plugin-manager/tests/manager.spec.ts",
+    "packages/boot/plugin-manager/tests/official-install-target.spec.ts",
+    "packages/experimental/cua-macos/src/native-build.ts",
+    "packages/experimental/cua-macos/tests/native-build.spec.ts",
+    "scripts/publish-npm-baseline.ts",
+    "scripts/release/families.ts",
+    "scripts/verify-dsh-package-licenses.spec.ts",
+    "scripts/verify-dsh-package-licenses.ts"
+  ],
+  "decisions": [
+    "接入主工作区14个文件的hi-buddy更名修改；根包名hi-buddy，版本保持0.2.2-rc.1。",
+    "主工作区未修改；CUA未启用。"
+  ],
+  "validation": {
+    "tests": "5 files, 241 passed (plugin manager, official install target, native build, release families, license policy).",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "pnpm自动安装阶段因集成工作区hooks路径仍指向旧目录而失败；随后Vitest运行通过。提交前需修正本地hooks路径。",
+    "此更名接入后未重新打包，安装和增量更新仍待验证。",
+    "未提交、推送或合回dev/junzerg。"
+  ],
+  "acceptance": "用户已确认此前集成版Web人工验收无问题；CUA保持代码合入但关闭。"
+}

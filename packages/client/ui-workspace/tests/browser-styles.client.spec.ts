@@ -34,6 +34,13 @@ const declarations = (selector: string): Map<string, string> | undefined => decl
 const rowDeclarations = (selector: string): Map<string, string> | undefined => declarationsFrom(rowsCss, selector)
 
 describe('WorkspaceBrowser.module.css list', () => {
+  it('hides touch timestamps without hiding pending-interaction labels', () => {
+    const touch = /@media \(hover: none\) \{([\s\S]*?)\n\}/.exec(rowsCss)?.[1]
+    expect(touch).toContain('.sessionRow .timestamp')
+    expect(touch).not.toMatch(/\.sessionRow(?:\.selected)? \.time[\s,{]/)
+    expect(rowDeclarations('.sessionRow .pinnedAction')?.get('order')).toBe('-1')
+  })
+
   const root = declarations('.root')
   const listArea = declarations('.listArea')
   const list = declarations('.list')
@@ -83,7 +90,8 @@ describe('WorkspaceBrowser.module.css list', () => {
     expect(listTopMarker?.get('top')).toBe('-8px')
     expect(listTopMarker?.get('left')).toBe('0')
     expect(workspaceMarker?.get('left')).toBe('0')
-    expect(sessionMarker?.get('left')).toBe('0')
+    expect(sessionMarker?.get('left')).toBe('calc(-1 * 0px)')
+    expect(sessionMarker?.get('right')).toBe('calc(4px - 0px)')
     for (const marker of [listTopMarker, workspaceMarker, sessionMarker]) {
       expect(marker?.get('height')).toBe('12px')
       expect(marker?.get('background')).not.toContain('radial-gradient')
@@ -99,7 +107,7 @@ describe('WorkspaceBrowser.module.css list', () => {
   it('keeps the compact fade, overflow control, search field, and row heights', () => {
     expect(declarations('.fade')?.get('height')).toBe('24px')
     expect(declarations('.sessionOverflowButton')?.get('height')).toBe('28px')
-    expect(declarations('.searchExpanded')?.get('height')).toBe('30px')
+    expect(declarations('.searchExpanded')?.get('height')).toBe('32px')
     expect(rowDeclarations('.projectRow')?.get('height')).toBe('34px')
     expect(rowDeclarations('.sessionRow')?.get('height')).toBe('32px')
     // One leading status cell for every session row, grouped or flat: the cell
@@ -111,6 +119,50 @@ describe('WorkspaceBrowser.module.css list', () => {
     expect(rowDeclarations('.searchResultRow')?.get('min-height')).toBe('48px')
     expect(rowDeclarations('.sessionRow.selected')?.get('background'))
       .toBe('var(--dsw-specific-task-row-selected)')
+  })
+
+  it('shares action spacing and inset backgrounds without moving the title column', () => {
+    for (const selector of ['.projectRow', '.sessionRow']) {
+      expect(rowDeclarations(selector)?.get('padding')).toBe(selector === '.sessionRow' ? '6px 10px' : '0 8px')
+      expect(rowDeclarations(selector)?.get('background-clip')).toBe('padding-box')
+      expect(rowDeclarations(selector)?.get('border-inline')).toBe('0px solid transparent')
+    }
+    expect(rowDeclarations('.rowActions')?.get('gap')).toBe('13px')
+    expect(rowDeclarations('.iconButton')?.get('width')).toBe('24px')
+    expect(rowDeclarations('.time')?.get('margin-inline-end')).toBe('-1px')
+    expect(declarations('.sectionLabel')?.get('margin-right')).toBe('auto')
+  })
+
+  it('extends native row action targets while retaining the compact layout footprint', () => {
+    const button = rowDeclarations('.iconButton')
+    expect(button?.get('width')).toBe('24px')
+    expect(button?.get('height')).toBe('24px')
+    expect(button?.get('margin')).toBe('-4px')
+    expect(button?.get('background')).toBe('transparent')
+    expect(rowDeclarations('.iconButton::after')).toBeUndefined()
+    expect(rowDeclarations('.iconButton:focus-visible')?.get('outline-offset')).toBe('-2px')
+  })
+
+  it('enables header spacing transitions only for search gestures in wide layout', () => {
+    expect(declarations('.root:not(.rail) .sectionHeader')?.get('transition')).toBeUndefined()
+    const selector = '.root:not(.rail) .sectionHeader.searchSpacingMotion'
+    const [ordinary = '', reduced = ''] = css.split('@media (prefers-reduced-motion: reduce)')
+    expect(declarationsFrom(ordinary, selector)?.get('transition'))
+      .toBe('margin-right 180ms var(--ds-ease-in-out), padding-inline 180ms var(--ds-ease-in-out), gap 180ms var(--ds-ease-in-out)')
+    expect(declarationsFrom(reduced, selector)?.get('transition')).toBe('none')
+  })
+
+  it('aligns the expanded search field without changing list scroll ownership', () => {
+    const header = declarations('.root:not(.rail) .sectionHeader:has(.searchExpanded)')
+    expect(header?.get('margin-right')).toBe('0')
+    expect(header?.get('padding-inline')).toBe('calc(0px + 1px)')
+    expect(header?.get('gap')).toBe('0')
+    expect(declarations('.root:not(.rail) .sectionHeader:not(:has(.searchExpanded))')?.get('padding-right')).toBe('1px')
+    expect(declarations('.searchExpanded')?.get('width')).toBe('100%')
+    expect(declarations('.searchExpanded')?.get('margin-inline')).toBe('0')
+    expect(declarations('.searchExpanded .searchButton')?.get('height')).toBe('32px')
+    expect(declarations('.sectionHeader:has(.searchExpanded) .sectionLabelHidden')?.get('margin-right')).toBe('0')
+    expect(declarations('.list')?.get('overflow-y')).toBe('auto')
   })
 
   it('marquees a clipped session title on row hover', () => {

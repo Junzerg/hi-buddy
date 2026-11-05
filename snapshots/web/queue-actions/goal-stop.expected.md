@@ -1,12 +1,14 @@
 - banner:
+  - text: Queue item to remove
+  - button "Task overview"
+  - button "Expand sidebar"
+- banner:
   - navigation "Session hierarchy": Queue item to remove
   - text: Standard mode
   - button "More actions"
-  - button "Open right sidebar"
   - tablist:
     - tab "Chat" [selected]
     - tab "Trajectory"
-  - button "More conversation views"
 - navigation "Turn navigation":
   - button "Jump to turn 1"
   - button "Jump to turn 2"
@@ -18,6 +20,7 @@
   - time: {{clock}}
 - status: Stopped
 - button "Stopped" [disabled]
+- text: HiBuddy {{clock}}
 - paragraph: partial
 - text: Stopped
 - button "Copy"
@@ -26,6 +29,7 @@
 - button "Copy"
 - status: Stopped
 - button "Stopped" [disabled]
+- text: HiBuddy {{clock}}
 - paragraph: partial
 - text: Stopped
 - button "Copy"
@@ -33,7 +37,8 @@
 - text: {{clock}} Wake the preserved queue {{clock}}
 - button "Copy"
 - status: Completed
-- button "Completed in {{duration}}"
+- button "Thinking"
+- text: HiBuddy Took {{duration}}
 - paragraph: Event sourcing is a pattern where all changes to an application's state are stored as an immutable, append-only sequence of events, rather than persisting only the current state, enabling full auditability, temporal queries, and event-driven architectures.
 - button "Copy"
 - button "Branch into a new conversation"
@@ -43,7 +48,7 @@
 - button "Clear goal"
 - textbox "Continue with more detail, or @ add context, / skills and commands"
 - button "Add files or run commands"
+- button "Send message" [disabled]
 - 'button "Access mode, current: Workspace Write"': Workspace Write
 - button "Select model, current DeepSeek-V4-Flash": DeepSeek-V4-Flash
-- button "Send message" [disabled]
-- button "3 turns 3 steps"
+- button "6% of context used": 6%

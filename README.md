@@ -1,6 +1,8 @@
-# DeepSeek Harness
+# hi-buddy
 
 English | [中文](README.zh.md)
+
+hi-buddy is a fork of [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) for the desktop application and intranet distribution.
 
 DeepSeek Harness (`dsh`) is an open-source agent harness developed by [DeepSeek AI](https://deepseek.com).
 
@@ -31,8 +33,8 @@ The command starts the Web UI at `http://127.0.0.1:3080` by default and opens it
 To run from a repository checkout:
 
 ```sh
-git clone https://github.com/deepseek-ai/deepseek-harness.git
-cd deepseek-harness
+git clone git@github.com:Junzerg/hi-buddy.git
+cd hi-buddy
 pnpm install
 pnpm run build
 pnpm dsh web

@@ -1,0 +1,19 @@
+{
+  "batch": "4o",
+  "status": "awaiting_user_review_with_checks_pending",
+  "scope": "队列动作、会话详情生命周期、CUA授权浏览器回放；未修改产品和快照。",
+  "validation": {
+    "browser": "1 passed, 5 failed, 1 skipped; 5 additional asynchronous errors reported.",
+    "findings": [
+      "队列4项失败于ARIA快照比较：公司顶栏、HiBuddy标识、隐藏入口和控件顺序与旧基线不同。",
+      "详情生命周期在查找New session按钮时超时，公司按钮为New task。",
+      "CUA测试限定darwin，Linux跳过。",
+      "队列提前中断后有未消费回放及会话清理错误，完整场景仍待验证。"
+    ]
+  },
+  "limitations": [
+    "未将快照差异直接判定为功能无回归。",
+    "未提交、推送或合回主分支。"
+  ],
+  "next_step": "针对性修正详情按钮定位，逐项核对队列快照与已确认公司界面，再回放完整场景；保留隐藏入口和现有产品交互。"
+}

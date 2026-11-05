@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 /** Frame interactions with a real store and explicitly driven browser measurements. */
 import type { GlobalStandardProps, RenderOpts } from '@deepseek-ai/dsh-client-ui-slots'
-import { allowAllAccess, bindSnapshotSelector } from '@deepseek-ai/dsh-client-test-runtime'
+import { allowAllAccess, bindSnapshotSelector, contextMenuHook } from '@deepseek-ai/dsh-client-test-runtime'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render } from '@testing-library/react'
 import { AppFrame } from '../src/client/AppFrame.tsx'
@@ -98,6 +98,7 @@ function mountFrame(windowWidth = frameWidth) {
       useSessionStatus={useSessionStatus}
       useSessionRetainInfo={() => undefined}
       useResource={useResource}
+      useContextMenu={contextMenuHook()}
       useWorkspaces={sel => sel(workspaceState)}
       {...allowAllAccess}
       t={key => key === 'brand.localBuild' ? 'LXO（内测版）' : key}
@@ -167,7 +168,7 @@ describe('AppFrame', () => {
 
   it('keeps the right panel available at its initial width beside a closed track', () => {
     const { frame, sidebarOwner, rightOwner } = mountFrame()
-    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236 })
+    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236, drawer: false })
     expect(rightOwner()).toEqual({ width: 336, viewportWidth: 1440, canShow: true })
     expect(frame.style.getPropertyValue('--dsh-rightbar-track-width')).toBe('0px')
     expect(frame.querySelector('[data-side]')).toBeNull()
@@ -198,7 +199,7 @@ describe('AppFrame', () => {
     fireEvent.click(getByRole('button', { name: 'sidebar.expand' }))
     expect(frame.style.getPropertyValue('--dsh-sidebar-track-width')).toBe('236px')
     expect(frame.dataset.sidebarCollapsed).toBeUndefined()
-    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236 })
+    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236, drawer: false })
     expect(frame.firstElementChild).toBe(sidebar)
   })
 
@@ -206,7 +207,7 @@ describe('AppFrame', () => {
     const { frame, instance, sidebarOwner, rightOwner } = mountFrame()
     act(() => { instance.actions.openRightbar(true, false) })
     resize(width)
-    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236 })
+    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236, drawer: false })
     expect(rightOwner()).toEqual({ width: 336, viewportWidth: width, canShow: true })
     expect(frame.dataset.rightbarCollapsed).toBe(width <= 1180 ? 'true' : undefined)
     expect(frame.dataset.rightbarOpen).toBe('true')
@@ -218,7 +219,7 @@ describe('AppFrame', () => {
     if (platform === 'win32') document.documentElement.setAttribute('data-windows-titlebar', '')
     const { frame, sidebarOwner, queryByTestId } = mountFrame()
     resize(390)
-    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236 })
+    expect(sidebarOwner()).toEqual({ collapsed: false, width: 236, drawer: false })
     expect(queryByTestId('shell.leading-content')).toBeNull()
     expect(frame.style.getPropertyValue('--dsh-sidebar-track-width')).toBe('236px')
     if (platform === 'win32') expect(frame.style.getPropertyValue('--dsh-windows-sidebar-width')).toBe('236px')

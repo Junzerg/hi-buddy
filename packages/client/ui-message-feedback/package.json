@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-client-ui-message-feedback",
   "description": "The Web feedback surface: the feedback dialog behind Session feedback. Like and Dislike are not shown beside assistant messages, backed by the messageFeedback and sessionFeedback Host Remotes",
-  "version": "0.2.1-rc.3",
+  "version": "0.2.2-rc.1",
   "publishConfig": {
     "access": "public"
   },

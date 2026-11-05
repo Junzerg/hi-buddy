@@ -1,0 +1,55 @@
+{
+  "batch": "4i",
+  "status": "awaiting_user_review",
+  "scope": "主题与公共组件兼容；产品确认的样式、配色、交互以公司版本为准。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 49,
+    "resolved": 4,
+    "remaining": 45
+  },
+  "paths": [
+    "packages/client/ui-primitives/README.i18n.yaml",
+    "packages/client/ui-primitives/README.md",
+    "packages/client/ui-primitives/README.zh.md",
+    "packages/client/ui-theme/src/styles/design-platform.css",
+    "packages/client/ui-theme/src/client/FontFamilyRow.tsx",
+    "packages/client/ui-theme/src/client/FontFamilyRow.module.css",
+    "packages/client/ui-theme/src/client/FontSizeRow.module.css",
+    "packages/client/ui-theme/README.md",
+    "packages/client/ui-theme/README.zh.md",
+    "packages/client/ui-theme/README.i18n.yaml",
+    "packages/client/ui-theme/tests/elevation-styles.client.spec.ts",
+    "packages/client/ui-primitives/src/Menu.module.css",
+    "packages/client/ui-theme/tests/expected/radius-exceptions.expected.json"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-primitives/README.i18n.yaml",
+    "packages/client/ui-primitives/README.md",
+    "packages/client/ui-primitives/README.zh.md",
+    "packages/client/ui-theme/src/styles/design-platform.css"
+  ],
+  "decisions": [
+    "保留全部既有明暗主题色值、菜单透明度、文件类型色块与公司品牌标记。",
+    "新增完成状态 token 映射到现有 success 色；不引入上游紫色方案。",
+    "保留菜单分隔线间距与字体设置现有排列，不接入上游窄屏堆叠改版。",
+    "合入浮层边界定位、禁用项处理、上下文菜单接口及文本/链接兼容修复。",
+    "后续合并也以已经产品确认的公司视觉和交互为准，必要兼容变更无法兼顾时单独说明。"
+  ],
+  "validation": {
+    "initial": "110 files: 109 passed, 1 failed; 2107 passed, 1 failed tests.",
+    "retest": "radius-styles: 2 passed after removing a stale avatar radius exception; no product radius changed. The stale exception also existed in HEAD.",
+    "combined": "110 files / 2108 tests passed, combining unchanged passing tests and final radius retest.",
+    "translation": "Primitives and theme README pairs consistent.",
+    "palette": "design-platform.css differs from HEAD only by 2 done aliases pointing to existing success color. FontFamilyRow TSX and both font layout sheets match HEAD.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "完整应用视觉与交互尚未验收；局部测试不能替代最终人工确认。",
+    "仍有其他冲突，最终全仓类型检查、浏览器回放和目录校验待完成。",
+    "未额外预览、提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理模型标记插件与 CUA 客户端接线，保持公司命名、入口隐藏和已确认权限策略。"
+}

@@ -4,8 +4,11 @@
   align-items: center;
   gap: 6px;
   border-radius: var(--dsw-radius-md);
+  border-inline: 0px solid transparent;
+  background-clip: padding-box;
+  box-sizing: border-box;
   padding: 0 8px;
-  padding-inline-start: calc(8px + var(--dsh-workspace-indent, 0px));
+  padding-inline-start: calc(8px - 0px + var(--dsh-workspace-indent, 0px));
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
@@ -14,7 +17,7 @@
 
 @media (hover: hover) {
   .projectRow:hover {
-    background: var(--dsw-alias-interactive-bg-hover);
+    background-color: var(--dsw-alias-interactive-bg-hover);
   }
 }
 
@@ -31,8 +34,10 @@
   box-sizing: border-box;
   border: none;
   border-radius: var(--dsw-radius-lg);
-  padding: 4px 8px;
+  padding: 4px calc(8px - 0px);
+  border-inline: 0px solid transparent;
   background: transparent;
+  background-clip: padding-box;
   cursor: pointer;
   text-align: left;
   color: var(--dsw-alias-label-primary);
@@ -40,12 +45,12 @@
 
 @media (hover: hover) {
   .searchResultRow:hover {
-    background: var(--dsw-alias-interactive-bg-hover);
+    background-color: var(--dsw-alias-interactive-bg-hover);
   }
 }
 
 .searchResultRow.selected {
-  background: var(--dsw-alias-interactive-bg-hover);
+  background-color: var(--dsw-alias-interactive-bg-hover);
 }
 
 .searchResultHeading {
@@ -57,7 +62,7 @@
 .searchResultTitle {
   flex: 0 1 auto;
   min-width: 0;
-  margin-left: 4px;
+  margin: 0 4px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -70,7 +75,7 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
-  margin-left: 20px;
+  margin-left: calc(16px + 4px);
 }
 
 .searchResultWorkspace,
@@ -233,6 +238,7 @@
   font-size: 10px;
   line-height: 16px;
   color: var(--dsw-alias-label-tertiary);
+  margin-inline-end: -1px;
 }
 
 .pinIndicator {
@@ -261,12 +267,12 @@
   flex: none;
 }
 
-/* Trailing action buttons surface on hover with bare 16px glyphs. */
+/* The trailing strip keeps a shared gap between its fixed-size control boxes. */
 .rowActions {
   flex: none;
   display: none;
   align-items: center;
-  gap: 15px;
+  gap: 13px;
 }
 
 @media (hover: hover) {
@@ -336,8 +342,17 @@
     display: inline-flex;
   }
 
-  .sessionRow .rowQuickActions {
+  /* Only update timestamps disappear; pending-interaction labels remain visible. */
+  .sessionRow .timestamp,
+  .sessionRow:has(.pinnedAction) .pinIndicator,
+  .sessionRow .rowQuickActions > :global([data-slot]) > :not(.pinnedAction),
+  .projectRow[aria-expanded='false'] .rowActions {
     display: none;
+  }
+
+  .sessionRow .pinnedAction {
+    /* Keep More aligned across rows. Tab order remains More, then Unpin. */
+    order: -1;
   }
 }
 
@@ -377,8 +392,8 @@
   content: '';
   position: absolute;
   z-index: 1;
-  left: 0;
-  right: 4px;
+  left: calc(-1 * 0px);
+  right: calc(4px - 0px);
   height: 12px;
   background:
     linear-gradient(
@@ -449,19 +464,26 @@
   margin: 0 -4px;
 }
 
+/* Compensated margins keep the 24px target on the compact icon's center. */
 .iconButton {
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 16px;
-  height: 16px;
+  width: 24px;
+  height: 24px;
+  margin: -4px;
   border: none;
   border-radius: var(--dsw-radius-xs);
   padding: 0;
   background: transparent;
   cursor: pointer;
   color: var(--dsw-alias-label-tertiary);
+}
+
+/* Keep the focus ring on its original compact outline. */
+.iconButton:focus-visible {
+  outline-offset: -2px;
 }
 
 @media (hover: hover) {

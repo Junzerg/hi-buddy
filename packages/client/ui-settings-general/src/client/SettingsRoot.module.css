@@ -42,7 +42,7 @@
 
 @media (hover: hover) {
   .trigger:hover {
-    background: var(--dsw-alias-interactive-bg-hover);
+    background-color: var(--dsw-alias-interactive-bg-hover);
   }
 }
 
@@ -178,7 +178,7 @@
 
 @media (hover: hover) {
   .navCell:hover {
-    background: var(--dsw-alias-interactive-bg-hover);
+    background-color: var(--dsw-alias-interactive-bg-hover);
   }
 }
 
@@ -187,6 +187,7 @@
 }
 
 .navIcon {
+  display: flex;
   flex: none;
 }
 
@@ -237,7 +238,7 @@
 
 @media (hover: hover) {
   .close:hover {
-    background: var(--dsw-alias-interactive-bg-hover);
+    background-color: var(--dsw-alias-interactive-bg-hover);
   }
 }
 

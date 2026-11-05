@@ -1,0 +1,75 @@
+{
+  "batch": "4k",
+  "status": "awaiting_user_review",
+  "scope": "功能说明与生成文档冲突；不修改产品代码、样式、入口或默认启用状态。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 42,
+    "resolved": 18,
+    "remaining": 24
+  },
+  "paths": [
+    "docs/config-catalog.md",
+    "docs/config-catalog.zh.md",
+    "docs/module-graph.md",
+    "docs/module-graph.zh.md",
+    "packages/client/ui-schedule/README.md",
+    "packages/client/ui-schedule/README.zh.md",
+    "packages/experimental/inspector-profile/docs/DETAIL.md",
+    "packages/experimental/inspector-profile/docs/DETAIL.zh.md",
+    "packages/experimental/plugin-market-bundle/docs/DETAIL.md",
+    "packages/experimental/plugin-market-bundle/docs/DETAIL.zh.md",
+    "packages/experimental/session-search/docs/DETAIL.md",
+    "packages/experimental/session-search/docs/DETAIL.zh.md",
+    "packages/experimental/terminal-bundle/docs/DETAIL.md",
+    "packages/experimental/terminal-bundle/docs/DETAIL.zh.md",
+    "packages/experimental/tool-worktree/docs/DETAIL.md",
+    "packages/experimental/tool-worktree/docs/DETAIL.zh.md",
+    "packages/experimental/webworker-runtime/README.i18n.yaml",
+    "packages/preset/agent-preset/skills/cordis-composition-reference/references/packages.md",
+    "docs/config-catalog.i18n.yaml",
+    "docs/module-graph.i18n.yaml",
+    "packages/client/ui-schedule/README.i18n.yaml"
+  ],
+  "resolved_paths": [
+    "docs/config-catalog.md",
+    "docs/config-catalog.zh.md",
+    "docs/module-graph.md",
+    "docs/module-graph.zh.md",
+    "packages/client/ui-schedule/README.md",
+    "packages/client/ui-schedule/README.zh.md",
+    "packages/experimental/inspector-profile/docs/DETAIL.md",
+    "packages/experimental/inspector-profile/docs/DETAIL.zh.md",
+    "packages/experimental/plugin-market-bundle/docs/DETAIL.md",
+    "packages/experimental/plugin-market-bundle/docs/DETAIL.zh.md",
+    "packages/experimental/session-search/docs/DETAIL.md",
+    "packages/experimental/session-search/docs/DETAIL.zh.md",
+    "packages/experimental/terminal-bundle/docs/DETAIL.md",
+    "packages/experimental/terminal-bundle/docs/DETAIL.zh.md",
+    "packages/experimental/tool-worktree/docs/DETAIL.md",
+    "packages/experimental/tool-worktree/docs/DETAIL.zh.md",
+    "packages/experimental/webworker-runtime/README.i18n.yaml",
+    "packages/preset/agent-preset/skills/cordis-composition-reference/references/packages.md"
+  ],
+  "decisions": [
+    "配置目录、模块依赖图和插件包清单由当前源码及 package 元数据重新生成，不手拼生成内容。",
+    "保留公司插件详情中的 Lingxi Office/灵犀办公名称、用法与限制说明。",
+    "自动任务说明接入当前规则与投递语义；任务行时钟的条件按公司实现写为非空、未归档且有活动任务。",
+    "刷新自动任务与 WebWorker README 双语记录；不因可选插件文档而开放入口。"
+  ],
+  "validation": {
+    "generators": "config-catalog, module-graph and plugin-packages generated; all three freshness checks passed.",
+    "tests": "gen-config-catalog.spec.ts: 17 tests passed.",
+    "translation": "4 named pairs consistent; final schedule pair re-recorded and rechecked after matching company clock condition.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "未在真实环境重新执行可选插件安装/启用操作，保留的是已存在的公司使用说明。",
+    "全仓 doc-sync/lint 尚未完成；已有未解决测试/快照冲突和前序记录的仓库引用基线问题待最终检查。",
+    "浏览器回归场景、全应用启动、类型检查和最终人工验收仍待完成。",
+    "未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理浏览器回归用例与对应快照，按公司现有样式和交互设定验收预期，不用上游截图覆盖产品设计。"
+}

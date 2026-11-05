@@ -7,6 +7,7 @@
   grid-template-columns: var(--dsh-sidebar-track-width) minmax(0, 1fr) var(--dsh-rightbar-track-width);
   transition: grid-template-columns var(--dsh-layout-transition-duration) var(--dsh-layout-transition-easing);
   height: 100%;
+  box-sizing: border-box;
   overflow: hidden;
   background: var(--dsw-alias-bg-base);
 }
