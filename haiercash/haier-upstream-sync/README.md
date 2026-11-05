@@ -21,7 +21,7 @@ This workflow serves maintainers of the company fork. Integrate upstream capabil
 
 ## Documents and versions
 
-The [customization register](local-customizations.md) describes current company requirements. Each file under `records/` describes one integration attempt; start with the [first assessment](records/2026-11-03-alpha.3.md). These internal documents are not added to the public documentation website.
+The [customization register](local-customizations.md) describes current company requirements. Each file under `records/` describes one integration attempt; see the [current rc.1 record](records/2026-11-05-rc.1.md) and the [earlier alpha.3 assessment](records/2026-11-03-alpha.3.md). These internal documents are not added to the public documentation website.
 
 Git commits version the workflow and register; do not create v1/v2 copies. Keep stable `HAIER-xxx` identifiers. Update behavior, source links and acceptance criteria in the same change as a customization. Mark retired requirements explicitly and never reuse their identifiers.
 

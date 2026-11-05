@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for 2026-11-05-rc.1.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/haier-upstream-sync/records/2026-11-05-rc.1.md
+/:
+  en: df088f0f1a4c87a2
+  zh: a7c81b9d5341e07f
+/haier-rc-1-integration-record:
+  en: d7f46259293fcd89
+  zh: d36c88239a7abd41
+/haier-rc-1-integration-record/summary:
+  en: 8ef65096b8370796
+  zh: 4854cd8059f47168
+/haier-rc-1-integration-record/contents:
+  en: 3f2c5a52ccfae4ef
+  zh: a05eec5f779eeb4e
+/haier-rc-1-integration-record/pinned-baseline:
+  en: 8f5521319b5aa79c
+  zh: 0d9936c78db4116d
+/haier-rc-1-integration-record/conflict-inventory:
+  en: 26579391e64cc362
+  zh: ea4f7182b43fc539
+/haier-rc-1-integration-record/batch-handoffs:
+  en: 43cca52401edce15
+  zh: 573fe93fd2446e54
+/haier-rc-1-integration-record/evidence-and-limitations:
+  en: d6c8d9115dbf71c9
+  zh: b24e3447b1b8afc7

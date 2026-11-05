@@ -1,0 +1,1637 @@
+{
+  "status": "preview-only",
+  "localBase": "d9c4dd3616fdc32da56322f5039b7e010c5cc1a7",
+  "upstreamTag": "dsh-v0.2.2-rc.1",
+  "upstreamCommit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "mergeBase": "22ddee3792402c3e70ec5f86a63c3e3e895a2f60",
+  "command": [
+    "git",
+    "merge-tree",
+    "--write-tree",
+    "--name-only",
+    "-z",
+    "d9c4dd3616fdc32da56322f5039b7e010c5cc1a7",
+    "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db"
+  ],
+  "exitCode": 1,
+  "conflictCount": 321,
+  "types": {
+    "CONFLICT (contents)": 247,
+    "CONFLICT (modify/delete)": 74
+  },
+  "categories": {
+    "documentation": 54,
+    "package-metadata": 103,
+    "implementation-and-configuration": 54,
+    "tests-and-expectations": 49,
+    "locale-json": 60,
+    "dependency-lock": 1
+  },
+  "conflicts": [
+    {
+      "path": "apps/desktop/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/desktop/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "apps/desktop/src/locale.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "apps/desktop/src/main.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "apps/desktop/tests/expected/application-menu-en-US.json",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/desktop/tests/expected/application-menu-zh-CN.json",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/desktop/tests/expected/fatal-address-in-use-en.txt",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/desktop/tests/expected/fatal-address-in-use-zh-CN.txt",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/desktop/tests/main-startup.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/desktop/tests/retain-desktop-ci.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/additional-locales.e2e.ts",
+      "type": "CONFLICT (modify/delete)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/caption-overlays.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/chat-scroll-contract.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/client-plugin-live.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/context-meter.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/cua-permissions.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/details-session-lifecycle.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/expected/additional-locales/de.expected.md",
+      "type": "CONFLICT (modify/delete)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/additional-locales/es.expected.md",
+      "type": "CONFLICT (modify/delete)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/additional-locales/fr.expected.md",
+      "type": "CONFLICT (modify/delete)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/additional-locales/pt.expected.md",
+      "type": "CONFLICT (modify/delete)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/additional-locales/ru.expected.md",
+      "type": "CONFLICT (modify/delete)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/cua-permissions/application-approval.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/japanese-plugin-metadata/card.expected.md",
+      "type": "CONFLICT (modify/delete)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/layout-bottom/geometry.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/expected/schedule-header.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "apps/web/tests/japanese-plugin-metadata.e2e.ts",
+      "type": "CONFLICT (modify/delete)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/markdown-wide-table.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/queue-actions.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/schedule-header.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/sessionless-header.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/sidebar-right.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/sidebar-scrollbar.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/stats-truncated-tooltip.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/support.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tests/window-drag-coverage.e2e.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "apps/web/tsconfig.json",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "docs/config-catalog.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "docs/config-catalog.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "docs/module-graph.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "docs/module-graph.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/acp/acp/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/attachment/attachment/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/boot/plugin-manager/src/tools.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/bundle/sdk-app/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/bundle/sdk-app/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/bundle/sdk-app/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-brand-official/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/client/ui-chat/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-chat/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-chat/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-chat/tests/turn-tail-spacing.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-conversation/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-conversation/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-conversation/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-conversation/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-conversation/src/client/skeleton/ConversationRoot.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-conversation/src/client/skeleton/InputBar.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-conversation/tests/skeleton.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-deepseek-model-label-1017/src/client/index.ts",
+      "type": "CONFLICT (modify/delete)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-deepseek-model-label-1017/src/client/locales.ts",
+      "type": "CONFLICT (modify/delete)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-deliverables/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-layout/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-layout/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-layout/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-layout/src/client/AppFrame.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-layout/src/client/AppFrame.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-layout/src/client/columns.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-layout/src/client/index.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-layout/src/client/stores.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-layout/tests/app-frame.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-layout/tests/columns.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-message-feedback/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/client/ui-open-in-app/src/client/index.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-open-in-app/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-plan/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-plugin-manager/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-primitives/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-primitives/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-primitives/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-reference/src/client/index.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-schedule/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-schedule/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-schedule/src/client/frequency-locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-schedule/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-schedule/src/client/task-manager-locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-settings-account/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-settings-account/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-settings-account/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-settings-account/src/client/AccountMenu.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-settings-account/src/client/AccountMenu.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-settings-account/tests/account.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-settings-general/src/client/SettingsRoot.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-shortcuts/tests/commands.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-documentpreview/tests/image-registration.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar-files/src/client/FilesBody.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-files/src/client/FilesBody.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-files/src/client/index.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-files/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-files/tests/apply.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.module.css",
+      "type": "CONFLICT (modify/delete)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.tsx",
+      "type": "CONFLICT (modify/delete)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/tests/apply.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/tests/expand-button.client.spec.tsx",
+      "type": "CONFLICT (modify/delete)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar-right/tests/service.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-sidebar/README.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-sidebar/README.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx",
+      "type": "CONFLICT (modify/delete)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar/src/client/SidebarRoot.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar/src/client/SidebarRoot.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar/src/client/contract/slots.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-sidebar/tests/__snapshots__/sidebar-snapshot.client.spec.tsx.snap",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar/tests/apply.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar/tests/panel-list.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar/tests/sidebar-root.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar/tests/sidebar-snapshot.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-sidebar/tests/sidebar-styles.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-subagent/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-theme/src/styles/design-platform.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-trajectory/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-workspace/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/client/ui-workspace/src/client/rows/Rows.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-workspace/src/client/rows/Rows.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.module.css",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/client/ui-workspace/tests/browser-styles.client.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/client/ui-workspace/tests/workspace-browser.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/compaction/compaction-basic/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/compaction/compaction/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/context/harness-dev-context/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/core/agent-loop/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/core/agent/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/core/scope/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/core/session/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/core/system-prompt/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/core/tools/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/credentials/credentials-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/deliverables/deliverable-file-references/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/deliverables/tool-present/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/deliverables/workspace-changes/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/agent-team-profile/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/agent-team-profile/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/agent-team-profile/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/agent-team-profile/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/agent-team-profile/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/agent-team-profile/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/auto-review/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/claude-code-mods/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/cot-translation-bundle/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/cot-translation-bundle/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/cot-translation-bundle/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/cot-translation-bundle/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/cot-translation-bundle/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/cot-translation-bundle/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/cua/src/application-access.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/experimental/cua/src/client/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/experimental/cua/src/client/mount.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/experimental/cua/src/locales.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/experimental/cua/tests/application-access.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/experimental/hooks-claude-code/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/hooks-codex/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/docs/DETAIL.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/docs/DETAIL.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/inspector-profile/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/docs/DETAIL.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/docs/DETAIL.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/plugin-market-bundle/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/ptc-runtime-python/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/ralph-bundle/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/ralph-bundle/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/ralph-bundle/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/ralph-bundle/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/ralph-bundle/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/ralph-bundle/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-search/docs/DETAIL.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/session-search/docs/DETAIL.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/session-search/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-search/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-search/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-search/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-search/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-search/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-title-all-prompts-llm/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/session-titles-bundle/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-titles-bundle/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-titles-bundle/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-titles-bundle/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-titles-bundle/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/session-titles-bundle/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/skill-badge/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/docs/DETAIL.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/docs/DETAIL.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/terminal-bundle/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/docs/DETAIL.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/docs/DETAIL.zh.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/locale/de.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/locale/es.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/locale/fr.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/locale/ja.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/locale/pt.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/tool-worktree/locale/ru.json",
+      "type": "CONFLICT (modify/delete)",
+      "category": "locale-json"
+    },
+    {
+      "path": "packages/experimental/webhook-github/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/webhook/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/experimental/webworker-runtime/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/extensions/cordis-client-runner/src/client/slot-catalog.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "packages/extensions/tool-cordis/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/fs/fs-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/fs/fs-observation-policy/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/fs/fs-sandbox/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/fs/fs/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/fs/tool-fs/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/fs/tool-str-replace-editor/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/goal/goal/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/host/directory-picker-auto/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/host/directory-picker-native/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/host/directory-picker/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/identity/anonymous-user-id/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/interaction/commands/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/interaction/permission-presets/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/interaction/user-approval/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/jobs/jobs-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/jobs/jobs/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/llm/llm-pi-ai/README.i18n.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/llm/llm-pi-ai/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/llm/llm-retry/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/llm/llm/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/llm/token-meter/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/lsp/lsp-stdio/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/lsp/lsp/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/lsp/tool-lsp/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/preset/agent-preset/skills/cordis-composition-reference/references/packages.md",
+      "type": "CONFLICT (contents)",
+      "category": "documentation"
+    },
+    {
+      "path": "packages/preset/persona/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/ptc-runtime/ptc-runtime/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/sandbox/sandbox-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/sandbox/sandbox-windows-acl/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/sandbox/sandbox/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/sdk/client/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/sdk/protocol/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/sdk/server/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session-query/session-log-export/tests/header-action.client.spec.tsx",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "packages/session/session-persistence-jsonl/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-persistence/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-stats/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-telemetry/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-title-first-prompt-llm/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-title-llm/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-title/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/session/session-turn-outline/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/settings/settings/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/bash-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/bash-sandbox/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/pwsh-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/pwsh-sandbox/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/shell/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/tool-bash-persistent/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/shell/tool-pwsh-persistent/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/skill/skill-filesystem/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/skill/skill/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/skill/tool-skill/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/spill/spill-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/spill/spill/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/storage/storage-domain/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/storage/storage-json/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/storage/storage-sqlite/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/storage/storage/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/subagent/subagent-dsh-sdk/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/subprocess/subprocess-local/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/subprocess/subprocess/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/terminal/terminal-bash/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/terminal/terminal/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/todo/tool-todo/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/util/brand/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/util/home-paths/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/util/http-proxy/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/util/launch-environment/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/util/values/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/tool-web/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/web-deepseek-api/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/web-fetch-http/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/web-search-deepseek/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/web-search-exa/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/web-search-perplexity/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/web/web/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "packages/workspace/workspace/package.json",
+      "type": "CONFLICT (contents)",
+      "category": "package-metadata"
+    },
+    {
+      "path": "pnpm-lock.yaml",
+      "type": "CONFLICT (contents)",
+      "category": "dependency-lock"
+    },
+    {
+      "path": "scripts/verify-repository-references.spec.ts",
+      "type": "CONFLICT (contents)",
+      "category": "implementation-and-configuration"
+    },
+    {
+      "path": "snapshots/session/dynamic-tool-updates/session.v4.jsonl",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "snapshots/web/auto-review-denial/ui.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "snapshots/web/details-session-lifecycle/sidebar.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "snapshots/web/queue-actions/sending.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    },
+    {
+      "path": "snapshots/web/sidebar-scrollbar/geometry.expected.md",
+      "type": "CONFLICT (contents)",
+      "category": "tests-and-expectations"
+    }
+  ]
+}

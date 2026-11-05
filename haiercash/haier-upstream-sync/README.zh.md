@@ -21,7 +21,7 @@ description: "在吸收上游能力的同时维护公司定制。"
 
 ## 文档与版本
 
-[定制保留清单](local-customizations.zh.md)描述当前公司要求。`records/` 下每份文件记录一次同步，参见[首次评估](records/2026-11-03-alpha.3.zh.md)。这些内部文档不加入公开文档网站。
+[定制保留清单](local-customizations.zh.md)描述当前公司要求。`records/` 下每份文件记录一次同步，参见[当前 rc.1 记录](records/2026-11-05-rc.1.zh.md)与[先前 alpha.3 评估](records/2026-11-03-alpha.3.zh.md)。这些内部文档不加入公开文档网站。
 
 流程和清单通过 Git 提交管理版本，不另存 v1/v2 副本。清单使用稳定的 `HAIER-xxx` 编号。定制变更时，同步更新行为、代码入口与验收要求；废止要求需明确标记，编号不复用。
 
