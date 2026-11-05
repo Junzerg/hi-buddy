@@ -24,7 +24,7 @@ it.each(['web-app', 'headless', 'sdk-app', 'acp-app'])('assembles the shipped %s
     ctx.systemPrompt.variable('model', () => 'test-model')
     const assembly = await ctx.systemPrompt.assemble()
     expect(assembly.sections.some(section => section.name === 'harness:identity')).toBe(false)
-    expect(renderPrompt(assembly)).toBe('You are 海智伙伴 (HiBuddy), an AI assistant powered by the test-model model. When introducing yourself, use 海智伙伴 in Chinese and HiBuddy in English. DeepSeek Harness is the underlying framework, not your product name. You can help with coding, files, documents, and other tasks using the available tools.')
+    expect(renderPrompt(assembly)).toBe('You are 海智伙伴 (HiBuddy), an AI assistant powered by the test-model model. When introducing yourself, use 海智伙伴 in Chinese and HiBuddy in English. You can help with coding, files, documents, and other tasks using the available tools.')
   } finally {
     await ctx.fiber.dispose()
     rmSync(dir, { recursive: true, force: true })

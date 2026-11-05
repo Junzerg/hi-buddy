@@ -10,7 +10,7 @@ export class ManagementFailure extends Error {
   readonly incompatible: IncompatiblePlugin[] | undefined
   /**
    * @param code Localizable management rejection.
-   * @param incompatible Packages the running DSH version rejects, for `incompatible-version`.
+   * @param incompatible Packages the running HiBuddy version rejects, for `incompatible-version`.
    */
   constructor(code: ManagementError['code'], incompatible?: IncompatiblePlugin[]) {
     super(code)
@@ -22,7 +22,7 @@ export class ManagementFailure extends Error {
 /**
  * Drop the exemption status from an unexempted compatibility result.
  * @param issue Result whose exemption is not active.
- * @returns The package, runtime, and unmet DSH requirements.
+ * @returns The package, runtime, and unmet HiBuddy requirements.
  */
 export function incompatiblePlugin(issue: PluginCompatibility): IncompatiblePlugin {
   return { name: issue.name, version: issue.version, runtimeVersion: issue.runtimeVersion, requirements: issue.requirements }

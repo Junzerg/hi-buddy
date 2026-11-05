@@ -27,7 +27,7 @@ function catalogOf(bundles: readonly BundleInfo[]): string {
 export function registerOfficialPluginsSkill(ctx: Context): void {
   const candidate: SkillCandidate = {
     name: 'official-plugins',
-    description: 'Check DSH’s optional plugins when the user asks how to do or use something in this app, whether it can, or says a capability is missing or should change: tools, input, thinking or title display, session search, terminals, worktrees, agent teams, desktop control, automation, access, approvals, badges or signatures, plugins or plugin sources. Not a request to develop DSH, even in its own repository: load before reading files or source. Not for ordinary tasks, quoted wishes or declined offers.',
+    description: 'Check HiBuddy plugins when the user asks how to do or use something in this app, whether it can, or says a capability is missing or should change: tools, input, thinking or title display, session search, terminals, worktrees, agent teams, desktop control, automation, access, approvals, badges or signatures, plugins or plugin sources. Not a request to develop HiBuddy, even in its own repository: load before reading files or source. Not for ordinary tasks, quoted wishes or declined offers.',
     invocation: { modelInvocable: true, userInvocable: false },
     provider: 'dsh-official-plugins', source: 'bundled', rank: BUNDLED_SKILL_RANK, locator: null,
   }

@@ -136,3 +136,15 @@ describe('installer preparation preserves application dependencies', () => {
     for (const name of referenced) expect(packaged.has(`lib/${name}`)).toBe(true)
   })
 })
+
+it('refreshes descriptions only for retained shortcuts that still exist', () => {
+  const script = readFileSync(new URL('../scripts/installer.nsh', import.meta.url), 'utf8')
+  const install = script.split('!macro customInstall\n')[1]!.split('!macroend')[0]!
+  const retained = install.split('${If} $keepShortcuts == "true"')[1]!
+  for (const link of ['$newStartMenuLink', '$newDesktopLink']) {
+    const existing = retained.split('${If} ${FileExists} "' + link + '"')[1]!.split('${EndIf}')[0]!
+    expect(existing).toContain('CreateShortCut "' + link + '" "$appExe" "" "$appExe" 0 "" "" "${APP_DESCRIPTION}"')
+    expect(existing).toContain('WinShell::SetLnkAUMI "' + link + '" "${APP_ID}"')
+  }
+  expect((install.match(/CreateShortCut/g) ?? [])).toHaveLength(2)
+})

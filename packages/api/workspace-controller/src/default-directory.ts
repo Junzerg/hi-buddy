@@ -74,5 +74,5 @@ export async function defaultWorkspaceDirectory(
   }
   directory = validateDocumentsDirectory(directory, platform)
   signal.throwIfAborted()
-  return paths.join(directory, 'lingxi-office', DEFAULT_WORKSPACE_DIRECTORY)
+  return paths.join(directory, 'HiBuddy', DEFAULT_WORKSPACE_DIRECTORY)
 }

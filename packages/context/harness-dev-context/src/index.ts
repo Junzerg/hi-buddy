@@ -35,7 +35,7 @@ const WEB_SURFACE = 'app:web-surface'
 
 const HARNESS_SOURCE_GUIDANCE = 'The checkout location and current working directory are separate values and may differ; '
   + 'never infer the working directory from the checkout path. Use pwd to determine the current working directory. '
-  + 'Use this checkout only to inspect or extend DSH itself.'
+  + 'Use this checkout only to inspect or extend HiBuddy itself.'
 
 const HARNESS_SOURCE_PROMPT = `The runtime context names the HiBuddy implementation checkout. ${HARNESS_SOURCE_GUIDANCE}`
 

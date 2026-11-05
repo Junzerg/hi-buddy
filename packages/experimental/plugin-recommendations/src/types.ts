@@ -17,7 +17,7 @@ export type PluginPhase = 'enabled' | 'already-enabled' | 'failed' | 'unconfirme
 
 /** Data each plugin decision records; profile files own the actual configuration. */
 export interface PluginData {
-  /** `restart-required` when the saved selection applies only after DSH restarts. */
+  /** `restart-required` when the saved selection applies only after HiBuddy restarts. */
   readonly application?: 'restart-required' | undefined
   /** Plugin manager error code of a failed change, or `operation-error` when the change was rejected; no diagnostic text is recorded. */
   readonly errorCode?: ManagementError['code'] | undefined

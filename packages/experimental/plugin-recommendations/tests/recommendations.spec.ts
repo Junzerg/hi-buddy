@@ -52,7 +52,7 @@ describe('official recommendations', () => {
     ])
     f.ctx.llm.registerAdapter(['mock'], adapter)
     const agent = await f.ctx.agentLoop.create(SessionId('invitation'), { provider: 'mock', model: 'mock' })
-    agent.followup(createUserMessage({ content: [{ type: 'text', text: 'Can DSH search my old conversations?' }], source: { kind: 'user' } }))
+    agent.followup(createUserMessage({ content: [{ type: 'text', text: 'Can HiBuddy search my old conversations?' }], source: { kind: 'user' } }))
     await agent.whenIdle()
     const results = agent.session.snapshotEvents().flatMap(event => event.type === 'tool/result' ? [event.data.message] : [])
     expect(results.map(message => message.isError === true)).toEqual([false, false, true])

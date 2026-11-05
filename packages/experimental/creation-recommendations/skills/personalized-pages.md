@@ -1,6 +1,6 @@
 # Personalized pages
 
-Use this workflow in the main conversation to plan an optional new page or small tool for any task, not just DSH. You decide whether a page helps, check existing capabilities, and hand the Creator a short plan. A `propose_action` call saves the proposal and shows a card below your answer; nothing is built until the user clicks Create. Plan from the conversation and the catalog at the end of this skill. Do not read files, configuration or source to validate a page idea; name an uninspected source as an unverified dependency and leave its details to the Creator.
+Use this workflow in the main conversation to plan an optional new page or small tool for any task, not just HiBuddy. You decide whether a page helps, check existing capabilities, and hand the Creator a short plan. A `propose_action` call saves the proposal and shows a card below your answer; nothing is built until the user clicks Create. Plan from the conversation and the catalog at the end of this skill. Do not read files, configuration or source to validate a page idea; name an uninspected source as an unverified dependency and leave its details to the Creator.
 
 ## When to propose
 
@@ -20,7 +20,7 @@ Do not propose a page in these cases:
 
 ## Check existing capabilities
 
-Compare the need with the official plugins listed at the end of this skill. If one covers it, say its name, what it does, whether it is enabled, and that it lives under Plugins; offer no page card. A partial match does not cancel an explicit unmet need. The catalog is not a full inventory of built-in UI: missing details do not prove absence, and do not read source to find out. DSH already has Chat, Trajectory, a right sidebar for files and context, and a Plugins page.
+Compare the need with the official plugins listed at the end of this skill. If one covers it, say its name, what it does, whether it is enabled, and that it lives under Plugins; offer no page card. A partial match does not cancel an explicit unmet need. The catalog is not a full inventory of built-in UI: missing details do not prove absence, and do not read source to find out. HiBuddy already has Chat, Trajectory, a right sidebar for files and context, and a Plugins page.
 
 ## Plan and hand off
 

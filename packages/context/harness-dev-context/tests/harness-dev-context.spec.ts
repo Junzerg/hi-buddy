@@ -12,7 +12,7 @@ import { SessionId, type Session } from '@deepseek-ai/dsh-session'
 import { renderContextSnapshot, renderPrompt } from '@deepseek-ai/dsh-system-prompt'
 import * as HarnessDevContext from '../src/index.ts'
 
-const SOURCE_PROMPT = 'The runtime context names the HiBuddy implementation checkout. The checkout location and current working directory are separate values and may differ; never infer the working directory from the checkout path. Use pwd to determine the current working directory. Use this checkout only to inspect or extend DSH itself.'
+const SOURCE_PROMPT = 'The runtime context names the HiBuddy implementation checkout. The checkout location and current working directory are separate values and may differ; never infer the working directory from the checkout path. Use pwd to determine the current working directory. Use this checkout only to inspect or extend HiBuddy itself.'
 const WEB_GUIDANCE = 'When the user refers to "this page", "this GUI", or "this app" without naming another target, they mean this GUI. '
   + 'The browser provides no implicit DOM, route, or screenshot context. '
   + 'The client-plugin HMR receiver is active, but client-plugin changes reload without a refresh only while '

@@ -420,7 +420,7 @@ export class PluginManager extends TypertRemoteService {
 
   /** Grant or revoke one exact plugin/runtime exemption and reevaluate live plugins.
    * @param packageVersion Exact manifest package name followed by @ and its version; never an installation spec or alias.
-   * @param runtimeVersion Exact current DSH version for grants; revocation may name a previous runtime.
+   * @param runtimeVersion Exact current HiBuddy version for grants; revocation may name a previous runtime.
    * @param enabled Whether to grant rather than revoke the exemption.
    * @param acceptRisk Required true for grants after the user accepts possible crashes and data loss.
    * @returns Saved and runtime outcomes. Startup-only profiles require restart.
@@ -616,12 +616,12 @@ export class PluginManager extends TypertRemoteService {
   }
 
   /** Read the published versions newer than an installed registry package's version, from the first registry that answers.
-   * Official bundles follow the DSH version and are not listed.
+   * Official bundles follow the HiBuddy version and are not listed.
    * @param name Installed profile dependency name.
    * @param options The registry asked first; absent, the one the package was installed from in this process, else the configured one.
    * @param signal Ends the lookups early.
    * @returns At most `versionListLimit` newer versions, newest first, with their tags, deprecation, bundle declaration,
-   * and DSH compatibility, and the registry that answered; or why no list could be read, with every registry asked.
+   * and HiBuddy compatibility, and the registry that answered; or why no list could be read, with every registry asked.
    */
   @Remote
   async listVersions(name: string, options?: ListVersionsOptions, signal?: AbortSignal): Promise<PluginVersionList> {
@@ -664,7 +664,7 @@ export class PluginManager extends TypertRemoteService {
 
   /**
    * Replace an installed registry bundle with a newer published version. The target is checked on the registry first:
-   * it must exist, declare a bundle, and accept the running DSH version, or nothing changes. With HMR the installed
+   * it must exist, declare a bundle, and accept the running HiBuddy version, or nothing changes. With HMR the installed
    * version is removed, so its plugins stop, and the target is installed with the same selection; when that
    * installation fails or is cancelled, the removed version is installed again from the registry it came from.
    * Without HMR the target is installed over the running version and the result reports the restart.

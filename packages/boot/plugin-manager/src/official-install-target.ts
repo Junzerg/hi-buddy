@@ -16,8 +16,8 @@ function manifestAt(file: string): WorkspaceManifest {
  * identified by the real CLI manifest and its unpacked workspace dependencies, including Desktop's
  * development symlink. An incomplete checkout is an error, never a registry fallback.
  * @param name - Official catalog package name.
- * @param installAnchor - Running application's DSH package.json, possibly reached through a symlink.
- * @param version - Running DSH version used by its release family.
+ * @param installAnchor - Running application's HiBuddy package.json, possibly reached through a symlink.
+ * @param version - Running HiBuddy version used by its release family.
  * @returns An ordinary package-manager spec and its package version.
  * @throws when a source installation lacks its workspace package, bundle patch, or built runtime.
  */
@@ -31,7 +31,7 @@ export function officialBundleInstallTarget(name: string, installAnchor: string,
   if (anchor !== join(root, 'apps', 'cli', 'package.json')
     || !existsSync(join(root, 'package.json'))
     || manifestAt(join(root, 'package.json')).name !== '@deepseek-ai/dsh-root') {
-    throw new Error(`Official bundle ${name}: source DSH installation ${anchor} requires its complete workspace checkout`)
+    throw new Error(`Official bundle ${name}: source HiBuddy installation ${anchor} requires its complete workspace checkout`)
   }
   const matches = globSync('packages/*/*/package.json', { cwd: root })
     .map(file => ({ file: join(root, file), manifest: manifestAt(join(root, file)) }))
@@ -43,7 +43,7 @@ export function officialBundleInstallTarget(name: string, installAnchor: string,
   const { file, manifest } = selected
   const directory = realpathSync(dirname(file))
   if (manifest.version !== version || manifest.private === true || manifest.dsh?.bundle === undefined) {
-    throw new Error(`Official bundle ${name}: ${file} must declare a public bundle at DSH version ${version}`)
+    throw new Error(`Official bundle ${name}: ${file} must declare a public bundle at HiBuddy version ${version}`)
   }
   const main = typeof manifest.main === 'string' ? resolve(directory, manifest.main) : undefined
   if (main === undefined || !existsSync(main) || !statSync(main).isFile()) {

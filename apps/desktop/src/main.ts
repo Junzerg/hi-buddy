@@ -3,6 +3,7 @@ import { WINDOWS_TITLEBAR_HEIGHT } from './windows-layout.ts'
 /** Electron shell: desktop project ownership, custom protocol, windows, and lifecycle. */
 
 import { readFile, writeFile } from 'node:fs/promises'
+import { execFile } from 'node:child_process'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -1265,7 +1266,16 @@ async function main(): Promise<void> {
     window.focus()
   }
 
-  if (app.isPackaged || process.env.DSH_DESKTOP_DEV_APP === '1') app.setAsDefaultProtocolClient('dsh')
+  if (app.isPackaged || process.env.DSH_DESKTOP_DEV_APP === '1') {
+    const registered = app.setAsDefaultProtocolClient('dsh')
+    if (registered && process.platform === 'win32') {
+      // Electron writes URL:dsh as the friendly name each time it registers the protocol.
+      execFile('reg.exe', ['add', 'HKCU\\Software\\Classes\\dsh', '/ve', '/t', 'REG_SZ', '/d', 'HiBuddy', '/f'],
+        { windowsHide: true }, (error) => {
+          if (error) console.warn('Unable to update the HiBuddy protocol display name:', error)
+        })
+    }
+  }
   app.on('open-url', (event, url) => {
     event.preventDefault()
     if (url === 'dsh://open' || url === 'dsh://open/') focusPrimaryWindow()

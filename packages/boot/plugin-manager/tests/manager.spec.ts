@@ -1819,7 +1819,7 @@ function extraRegistry(spec: string, fields: readonly string[]): object {
   return { name: 'extra', version, dsh: BUNDLE }
 }
 
-it('lists newer registry versions with tags, times, deprecation, bundle declaration, and DSH compatibility', async () => {
+it('lists newer registry versions with tags, times, deprecation, bundle declaration, and HiBuddy compatibility', async () => {
   const config = { inspectTimeoutMs: 1000, versionListLimit: 3, versionLookupConcurrency: 2 }
   const { manager, dir } = await fixture(undefined, false, undefined, config)
   const view = viewAnswers(extraRegistry)

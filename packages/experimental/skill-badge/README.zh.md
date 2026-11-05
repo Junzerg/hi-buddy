@@ -1,5 +1,5 @@
 ---
-description: "随包附带的「powered by dsh」徽章 skill（技能），供启用、使用或排查该可选徽章提供方的用户与维护者阅读。"
+description: "随包附带的「powered by HiBuddy」徽章 skill（技能），供启用、使用或排查该可选徽章提供方的用户与维护者阅读。"
 kind: "package-reference"
 ---
 
@@ -9,7 +9,7 @@ kind: "package-reference"
 
 ## 概述
 
-agent（智能体）可以通过该内置提供方加载官方「powered by dsh」徽章 skill，并遵循其指令，给文档、PR（Pull Request）以及其他用 DeepSeek Harness 生成的内容添加署名徽章。该提供方没有配置；部署方需要显式安装并插入插件行。该 skill 同时提供 Markdown 片段和随包分发的 PNG，供无法可靠导入远程图片的系统使用。
+agent（智能体）可以通过该内置提供方加载官方「powered by HiBuddy」徽章 skill，并遵循其指令，给文档、PR（Pull Request）以及其他用 HiBuddy 生成的内容添加署名徽章。该提供方没有配置；部署方需要显式安装并插入插件行。该 skill 提供 Markdown 片段，以及供无法可靠导入远程图片的系统使用的纯文本署名。
 
 ## 目录
 
@@ -25,13 +25,13 @@ agent（智能体）可以通过该内置提供方加载官方「powered by dsh�
 <a id="use-this-package"></a>
 ## 使用本包
 
-启用插件即可让 `dsh-badge` skill 出现在会话 skill 目录中；随后模型可以像加载任何其他 skill 一样加载它，并遵循其指令添加「powered by dsh」徽章。
+启用插件即可让 `dsh-badge` skill 出现在会话 skill 目录中；随后模型可以像加载任何其他 skill 一样加载它，并遵循其指令添加「powered by HiBuddy」徽章。
 
-在插件页面中，此组件显示为 **DSH**，并使用 DSH 标签图标。它提供的 skill 名称为 `dsh-badge`。
+在插件页面中，此组件显示为 **署名徽章技能**，并使用 bundle 标签图标。它提供的 skill 名称为 `dsh-badge`。
 
 ### 何时选择
 
-当用 DeepSeek Harness 生成的内容应携带官方署名徽章、且部署方希望该徽章 skill 对 agent 可用而无需存入本地 skill 目录时，选择此提供方。当徽章与部署无关时，请跳过。默认组合省略此插件；使用它需要安装包并显式插入活动行。
+当用 HiBuddy 生成的内容应携带官方署名徽章、且部署方希望该徽章 skill 对 agent 可用而无需存入本地 skill 目录时，选择此提供方。当徽章与部署无关时，请跳过。默认组合省略此插件；使用它需要安装包并显式插入活动行。
 
 ### 启用插件
 
@@ -43,12 +43,12 @@ agent（智能体）可以通过该内置提供方加载官方「powered by dsh�
       name: '@deepseek-ai/dsh-skill-badge'
 ```
 
-启用后，`dsh-badge` 会出现在会话目录的可用 skill 中。该 skill 覆盖远程 Markdown 徽章（基于 Shields.io）和随包分发的 PNG 徽章资源，后者用于无法可靠获取远程图片的目标环境。
+启用后，`dsh-badge` 会出现在会话目录的可用 skill 中。该 skill 覆盖远程 Markdown 徽章（基于 Shields.io）和纯文本署名，后者用于无法可靠获取远程图片的目标环境。
 
 ### 徽章 skill 提供什么
 
 - **Markdown 片段。** 在文档、PR 与 merge request 中嵌入官方徽章标记的指令。
-- **随包分发的 PNG 资源。** `dsh-badge.png`（726×120 源图，按 121×20 渲染），在无法导入远程图片的环境中可用。
+- **纯文本署名。** 无法导入远程图片时，使用“powered by HiBuddy”。此技能不使用旧的 `dsh-badge.png`。
 
 ### 可观察的成功与失败
 
@@ -73,7 +73,7 @@ agent（智能体）可以通过该内置提供方加载官方「powered by dsh�
 | 文件 | 职责 |
 |---|---|
 | [`src/index.ts`](src/index.ts) | 插件入口与不可变提供方：一个候选项、资源基底、正文加载 |
-| [`assets/`](assets/) | 随包分发的 skill 正文（`dsh-badge.md`）与 PNG 资源（`dsh-badge.png`） |
+| [`assets/`](assets/) | 随包分发的 skill 正文（`dsh-badge.md`）与未使用的旧 PNG（`dsh-badge.png`） |
 
 </details>
 
@@ -107,7 +107,7 @@ agent（智能体）可以通过该内置提供方加载官方「powered by dsh�
 这些限制说明内置提供方不做什么。它们是当前包约束，不是任务积压。
 
 - **固定一个 skill，无运行时自定义**——提供方恰好贡献 `dsh-badge` 这一个 skill；需要其他徽章变体的部署请自行编写 skill。
-- **远程 Markdown 依赖 Shields.io**——远程徽章标记内嵌 Shields.io 图片；目标环境无法可靠获取远程图片时，请使用随包分发的 PNG。
+- **远程 Markdown 依赖 Shields.io**——远程徽章标记内嵌 Shields.io 图片；目标环境无法可靠获取远程图片时，请使用纯文本署名。
 
 <a id="dev-note"></a>
 ### 开发备注

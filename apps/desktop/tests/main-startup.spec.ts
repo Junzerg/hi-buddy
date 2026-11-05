@@ -16,6 +16,11 @@ import { writeCrashReport } from '../src/crash-report.ts'
 type InvokeEvent = { sender?: unknown; senderFrame: { url: string } }
 type InvokeHandler = (event: InvokeEvent, ...args: unknown[]) => unknown
 
+const protocolCommand = vi.hoisted(() => vi.fn())
+vi.mock('node:child_process', async importOriginal => ({
+  ...await importOriginal<typeof import('node:child_process')>(), execFile: protocolCommand,
+}))
+
 const fileDrag = vi.hoisted(() => ({ dispose: vi.fn<() => Promise<void>>(), install: vi.fn() }))
 vi.mock('../src/file-drag.ts', () => ({ installDesktopFileDrag: () => { fileDrag.install(); return fileDrag.dispose } }))
 
@@ -426,6 +431,8 @@ beforeEach(() => {
   testAuth.login.mockResolvedValue('cancelled')
   vi.useFakeTimers()
   harness.reset()
+  protocolCommand.mockReset()
+  harness.app.setAsDefaultProtocolClient.mockReset()
   const userData = mkdtempSync(join(tmpdir(), 'dsh-main-user-data-'))
   onTestFinished(() => { rmSync(userData, { recursive: true, force: true }) })
   harness.app.getPath.mockImplementation(name => name === 'userData' ? userData : `desktop-test-${name}`)
@@ -465,6 +472,27 @@ afterEach(async () => {
 })
 
 describe('desktop main startup', () => {
+  it.each([
+    ['win32', true, true], ['win32', false, false], ['darwin', true, false],
+  ] as const)('updates the protocol display name on %s after registration=%s', async (platform, registered, expected) => {
+    vi.stubGlobal('process', { ...process, platform })
+    harness.app.setAsDefaultProtocolClient.mockReturnValue(registered)
+    await readyForUpdate()
+    expect(harness.app.setAsDefaultProtocolClient).toHaveBeenCalledWith('dsh')
+    if (expected) {
+      expect(protocolCommand).toHaveBeenCalledWith('reg.exe',
+        ['add', 'HKCU\\Software\\Classes\\dsh', '/ve', '/t', 'REG_SZ', '/d', 'HiBuddy', '/f'],
+        { windowsHide: true }, expect.any(Function))
+      const callback = protocolCommand.mock.calls[0]![3] as (error: Error | null) => void
+      callback(null)
+      const error = new Error('registry access denied')
+      callback(error)
+      expect(console.warn).toHaveBeenCalledWith('Unable to update the HiBuddy protocol display name:', error)
+    } else {
+      expect(protocolCommand).not.toHaveBeenCalled()
+    }
+  })
+
   it.each([true, false])('selects the package manager before Host startup (packaged=%s)', async (packaged) => {
     harness.app.isPackaged = packaged
     await readyForUpdate()

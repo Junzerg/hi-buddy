@@ -64,7 +64,7 @@ export class PluginRecommendations extends TypertRemoteService {
         + 'do not say the plugin is already on.',
       verbs: { enable: { global: true } },
       openPhases: ['failed', 'unconfirmed'],
-      statusGuidance: 'Plugin cards: enabled means the plugin is on now, or after a DSH restart when application is restart-required; '
+      statusGuidance: 'Plugin cards: enabled means the plugin is on now, or after a HiBuddy restart when application is restart-required; '
         + 'already-enabled means it was on before; failed, or unconfirmed when a reload cut enabling off, can be retried from the card; '
         + 'dismissed means the user declined it, so do not offer it again in this conversation; enabling authorizes nothing beyond that plugin.',
       // Every action, including Not now, first learns whether an interrupted enable has since landed.
