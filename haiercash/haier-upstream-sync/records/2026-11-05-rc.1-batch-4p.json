@@ -1,0 +1,34 @@
+{
+  "batch": "4p",
+  "status": "awaiting_user_review",
+  "paths": [
+    "apps/web/tests/details-session-lifecycle.e2e.ts",
+    "snapshots/web/queue-actions/collapsed.expected.md",
+    "snapshots/web/queue-actions/editing.expected.md",
+    "snapshots/web/queue-actions/failed.expected.md",
+    "snapshots/web/queue-actions/goal-stop.expected.md",
+    "snapshots/web/queue-actions/layout.expected.md",
+    "snapshots/web/queue-actions/preserved-expanded.expected.md",
+    "snapshots/web/queue-actions/preserved.expected.md",
+    "snapshots/web/queue-actions/sending.expected.md",
+    "snapshots/web/queue-actions/ui.expected.md",
+    "snapshots/web/queue-actions/writer-held.expected.md"
+  ],
+  "decisions": [
+    "详情测试定位公司New task按钮。",
+    "队列ARIA基线逐项对齐公司顶栏、品牌、隐藏入口及控件顺序；失败卡片只采集composer-card，其外部权限和模型工具不在此快照范围。",
+    "仅改测试及10份队列ARIA快照，产品代码和详情几何基线不变。",
+    "CUA代码保留但不启用、不开放入口；当前可选bundle使用macOS provider，默认bundle未挂载CUA。"
+  ],
+  "validation": {
+    "capture": "2 files, 6 tests passed; reviewed every generated diff.",
+    "replay": "2 files, 6 tests passed in read-only replay; no unhandled errors reported.",
+    "diff_check": "passed"
+  },
+  "limitations": [
+    "CUA原生权限场景在Linux不能验证。",
+    "其余浏览器回归和最终验收仍待完成。",
+    "未提交、推送或合回主分支。"
+  ],
+  "next_step": "继续剩余浏览器场景回放，保留公司产品设计及可选能力关闭状态。"
+}

@@ -115,6 +115,8 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 
 /** Sidebar owner share: the fixed, expanded navigation column. */
 export interface SidebarOwnerProps {
+  /** Whether the sidebar uses overlay drawer presentation; false in the company layout. */
+  drawer: boolean
   /** Always false: the navigation column stays expanded. */
   collapsed: boolean
   /** Fixed navigation column width in px. */

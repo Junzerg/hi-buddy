@@ -56,7 +56,7 @@ async function bench(options: { locale?: 'en' } = {}) {
 describe('sidebar shell snapshots', () => {
   it('renders the expanded column in the default locale (zh, no setLocale)', async () => {
     const { runtime } = await bench()
-    const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236 })
+    const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236, drawer: false })
     // Wordmark + capsule both start a session in the expanded state.
     expect(slot.view.getAllByRole('button', { name: '新建任务' })).toHaveLength(2)
     expect(slot.container).toMatchSnapshot()
@@ -65,7 +65,7 @@ describe('sidebar shell snapshots', () => {
 
   it('renders the expanded column (wordmark, capsule, empty holes)', async () => {
     const { runtime } = await bench({ locale: 'en' })
-    const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236 })
+    const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236, drawer: false })
     // Wordmark + capsule both start a session in the expanded state.
     expect(slot.view.getAllByRole('button', { name: 'New task' })).toHaveLength(2)
     expect(slot.container).toMatchSnapshot()
@@ -75,7 +75,7 @@ describe('sidebar shell snapshots', () => {
 
   it('a locale switch refreshes mounted copy without re-registration', async () => {
     const { runtime, locale } = await bench()
-    const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236 })
+    const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236, drawer: false })
     expect(slot.view.getAllByRole('button', { name: '新建任务' })).toHaveLength(2)
     // Same fiber, same registration: setLocale alone re-renders the outlet.
     act(() => { locale.setLocale('en') })
@@ -88,7 +88,7 @@ describe('sidebar shell snapshots', () => {
     document.documentElement.setAttribute('data-windows-titlebar', '')
     const { runtime } = await bench({ locale: 'en' })
     try {
-      const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236 })
+      const slot = runtime.renderSlot('sidebar', { collapsed: false, width: 236, drawer: false })
       expect(slot.container).toMatchSnapshot('windows expanded')
 
     } finally {

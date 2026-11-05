@@ -1,0 +1,60 @@
+{
+  "batch": "4c",
+  "status": "awaiting_user_review",
+  "scope": "右栏容器与打开/引用接口；文件树和文档预览内部留待下一子批次。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 95,
+    "resolved": 12,
+    "remaining": 83
+  },
+  "paths": [
+    "packages/client/ui-open-in-app/src/client/index.ts",
+    "packages/client/ui-reference/src/client/index.ts",
+    "packages/client/ui-sidebar-right/README.i18n.yaml",
+    "packages/client/ui-sidebar-right/README.md",
+    "packages/client/ui-sidebar-right/README.zh.md",
+    "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.module.css",
+    "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.tsx",
+    "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.module.css",
+    "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx",
+    "packages/client/ui-sidebar-right/tests/apply.client.spec.ts",
+    "packages/client/ui-sidebar-right/tests/expand-button.client.spec.tsx",
+    "packages/client/ui-sidebar-right/tests/service.client.spec.ts",
+    "packages/client/ui-sidebar-right/tests/controller-harness.client.ts"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-open-in-app/src/client/index.ts",
+    "packages/client/ui-reference/src/client/index.ts",
+    "packages/client/ui-sidebar-right/README.i18n.yaml",
+    "packages/client/ui-sidebar-right/README.md",
+    "packages/client/ui-sidebar-right/README.zh.md",
+    "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.module.css",
+    "packages/client/ui-sidebar-right/src/client/shell/ExpandButton.tsx",
+    "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.module.css",
+    "packages/client/ui-sidebar-right/src/client/shell/SidebarRight.tsx",
+    "packages/client/ui-sidebar-right/tests/apply.client.spec.ts",
+    "packages/client/ui-sidebar-right/tests/expand-button.client.spec.tsx",
+    "packages/client/ui-sidebar-right/tests/service.client.spec.ts"
+  ],
+  "decisions": [
+    "保持工作台顶栏控制右栏；继续删除上游 ExpandButton 及其专属样式、测试，不恢复 conversation.session.header.corner 入口。",
+    "保持公司右栏宽度、窄屏浮层、手动全屏，不接入自动全屏规则。",
+    "接入上游标签页定位、已有标签提示、右键菜单接口与文件打开反馈，保留中英文。",
+    "保留现有窄屏面板阴影并合入标签定位反馈样式；文件树的新布局单独处理。"
+  ],
+  "validation": {
+    "targeted": "38 files, 477 tests passed: ui-sidebar-right, ui-open-in-app, ui-reference, ui-context-menu",
+    "hidden_entry": "apply test checks complete registrations without conversation header expand button",
+    "translation": "right-sidebar README pair consistent",
+    "scoped_whitespace": "passed"
+  },
+  "limitations": [
+    "尚未完成全应用启动、全仓类型检查和浏览器回放；其他 UI 冲突仍存在。",
+    "未把本批通过解释为文件树、文档预览或全部隐藏入口验收通过。",
+    "遵照用户要求不另做演示预览；最后仍需完整应用人工验收。",
+    "未提交、未推送，未合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理文件树与文档预览的接口迁移，保留公司文件标记和已有入口策略。"
+}

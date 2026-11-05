@@ -1,0 +1,48 @@
+{
+  "batch": "4b",
+  "status": "awaiting_user_review",
+  "scope": "左侧导航与中央顶栏；未处理聊天输入及右栏内部功能。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 108,
+    "resolved": 13,
+    "remaining": 95
+  },
+  "resolved_paths": [
+    "packages/client/ui-sidebar/README.i18n.yaml",
+    "packages/client/ui-sidebar/README.md",
+    "packages/client/ui-sidebar/README.zh.md",
+    "packages/client/ui-sidebar/src/client/HeaderLeadingControls.tsx",
+    "packages/client/ui-sidebar/src/client/SidebarRoot.module.css",
+    "packages/client/ui-sidebar/src/client/SidebarRoot.tsx",
+    "packages/client/ui-sidebar/src/client/contract/slots.ts",
+    "packages/client/ui-sidebar/tests/__snapshots__/sidebar-snapshot.client.spec.tsx.snap",
+    "packages/client/ui-sidebar/tests/apply.client.spec.tsx",
+    "packages/client/ui-sidebar/tests/panel-list.client.spec.tsx",
+    "packages/client/ui-sidebar/tests/sidebar-root.client.spec.tsx",
+    "packages/client/ui-sidebar/tests/sidebar-snapshot.client.spec.tsx",
+    "packages/client/ui-sidebar/tests/sidebar-styles.client.spec.ts"
+  ],
+  "decisions": [
+    "原来因未适配而隐藏的入口继续隐藏；底层更新不自动授权开放入口。",
+    "保持公司侧栏、导航注册、中央顶栏源代码和样式与 HEAD 一致；现有收起按钮由 ui-layout 负责。",
+    "保持已删除的 HeaderLeadingControls 删除状态，不引入另一套侧栏打开控件。",
+    "承接 drawer:false 接口和上游新增的全局 contextMenu 测试钩子，保留原有导航、权限、快捷键和快照测试。"
+  ],
+  "validation": {
+    "targeted": "21 files: 20 passed, 1 failed; 147 tests passed, 1 failed",
+    "blocked_test": "ui-entry-customization/tests/reader-boot.client.spec.ts depends on unresolved ui-open-in-app/src/client/index.ts; deferred until that region is merged",
+    "hidden_entry_assertions": "panel-list.client.spec.tsx keeps Plugins out of navigation; topbar.client.spec.tsx keeps unfinished search hidden; both passed",
+    "source_integrity": "SidebarRoot, its stylesheet, sidebar registration, WorkbenchTopbar and its stylesheet byte-identical to HEAD",
+    "translation_pair": "consistent",
+    "scoped_whitespace": "passed"
+  },
+  "limitations": [
+    "完整客户端启动与浏览器回放尚未通过；未声称所有区域的入口已验收。",
+    "账户、右栏和聊天等区域仍需分别检查隐藏入口，不能仅凭本轮结果判定兼容。",
+    "用户不再需要独立演示预览，4187 预览进程已停止；未修改产品图标实现。",
+    "未提交、未推送、未合回 dev/junzerg。"
+  ],
+  "next_step": "用户确认后继续下一个 UI 区域，保留现有隐藏入口。"
+}

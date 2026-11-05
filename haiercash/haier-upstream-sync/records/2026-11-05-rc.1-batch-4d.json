@@ -1,0 +1,51 @@
+{
+  "batch": "4d",
+  "status": "awaiting_user_review",
+  "scope": "文件树与文档预览接口迁移、公司文件标记和工具栏样式保留。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 83,
+    "resolved": 6,
+    "remaining": 77
+  },
+  "paths": [
+    "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+    "packages/client/ui-sidebar-documentpreview/tests/image-registration.client.spec.ts",
+    "packages/client/ui-sidebar-files/src/client/FilesBody.module.css",
+    "packages/client/ui-sidebar-files/src/client/FilesBody.tsx",
+    "packages/client/ui-sidebar-files/src/client/index.ts",
+    "packages/client/ui-sidebar-files/tests/apply.client.spec.ts",
+    "packages/client/ui-sidebar-files/src/client/FileTree.tsx",
+    "packages/client/ui-sidebar-files/src/client/FileTree.module.css",
+    "packages/client/ui-sidebar-files/tests/file-tree.client.spec.tsx"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-sidebar-documentpreview/src/client/TextPreview.module.css",
+    "packages/client/ui-sidebar-documentpreview/tests/image-registration.client.spec.ts",
+    "packages/client/ui-sidebar-files/src/client/FilesBody.module.css",
+    "packages/client/ui-sidebar-files/src/client/FilesBody.tsx",
+    "packages/client/ui-sidebar-files/src/client/index.ts",
+    "packages/client/ui-sidebar-files/tests/apply.client.spec.ts"
+  ],
+  "decisions": [
+    "采用上游共享文件树、按面板管理的导航状态、预览内文件导航和刷新接口。",
+    "将公司文件类型文字色块、颜色、行高和间距迁移到 FileTree；保留文件树和预览工具栏尺寸。",
+    "保持中英文；本批不恢复既有隐藏功能入口，不改变左栏布局与右栏展开入口。"
+  ],
+  "validation": {
+    "initial": "71 files: 69 passed, 1 failed, 1 skipped; 793 passed, 7 failed, 1 skipped tests. All 7 failures were tree tests assuming SVG icons or first-span filename text.",
+    "retest": "file-tree.client.spec.tsx: 22 tests passed after adapting selectors and adding English/Chinese badge, accessible filename and open-action coverage.",
+    "combined": "70 files / 802 tests passed, 1 file / 1 test skipped, combining unchanged passing files with the corrected file retest.",
+    "skipped": "Packed lazy-chunk license test requires a built bundle, unavailable in this worktree.",
+    "reader_boot": "Blocked by unresolved ui-settings-account/src/client/AccountMenu.tsx conflict; no out-of-scope repair.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg working tree remains clean"
+  },
+  "limitations": [
+    "全应用启动、全仓类型检查和浏览器回放仍待剩余冲突处理完成。",
+    "未做额外演示预览；最终完整应用仍需人工验收。",
+    "未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理会话区与输入栏，继续保留已有定制和隐藏入口。"
+}

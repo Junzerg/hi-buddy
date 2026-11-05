@@ -86,7 +86,7 @@ export function AppFrame({
   const cols = computeColumns(viewport, layoutInfo.rightbarTrack, rightbarWidth)
   const toggleLabel = t(sidebarCollapsed ? 'sidebar.expand' : 'sidebar.collapse')
   const sidebar = useMemo(() => renderSlot('sidebar', {
-    collapsed: false, width: 236,
+    collapsed: false, width: 236, drawer: false,
   }), [renderSlot])
   const main = useMemo(() => (
     <MainPanel usePanelInfo={usePanelInfo} renderSlot={renderSlot} />

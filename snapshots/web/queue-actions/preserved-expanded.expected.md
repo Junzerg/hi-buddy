@@ -1,16 +1,19 @@
 - banner:
+  - text: Reply with a one-sentence description
+  - button "Task overview"
+  - button "Expand sidebar"
+- banner:
   - navigation "Session hierarchy": Reply with a one-sentence description
   - text: Standard mode
   - button "More actions"
-  - button "Open right sidebar"
   - tablist:
     - tab "Chat" [selected]
     - tab "Trajectory"
-  - button "More conversation views"
 - text: Reply with a one-sentence description of event sourcing, then stop. {{clock}}
 - button "Copy"
 - status: Stopped
 - button "Stopped" [disabled]
+- text: HiBuddy {{clock}}
 - paragraph: partial
 - text: Stopped
 - button "Copy"
@@ -30,7 +33,6 @@
     - button "Steer queued message" [disabled]
 - textbox "Continue with more detail, or @ add context, / skills and commands"
 - button "Add files or run commands"
+- button "Send message" [disabled]
 - 'button "Access mode, current: Workspace Write"': Workspace Write
 - button "Select model, current DeepSeek-V4-Flash": DeepSeek-V4-Flash
-- button "Send message" [disabled]
-- button "1 turns 1 steps"

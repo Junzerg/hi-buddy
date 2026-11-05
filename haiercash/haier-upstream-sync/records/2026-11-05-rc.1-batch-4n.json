@@ -1,0 +1,32 @@
+{
+  "batch": "4n",
+  "status": "awaiting_user_review",
+  "scope": "5个测试文件类型适配，以及侧栏滚动和空白首页统计测试夹具修正。",
+  "paths": [
+    "packages/client/ui-layout/tests/app-frame.client.spec.tsx",
+    "packages/client/ui-sidebar-files/tests/file-tree.client.spec.tsx",
+    "packages/client/ui-sidebar-files/tests/files-navigator.client.spec.tsx",
+    "packages/session-query/session-log-export/tests/header-action.client.spec.tsx",
+    "apps/web/tests/composer-tab-geometry.e2e.ts",
+    "apps/web/tests/context-meter.e2e.ts",
+    "apps/web/tests/sidebar-scrollbar.e2e.ts"
+  ],
+  "decisions": [
+    "使用当前上下文菜单测试钩子，移除过时的自动全屏属性、多余参数和未使用导入。",
+    "侧栏预置48条会话并等待展开，保留真实溢出断言、公司配色和几何基线。",
+    "空白首页统计测试不挂载未消费的模型回放，验证统计容器为空且无统计按钮。",
+    "仅修改测试，不修改产品源码或刷新快照。"
+  ],
+  "validation": {
+    "unit": "4 files, 93 tests passed.",
+    "aggregate_types": "pnpm run build:check: Host and Client checks passed.",
+    "browser": "Sidebar scrollbar: 7 passed; final blank-home context checks: 2 passed.",
+    "whitespace": "git diff --check passed."
+  },
+  "limitations": [
+    "本批浏览器统计覆盖空白首页；有模型调用后的统计交互不在本批覆盖范围。",
+    "其余待回放浏览器场景及最终人工验收尚未完成。",
+    "未提交、推送或合回 dev/junzerg，未触碰主工作区修改。"
+  ],
+  "next_step": "确认后继续回放剩余浏览器场景，按公司样式和隐藏入口核对；出现产品行为差异时单独报告。"
+}

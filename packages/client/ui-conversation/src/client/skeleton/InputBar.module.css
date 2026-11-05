@@ -19,6 +19,15 @@
   padding-top: 4px;
 }
 
+/* The docked composer toolbar reserves room for context usage before readings
+   arrive, so the projections landing never change the composer height. The
+   row height matches the readings: a 20px secondary line plus 1px block
+   padding (ContextMeter `.trigger`). A minimum,
+   not a fixed height, so taller readings still size the row. */
+.root:not(.hero) > .composerToolsRow {
+  min-height: calc(22px + var(--dsh-content-font-delta-secondary, 0px));
+}
+
 .hero .dock:empty {
   display: none;
 }
@@ -556,6 +565,29 @@
   opacity: 1;
   background: var(--dsw-static-neutral-bluish-300);
   color: var(--dsw-alias-bg-base);
+}
+
+/* Sending: the message waits for the Host to accept it. The circle keeps its
+   full fill rather than the disabled fade, and an arc turns where the arrow was. */
+.hero .primary[data-sending]:disabled,
+.root:not(.hero) .primary[data-sending]:disabled {
+  opacity: 1;
+  cursor: progress;
+  background: var(--dsw-alias-label-primary);
+}
+
+.sendingSpinner {
+  animation: input-sending 800ms linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sendingSpinner {
+    animation-duration: 2400ms;
+  }
+}
+
+@keyframes input-sending {
+  to { transform: rotate(360deg); }
 }
 
 .retry {

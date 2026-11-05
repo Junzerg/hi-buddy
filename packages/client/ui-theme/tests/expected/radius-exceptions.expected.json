@@ -4,9 +4,6 @@
     ".option: border-radius: 20px",
     ".hint: border-radius: 12px"
   ],
-  "ui-chat/src/client/chat/AssistantMarkdown.module.css": [
-    ".avatar: border-radius: 7px"
-  ],
   "ui-chat/src/client/chat/MessageItem.module.css": [
     ".userStack .userBubble: border-radius: 14px 14px 4px 14px"
   ],
@@ -62,8 +59,7 @@
     ".ruleInput: border-radius: 18px",
     ".ruleIntervalStepper: border-radius: 18px",
     ".instruction: border-radius: 16px",
-    ".delivery: border-radius: 8px",
-    ".linkedSession: border-radius: 14px"
+    ".delivery: border-radius: 8px"
   ],
   "ui-settings-account/src/client/AccountNotice.module.css": [
     ".card: border-radius: 16px"

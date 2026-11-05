@@ -1,0 +1,44 @@
+{
+  "batch": "4g",
+  "status": "awaiting_user_review_with_integration_checks_pending",
+  "scope": "全局插槽目录、Web 类型引用及快捷键/导出装配测试适配。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 60,
+    "resolved": 4,
+    "remaining": 56
+  },
+  "paths": [
+    "packages/extensions/cordis-client-runner/src/client/slot-catalog.ts",
+    "apps/web/tsconfig.json",
+    "packages/client/ui-shortcuts/tests/commands.client.spec.ts",
+    "packages/session-query/session-log-export/tests/header-action.client.spec.tsx"
+  ],
+  "resolved_paths": [
+    "packages/extensions/cordis-client-runner/src/client/slot-catalog.ts",
+    "apps/web/tsconfig.json",
+    "packages/client/ui-shortcuts/tests/commands.client.spec.ts",
+    "packages/session-query/session-log-export/tests/header-action.client.spec.tsx"
+  ],
+  "decisions": [
+    "使用 gen-client-catalog 按当前源码生成目录，保留公司通知插槽和固定侧栏 owner 契约，纳入上游上下文菜单及设置图标接口。",
+    "保留中英文测试范围；Web 类型配置合入上下文菜单等 Host 测试的排除引用。",
+    "快捷键测试保持公司布局契约；导出测试接入 contextMenuHook 和 act。",
+    "不为解除装配依赖而跨批次修改工作区 UI。"
+  ],
+  "validation": {
+    "targeted": "48 files: 42 passed, 6 failed; 596 passed, 54 failed tests.",
+    "blocked": "All 54 failures share unresolved packages/client/ui-workspace/src/client/rows/WorkspaceBrowser.tsx during import. The slot-catalog parse blocker is removed.",
+    "catalog": "gen-client-catalog and verify-client-catalog passed against current intermediate source.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "源码仍有未解决冲突，目录属于中间生成结果；全部源文件处理后必须再次生成和校验。",
+    "账户、设置、快捷键和隐藏入口装配测试仍须在工作区冲突解决后复测；最后一处旧 sidebar 测试引用已改回 geometry，其用例本轮仍受导入阻断。",
+    "全应用启动、全仓类型检查、浏览器回放及最终人工验收尚未完成。",
+    "未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理工作区列表与工作区浏览器，保留公司列表样式及隐藏入口，复测阻断的装配用例。"
+}

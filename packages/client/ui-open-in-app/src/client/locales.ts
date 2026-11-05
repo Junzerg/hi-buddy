@@ -39,6 +39,18 @@ const PRODUCT_NAMES = {
 
 /** Simplified Chinese dictionary (the key-set source of truth). */
 export const zh = {
+  'menu.openInSidebar': '在侧边栏打开',
+  'menu.openInFloat': '在浮窗中打开',
+  'menu.finder': '在 Finder 中显示',
+  'menu.reveal': '在文件夹显示',
+  'menu.defaultApp': '使用默认应用打开',
+  'menu.external': '外部浏览器打开',
+  'menu.copyLink': '复制链接地址',
+  'menu.copyPath': '复制文件路径',
+  'menu.copyDirectoryPath': '复制文件夹路径',
+  'menu.copied': '已复制',
+  'menu.copyFailed': '无法复制，请检查内容是否可用后重试',
+
   'open.title': '用 {app} 打开',
   'path.appDefault': '{app}（默认）',
   'path.appsError': '无法获取应用列表',
@@ -48,6 +60,8 @@ export const zh = {
   'path.open': '打开',
   'path.more': '更多打开方式',
   'path.reveal': '显示文件位置',
+  'path.opened': '已在其它设备打开',
+  'path.revealed': '已在其它设备显示文件位置',
   'path.openError': '打开失败，请重试',
   'path.revealError': '无法显示文件位置，请重试',
   ...PRODUCT_NAMES,
@@ -59,6 +73,18 @@ export const zh = {
 
 /** English dictionary, key-identical to the Chinese source of truth. */
 export const en: Record<OpenInAppKey, string> = {
+  'menu.openInSidebar': 'Open in sidebar',
+  'menu.openInFloat': 'Open in floating panel',
+  'menu.finder': 'Show in Finder',
+  'menu.reveal': 'Show in folder',
+  'menu.defaultApp': 'Open in default application',
+  'menu.external': 'Open in external browser',
+  'menu.copyLink': 'Copy link address',
+  'menu.copyPath': 'Copy file path',
+  'menu.copyDirectoryPath': 'Copy folder path',
+  'menu.copied': 'Copied',
+  'menu.copyFailed': 'Could not copy. Check that the content is available, then retry.',
+
   'open.title': 'Open in {app}',
   'path.appDefault': '{app} (default)',
   'path.appsError': 'Could not load applications',
@@ -68,6 +94,8 @@ export const en: Record<OpenInAppKey, string> = {
   'path.open': 'Open',
   'path.more': 'More ways to open',
   'path.reveal': 'Show file location',
+  'path.opened': 'Opened on another device',
+  'path.revealed': 'File location shown on another device',
   'path.openError': 'Could not open. Try again.',
   'path.revealError': 'Could not show the file location. Try again.',
   ...PRODUCT_NAMES,

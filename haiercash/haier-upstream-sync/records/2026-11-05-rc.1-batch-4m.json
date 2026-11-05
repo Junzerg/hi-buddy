@@ -1,0 +1,36 @@
+{
+  "batch": "4m",
+  "status": "awaiting_user_review_with_checks_pending",
+  "scope": "剩余两处冲突、命令类型导入及 LiveShare 公司登录接口分类。",
+  "conflicts": {
+    "before": 2,
+    "resolved": 2,
+    "remaining": 0
+  },
+  "paths": [
+    "scripts/verify-repository-references.spec.ts",
+    "snapshots/session/dynamic-tool-updates/session.v4.jsonl",
+    "packages/client/ui-commands/src/client/resolution.ts",
+    "packages/experimental/liveshare/src/endpoint-classification.ts",
+    "packages/experimental/liveshare/tests/viewer-access-policy.spec.ts"
+  ],
+  "decisions": [
+    "公司登录接口仅所有者可用，测试验证共享阅读者不能调用或获得授权。",
+    "命令仅补类型导入，保留隐藏反馈及导出命令的现有策略。",
+    "动态工具快照保留 HiBuddy 提示并接入 apply_patch 工具列表。",
+    "仓库引用测试采用当前扫描器的十进制标记规则。"
+  ],
+  "validation": {
+    "unit": "231 tests passed; after adding the login denial assertion, 45 access-policy tests passed again.",
+    "session_snapshot": "dynamic-tool-updates: 1 passed (182 unselected).",
+    "build": "8 gates passed; Host and Client aggregate checks failed on test type compatibility in 5 files. All runtime compilers and bundles passed.",
+    "browser": "3 files: 8 passed, 5 failed. Sessionless header passed for all four platforms. Scrollbar tests failed because the list did not overflow; context-meter teardown failed because its recorded model script was not consumed.",
+    "scoped_diff_check": "passed"
+  },
+  "limitations": [
+    "未刷新快照来掩盖回归失败，浏览器失败原因仍待核查。",
+    "其余浏览器回放、完整检查及人工验收尚未完成。",
+    "主工作区存在用户未提交修改，未触碰；集成分支尚未提交、推送或合回。"
+  ],
+  "next_step": "下一批处理5个测试文件的类型兼容，并核查侧栏滚动场景和统计测试夹具；保持产品样式与隐藏入口。"
+}

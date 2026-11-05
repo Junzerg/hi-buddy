@@ -144,6 +144,8 @@ describe('assembled shortcut command owners', () => {
     }
     menu('settings.open' as ShortcutCommandId)
     expect(settings.getSnapshot().open).toBe(true)
+    press('KeyB')
+    expect(layout.getSnapshot().layoutInfo).toBe(geometry)
     menu('settings.open' as ShortcutCommandId)
     expect(settings.getSnapshot().open).toBe(false)
     menu('shortcuts.open' as ShortcutCommandId)

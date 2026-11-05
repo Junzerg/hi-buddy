@@ -1,0 +1,80 @@
+{
+  "batch": "4a",
+  "status": "awaiting_layout_review",
+  "scope": "第 4 批的整体布局子批次，仅 ui-layout；不是整个 UI 批次完成。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 118,
+    "resolved": 10,
+    "remaining": 108
+  },
+  "decisions": [
+    "用户确认先保留现有布局；本次不启用上游窄屏左栏抽屉和折叠屏重排。",
+    "保留 236px 左栏、中央顶栏、右栏初始宽度与缩放、窄屏右栏浮层、既有侧栏收起按钮和主题。",
+    "SidebarOwnerProps 接入 drawer 字段并明确传 false，防止上游消费者误判展示形态。",
+    "保留仍被公司布局使用的 ui-primitives TypeScript 引用。",
+    "抽屉、折叠屏及相关快捷键的上游实现与专属测试暂不接入；继续运行公司原有布局测试，字段断言同步 drawer:false。"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-layout/README.i18n.yaml",
+    "packages/client/ui-layout/README.md",
+    "packages/client/ui-layout/README.zh.md",
+    "packages/client/ui-layout/src/client/AppFrame.module.css",
+    "packages/client/ui-layout/src/client/AppFrame.tsx",
+    "packages/client/ui-layout/src/client/columns.ts",
+    "packages/client/ui-layout/src/client/index.ts",
+    "packages/client/ui-layout/src/client/stores.ts",
+    "packages/client/ui-layout/tests/app-frame.client.spec.tsx",
+    "packages/client/ui-layout/tests/columns.client.spec.ts"
+  ],
+  "paths": [
+    "packages/client/ui-layout/src/client/AppFrame.tsx",
+    "packages/client/ui-layout/src/client/AppFrame.module.css",
+    "packages/client/ui-layout/src/client/columns.ts",
+    "packages/client/ui-layout/src/client/stores.ts",
+    "packages/client/ui-layout/src/client/index.ts",
+    "packages/client/ui-layout/tests/app-frame.client.spec.tsx",
+    "packages/client/ui-layout/tests/columns.client.spec.ts",
+    "packages/client/ui-layout/tests/apply.client.spec.ts",
+    "packages/client/ui-layout/tests/layout-store.client.spec.ts",
+    "packages/client/ui-layout/README.md",
+    "packages/client/ui-layout/README.zh.md",
+    "packages/client/ui-layout/README.i18n.yaml",
+    "packages/client/ui-layout/tsconfig.json"
+  ],
+  "validation": {
+    "layout_tests": "7 files, 71 tests passed",
+    "browser_preview": {
+      "passed": [
+        "render",
+        "left-collapse-restore",
+        "right-resize",
+        "light-dark",
+        "1024-overlay",
+        "right-close"
+      ],
+      "pageErrors": []
+    },
+    "translation_pair": "consistent",
+    "scoped_whitespace": "passed",
+    "gui_gate": "failed: 40 files failed, 692 passed, 3 skipped; 58 tests failed, 11699 passed, 7 skipped. Remaining conflict markers and other UI integration failures recorded in checkpoint log; no out-of-scope fixes."
+  },
+  "preview": {
+    "url": "http://127.0.0.1:4187",
+    "directory": "/tmp/haier-layout-preview",
+    "implementation": "真实集成工作区 AppFrame、布局 store 与 CSS；槽位内容为占位展示，主题使用开发基线 CSS。不是完整应用，不验证其他区域。",
+    "screenshots": [
+      "layout-wide.png",
+      "layout-dark.png",
+      "layout-narrow.png"
+    ]
+  },
+  "limitations": [
+    "完整 test:web 回放和全仓类型检查被剩余 UI 冲突阻塞，未运行。",
+    "390px 左栏展示仍保留现有行为；手机抽屉交互未验收，也未宣称达到新的手机布局要求。",
+    "未改动聊天输入、左右侧栏内部组件和其他 UI；这些仍待分区合并。",
+    "尚未合回 dev/junzerg，未提交、未推送。"
+  ],
+  "next_step": "用户审阅整体布局后，再进入左侧导航与顶栏等下一区域。"
+}

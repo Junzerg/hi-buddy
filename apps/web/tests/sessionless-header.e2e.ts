@@ -19,7 +19,7 @@ afterAll(async () => {
 })
 
 describe('navigation without a selected Session', () => {
-  it.each(['web', 'win32', 'linux', 'darwin'] as const)('%s preserves its empty-header geometry and sidebar access', async (platform) => {
+  it.each(['web', 'win32', 'linux', 'darwin'] as const)('%s keeps the company blank-home header height and sidebar access', async (platform) => {
     const page = await newEnglishPage(browser)
     try {
       if (platform !== 'web') {
@@ -41,13 +41,13 @@ describe('navigation without a selected Session', () => {
       const sessionHeader = page.locator('[data-slot="conversation.session.header"]')
       expect(await sessionHeader.count()).toBe(0)
       const header = page.locator('[data-slot="conversation.header"] > header')
-      expect(await header.evaluate(element => element.getBoundingClientRect().height)).toBe(platform === 'darwin' ? 40 : 0)
+      expect(await header.evaluate(element => element.getBoundingClientRect().height)).toBe(0)
       expect(await page.getByRole('button', { name: /^(Open|Collapse) sidebar$/ }).count()).toBe(0)
       for (const width of [1440, 1180, 390, 1440]) {
         await page.setViewportSize({ width, height: 900 })
         await expect.poll(() => page.locator('[data-slot="sidebar"]').evaluate(element => element.closest('[class*="sidebarCol"]')!.getBoundingClientRect().width)).toBe(236)
         expect(await sessionHeader.count()).toBe(0)
-        expect(await header.evaluate(element => element.getBoundingClientRect().height)).toBe(platform === 'darwin' ? 40 : 0)
+        expect(await header.evaluate(element => element.getBoundingClientRect().height)).toBe(0)
       }
       expect(tripwire.pageErrors).toEqual([])
       expect(tripwire.warnings).toEqual([])

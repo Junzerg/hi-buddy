@@ -1,0 +1,55 @@
+{
+  "batch": "4l",
+  "status": "awaiting_user_review_with_browser_checks_pending",
+  "scope": "浏览器回归用例及对应快照；不修改产品代码。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "conflicts": {
+    "before": 24,
+    "resolved": 22,
+    "remaining": 2
+  },
+  "resolved_paths": [
+    "apps/web/tests/caption-overlays.e2e.ts",
+    "apps/web/tests/chat-scroll-contract.e2e.ts",
+    "apps/web/tests/client-plugin-live.e2e.ts",
+    "apps/web/tests/context-meter.e2e.ts",
+    "apps/web/tests/cua-permissions.e2e.ts",
+    "apps/web/tests/details-session-lifecycle.e2e.ts",
+    "apps/web/tests/expected/cua-permissions/application-approval.expected.md",
+    "apps/web/tests/expected/layout-bottom/geometry.expected.md",
+    "apps/web/tests/expected/schedule-header.expected.md",
+    "apps/web/tests/markdown-wide-table.e2e.ts",
+    "apps/web/tests/queue-actions.e2e.ts",
+    "apps/web/tests/schedule-header.e2e.ts",
+    "apps/web/tests/sessionless-header.e2e.ts",
+    "apps/web/tests/sidebar-right.e2e.ts",
+    "apps/web/tests/sidebar-scrollbar.e2e.ts",
+    "apps/web/tests/stats-truncated-tooltip.e2e.ts",
+    "apps/web/tests/support.ts",
+    "apps/web/tests/window-drag-coverage.e2e.ts",
+    "snapshots/web/auto-review-denial/ui.expected.md",
+    "snapshots/web/details-session-lifecycle/sidebar.expected.md",
+    "snapshots/web/queue-actions/sending.expected.md",
+    "snapshots/web/sidebar-scrollbar/geometry.expected.md"
+  ],
+  "decisions": [
+    "以公司固定侧栏、手动全屏、空白首页及隐藏入口为准，不引入上游窄屏抽屉。",
+    "接入会话级 CUA 授权、发送中草稿只读及文件导航器断言。",
+    "快照处理冲突后仍须浏览器回放验证。"
+  ],
+  "validation": {
+    "syntax": "15 TypeScript files parsed successfully.",
+    "scoped_checks": "22 files passed conflict-marker, trailing-newline and git diff --check checks.",
+    "build": "5 gates passed, 2 failed, 3 skipped.",
+    "blockers": [
+      "仓库引用测试尚有冲突标记。",
+      "LiveShare 权限分类缺少 account/completeApiKeySignIn。",
+      "ui-commands 缺少 BuiltinCommandName 类型导入。"
+    ]
+  },
+  "limitations": [
+    "浏览器回放未运行，完整构建和最终人工验收未完成。",
+    "未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理剩余两个冲突与两个构建兼容问题，再构建和回放。"
+}

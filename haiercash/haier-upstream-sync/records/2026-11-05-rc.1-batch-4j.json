@@ -1,0 +1,49 @@
+{
+  "batch": "4j",
+  "status": "awaiting_user_review",
+  "scope": "模型标签迁移与可选 CUA 客户端接线。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 45,
+    "resolved": 3,
+    "remaining": 42
+  },
+  "paths": [
+    "packages/client/ui-deepseek-model-label-1017/src/client/index.ts",
+    "packages/client/ui-deepseek-model-label-1017/src/client/locales.ts",
+    "packages/experimental/cua/src/client/mount.ts",
+    "packages/client/ui-model-selection/src/client/ModelSelect.tsx",
+    "packages/client/ui-model-selection/src/client/slots.ts",
+    "packages/client/ui-model-selection/tests/model-select.client.spec.tsx",
+    "packages/client/ui-model-selection/README.md",
+    "packages/client/ui-model-selection/README.zh.md",
+    "packages/client/ui-model-selection/README.i18n.yaml",
+    "packages/extensions/cordis-client-runner/src/client/slot-catalog.ts"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-deepseek-model-label-1017/src/client/index.ts",
+    "packages/client/ui-deepseek-model-label-1017/src/client/locales.ts",
+    "packages/experimental/cua/src/client/mount.ts"
+  ],
+  "decisions": [
+    "用户明确允许未启用功能合入代码，保持默认未启用、入口隐藏。",
+    "CUA 不在 base/web-app 默认组合中；本批仅修正中英文注册与 PermissionController 当前语言回调，不启用插件或申请系统权限。",
+    "旧 1017 临时标签插件曾被默认 web-app 加载；上游改由模型目录提供 badge。本批删除剩余旧插件文件，使用新接口。",
+    "保持产品排列：触发按钮和菜单都在模型名称后展示标签，保留现有 Tag 样式与 4px 间距。模型目录决定是否提供标签，不硬编码过期版本号。"
+  ],
+  "validation": {
+    "targeted": "7 files / 168 tests passed: model selection and CUA mount/controller/panel/application approval.",
+    "composition": "No CUA references in base/web-app default package and patch files; old model-label plugin absent from web-app, lockfile and client aggregate.",
+    "translation": "Model selection README pair consistent.",
+    "catalog": "Regeneration and freshness check passed.",
+    "scoped_whitespace": "passed",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "未检查用户运行时另行安装的插件或内网部署状态；默认启用情况依据仓库配置。",
+    "全应用人工验收、全仓类型检查及浏览器回放仍待剩余冲突解决。",
+    "未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后整理剩余功能说明和生成文档，再处理浏览器回归场景；保持公司视觉与入口策略。"
+}

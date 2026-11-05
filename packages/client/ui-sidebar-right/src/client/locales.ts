@@ -8,6 +8,9 @@
 
 /** Simplified Chinese dictionary and key-set source of truth. */
 export const zh = {
+  'menu.close': '关闭',
+  'menu.closeOthers': '关闭其他标签页',
+  'menu.closeRight': '关闭右侧标签页',
   'command.close': '关闭当前页面／窗口',
   'command.refresh': '刷新当前页面',
   'command.noRefresh': '当前页面不支持刷新',
@@ -48,6 +51,9 @@ export type SidebarRightKey = keyof typeof zh
 
 /** English dictionary, checked against the Chinese key set. */
 export const en = {
+  'menu.close': 'Close',
+  'menu.closeOthers': 'Close Other Tabs',
+  'menu.closeRight': 'Close Tabs to the Right',
   'command.close': 'Close current page or window',
   'command.refresh': 'Refresh current page',
   'command.noRefresh': 'This page cannot be refreshed',

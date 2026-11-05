@@ -1,0 +1,52 @@
+{
+  "batch": "4f",
+  "status": "awaiting_user_review_with_integration_checks_pending",
+  "scope": "账户菜单与通用设置；保留公司账号入口与内部反馈，合入设置图标扩展接口。",
+  "target_commit": "66491b05e3f05ad35bcdd4f6cd7ed26041d9e3db",
+  "integration_head": "564994fc95a9e18a72158b4768d4033d22aeae79",
+  "conflicts": {
+    "before": 67,
+    "resolved": 7,
+    "remaining": 60
+  },
+  "paths": [
+    "packages/client/ui-settings-account/README.i18n.yaml",
+    "packages/client/ui-settings-account/README.md",
+    "packages/client/ui-settings-account/README.zh.md",
+    "packages/client/ui-settings-account/src/client/AccountMenu.module.css",
+    "packages/client/ui-settings-account/src/client/AccountMenu.tsx",
+    "packages/client/ui-settings-account/tests/account.client.spec.tsx",
+    "packages/client/ui-settings-general/src/client/SettingsRoot.module.css",
+    "packages/client/ui-settings-account/tests/account-menu-styles.client.spec.ts",
+    "packages/client/ui-settings-general/tests/settings-root-styles.client.spec.ts"
+  ],
+  "resolved_paths": [
+    "packages/client/ui-settings-account/README.i18n.yaml",
+    "packages/client/ui-settings-account/README.md",
+    "packages/client/ui-settings-account/README.zh.md",
+    "packages/client/ui-settings-account/src/client/AccountMenu.module.css",
+    "packages/client/ui-settings-account/src/client/AccountMenu.tsx",
+    "packages/client/ui-settings-account/tests/account.client.spec.tsx",
+    "packages/client/ui-settings-general/src/client/SettingsRoot.module.css"
+  ],
+  "decisions": [
+    "账户菜单与样式保持公司版本：姓名首字头像、部门信息、通知/反馈/设置按钮及内部团队反馈弹窗。",
+    "保留公司底部间距；不采用上游账号整行入口与折叠态改版，不引入当前侧栏未定义的布局变量。",
+    "接入 settings.section.icon 注册接口及默认图标回退，不改变设置项名册或恢复隐藏入口。",
+    "公司 IAM 和账号 provider 未修改；不接触凭据、内网或外部反馈发送。"
+  ],
+  "validation": {
+    "targeted": "38 files: 33 passed, 5 failed; 452 passed, 52 failed tests.",
+    "blocked": "All 52 failures share the unresolved conflict in packages/extensions/cordis-client-runner/src/client/slot-catalog.ts during import. Includes account/general apply, settings shell, and shipped reader boot.",
+    "translation": "2 named README pairs consistent.",
+    "scoped_whitespace": "passed",
+    "company_account_menu": "AccountMenu.tsx and AccountMenu.module.css match integration HEAD.",
+    "main_worktree": "dev/junzerg remains clean."
+  },
+  "limitations": [
+    "装配测试被全局插槽目录冲突阻断，待处理后必须复测；不宣称本批全部通过。",
+    "全应用启动、全仓类型检查、浏览器回放与最终人工验收尚未完成。",
+    "未额外做预览，未提交、推送或合回 dev/junzerg。"
+  ],
+  "next_step": "确认后处理客户端装配接口与全局插槽目录，再复测被阻断的账户、设置和隐藏入口装配测试。"
+}
