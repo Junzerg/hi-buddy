@@ -27,6 +27,8 @@ English | [中文](README.zh.md)
 
 The Web bundle mounts this plugin. Its Client entry registers the selection action with `ctx.uiConversation.interactions` and renders quotes through UserText rules. Registrations are removed when the plugin unloads. The selection button uses the shared floating-surface stroke and shadow.
 
+Plugins add buttons beside Quote through the `conversation.chat.text-interaction.quote.actions` list Slot. Import the `/client` entry's types, wait with `ctx.slots.inject`, and register a unique `id`. The Slot uses Session scope: actions receive the selected text's `sessionId` and standard Session hooks, plus `trigger`, `readText`, `clearSelection`, `dismiss`, and `actionClassName`. Use the class on a button, prevent the pointer-down default to retain selection, and call `readText()` at click time; `null` means the source is no longer valid. Capture the text and Session identity before dismissing or navigating. Extensions share Quote's writable-Session eligibility and unload with their registration; they do not register a competing selection interaction. Without extensions, only Quote appears.
+
 -----
 
 <a id="understand-the-implementation"></a>

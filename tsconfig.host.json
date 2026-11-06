@@ -13,6 +13,7 @@
     "apps/web/tests/plugin-recommendations.e2e.ts",
     "apps/web/tests/unsupported-locales.e2e.ts",
     "apps/web/tests/rich-text-quotes.e2e.ts",
+    "apps/web/tests/selection-actions.e2e.ts",
     "apps/web/tests/hover-input.e2e.ts",
     "apps/web/tests/collapse-timing.e2e.ts",
     "apps/web/tests/notice-wake-tail.e2e.ts",

@@ -4,6 +4,7 @@ import type {} from '@deepseek-ai/dsh-api-session-controller/client'
 import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-chat/client'
 import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
+import type { TextInteractionSurface } from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 import { QuoteSelectionAction } from './QuoteSelection.tsx'
 import { QuotedUserText } from './QuotedUserText.tsx'
@@ -12,7 +13,21 @@ import { en, NS, zh, type MessageQuotesKey } from './locales.ts'
 
 export type {} from './quote-rule.ts'
 
+/** Live selection callbacks and the shared button style for additive actions. */
+export interface QuoteSelectionActionOwnerProps extends TextInteractionSurface {
+  /** Shared floating-action button style; preserve selection on pointer down. */
+  readonly actionClassName: string
+}
+
 declare module '@deepseek-ai/dsh-client-ui-slots' {
+  interface SlotMap {
+    /** Additional actions beside Quote, bound to the selected text's Session. */
+    'conversation.chat.text-interaction.quote.actions': {
+      kind: 'list'
+      scope: 'session'
+      owner: QuoteSelectionActionOwnerProps
+    }
+  }
   interface LocaleNamespaceMap {
     /** Quote selection action copy. */
     messageQuotes: MessageQuotesKey
@@ -46,6 +61,9 @@ export function apply(ctx: Context): void {
   }), 'message-quotes: selection interaction')
   ctx.slots.inject('conversation.chat.text-interaction', () => ctx.slots.register({
     name: 'conversation.chat.text-interaction', key: 'quote', locale: NS,
+    children: {
+      'conversation.chat.text-interaction.quote.actions': { kind: 'list', scope: 'session' },
+    },
   }, QuoteSelectionAction))
   ctx.slots.inject('conversation.user.text.node', () => ctx.slots.register({
     name: 'conversation.user.text.node', key: 'quote', priority: 100,

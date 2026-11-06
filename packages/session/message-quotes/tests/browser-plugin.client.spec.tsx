@@ -71,15 +71,26 @@ describe('Quote browser plugin', () => {
 
   it('mounts with late Slot declarations, reattaches after their replacement, and releases every contribution', async () => {
     const { ctx, conversation, fiber, declareSlots, sessionId } = await fixture()
+    const extension = ctx.plugin({
+      inject: ['slots'],
+      apply(scope: Context) {
+        scope.slots.inject('conversation.chat.text-interaction.quote.actions', () => scope.slots.register({
+          name: 'conversation.chat.text-interaction.quote.actions', id: 'test-action',
+        }, () => null))
+      },
+    })
+    await extension.await()
     const evaluate = conversation.userText.createEvaluator()
     expect(evaluate({ text: '> excerpt', facts: {} })[0]?.id).toBe('quote')
     const firstDeclaration = declareSlots()
     expect(ctx.slots.entries('conversation.chat.text-interaction').map(entry => entry.options.key)).toEqual(['quote'])
     expect(ctx.slots.entries('conversation.user.text.node').map(entry => entry.options.key)).toEqual(['quote'])
+    expect(ctx.slots.entries('conversation.chat.text-interaction.quote.actions').map(entry => entry.options.id)).toEqual(['test-action'])
     firstDeclaration()
     const replacement = declareSlots()
     expect(ctx.slots.entries('conversation.chat.text-interaction')).toHaveLength(1)
     expect(ctx.slots.entries('conversation.user.text.node')).toHaveLength(1)
+    expect(ctx.slots.entries('conversation.chat.text-interaction.quote.actions')).toHaveLength(1)
 
     await fiber.dispose()
     expect(conversation.interactions.dispatch(sessionId, selection())).toBeNull()
@@ -91,6 +102,9 @@ describe('Quote browser plugin', () => {
     expect(conversation.interactions.dispatch(sessionId, selection())).toBe('quote')
     expect(evaluate({ text: '> excerpt', facts: {} })[0]?.id).toBe('quote')
     expect(ctx.slots.entries('conversation.chat.text-interaction')).toHaveLength(1)
+    expect(ctx.slots.entries('conversation.chat.text-interaction.quote.actions')).toHaveLength(1)
+    await extension.dispose()
+    expect(ctx.slots.entries('conversation.chat.text-interaction.quote.actions')).toEqual([])
     replacement()
   })
 })

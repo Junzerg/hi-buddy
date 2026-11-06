@@ -27,6 +27,8 @@ kind: "package-reference"
 
 Web bundle 挂载此插件。Client 入口向 `ctx.uiConversation.interactions` 注册选区操作，并通过 UserText 规则渲染引用。插件卸载时会移除这些注册。选区按钮使用共享浮层描边与阴影。
 
+插件通过 `conversation.chat.text-interaction.quote.actions` 列表插槽在引用按钮旁添加按钮。引入 `/client` 入口的类型，通过 `ctx.slots.inject` 等待插槽，再注册唯一的 `id`。该插槽使用 Session 作用域：操作组件接收选中文本所属的 `sessionId` 和标准 Session hooks，以及 `trigger`、`readText`、`clearSelection`、`dismiss`、`actionClassName`。将该样式类用于按钮，阻止 pointer-down 默认行为以保留选区，并在点击时调用 `readText()`；返回 `null` 表示来源已失效。关闭浮层或跳转前先捕获文本和 Session 身份。扩展沿用引用操作对可写 Session 的准入条件，随注册卸载，不另行注册竞争选区的交互。没有扩展时仅显示引用按钮。
+
 -----
 
 <a id="understand-the-implementation"></a>

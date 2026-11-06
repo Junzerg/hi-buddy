@@ -21,6 +21,11 @@ import type {
 import { NAV_PAGE_IDS, placeholderPanelId, PlaceholderIcon } from './MorePage.tsx'
 import css from './SidebarRoot.module.css'
 
+const SIDEBAR_PANEL_ALLOWLIST: readonly string[] = [
+  'schedules',
+  'project-glossary',
+]
+
 /**
  * How long the column's scrollbars stay drawn after the pointer leaves it.
  * The bar is a pointer affordance here, and hiding it on the leave event
@@ -270,8 +275,8 @@ export function SidebarRoot({
             {page === 'assistant' && <span className={css.betaTag}>{t('panels.beta')}</span>}
           </button>
           if (page !== 'experts') return [entry]
-          return [entry, ...panels.filter(({ id: panelId }) => panelId === 'schedules').map(({ id: panelId }) => (
-            <PanelRow key={panelId} id={panelId} label={t('panels.schedules')}
+          return [entry, ...panels.filter(({ id: panelId }) => SIDEBAR_PANEL_ALLOWLIST.includes(panelId)).map(({ id: panelId, label }) => (
+            <PanelRow key={panelId} id={panelId} label={panelId === 'schedules' ? t('panels.schedules') : label}
               usePanelInfo={usePanelInfo} selectPanel={selectPanel}
               trackEntryClick={trackEntryClick} renderSlot={renderSlot} />
           ))]
