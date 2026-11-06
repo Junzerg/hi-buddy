@@ -155,10 +155,10 @@ function httpsOrigin(value, name) {
 export function resolveDesktopAutoUpdateConfig(env, platform, arch) {
   const intranet = resolveIntranetUpdateUrl(env)
   if (intranet !== undefined) {
-    if (platform !== 'win32' || arch !== 'x64') throw new Error('desktop package: intranet updates require Windows x64')
+    const target = resolveDesktopAutoUpdateTarget(platform, arch)
     const url = new URL(intranet)
     return {
-      environment: 'test', channel: resolveDesktopUpdateChannel(env), target: 'win-x64',
+      environment: 'test', channel: resolveDesktopUpdateChannel(env), target,
       origin: url.origin, publicUrl: intranet,
       keyPrefix: url.pathname.replace(/^\//u, '').replace(/\/$/u, ''),
       binaryKeyPrefix: url.pathname.replace(/^\//u, '').replace(/\/$/u, ''),

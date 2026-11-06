@@ -136,3 +136,17 @@ location /site/ {
 After editing the mounted file, run `docker exec lingxi-office-versions-1 nginx -t`. Restore the backup on failure without switching images. Switching and forcibly recreating the versions service loads the configuration. The homepage uses only same-origin static assets, with no external fonts, CDN, or analytics scripts; `noindex` is not access control, and intranet restrictions depend on the existing network and server setup.
 
 To roll back, restore the saved `.env` and run the same compose force-recreation command. When reverting to an old image without `site/`, also restore the Nginx configuration saved for this deployment. Retain historical release directories and installers; do not stop or recreate company-login, STG, or other services.
+
+## Release discipline (five gates)
+
+Treat every release as five sequential gates; never continue past a failing gate. The feed never downgrades, so everything below happens BEFORE the switch — after flipping, already-updated clients cannot be pulled back by a server rollback.
+
+1. Checksums: every archive verified with `sha256sum -c` (a shared 6-hex prefix is acceptable only when the full hash is impractical to transfer; the merge step still byte-verifies new installers).
+2. Baseline: `grep VERSIONS_IMAGE server/.env` confirms the expected previous image is live.
+3. Assembly and merge: inherit with hardlinks — `cp -al "releases/$previous" "releases/$release"` (instant, no duplicate disk usage). **Never overwrite a file in place inside release directories** (shared inodes corrupt every historical dir): remove then copy, or `cp --remove-destination`. The merge run byte-validates every installer.
+4. Image build and full verification on the throwaway `127.0.0.1:18766` container: homepage, full `releases.json` HEAD loop (every record, both platforms, 200), the Windows feed still points at the intended version (a Mac-only release must not move it), company-login health.
+5. Real machines, before switching: install on one Windows machine (upgrade from the previous version) and one Mac; pass IAM login → model discovery → conversation → Office-to-PDF. After large merges this gate is the only defense against runtime regressions.
+
+Same-version dual-platform publish into one directory: extract the Windows archive, merge, then extract the Mac archive with `--exclude=release-records.json` (keep its records aside), and run the merge a second time with the Mac records against the just-merged catalog. Mac-only follow-ups use the `<version>-mac-arm64` directory suffix.
+
+After both platforms are live and observed, prune old distribution images (keep the newest two or three tags for rollback): `docker images | grep lingxi-office-distribution` then `docker rmi <old tag>`. A version number is burned once any client could have seen it — fixes always ship under a new version, never a same-number republish.

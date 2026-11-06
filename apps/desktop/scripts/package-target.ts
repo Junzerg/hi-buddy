@@ -11,6 +11,7 @@ import {
 import { desktopArtifactOutput, desktopTargetBuildPaths } from './desktop-build-paths.mjs'
 import { packageMacOSArtifacts, type DesktopPrepackagedArtifact } from './package-macos.ts'
 import { loadDesktopPackageEnvironment, localMacOSPackageEnvironment, validateDesktopPackageEnvironment } from './desktop-package-environment.mjs'
+import { resolveIntranetUpdateUrl } from './intranet-update-environment.mjs'
 import { createPackagingRun, recordPackagingEvent } from './packaging-run.mjs'
 import { withWindowsSigningStage } from './windows-signing-stage.mjs'
 import { prepareWindowsSignatureCacheDirectory, resolveWindowsSignatureCacheDirectory } from './windows-signature-cache-directory.mjs'
@@ -402,8 +403,11 @@ async function main(): Promise<void> {
   if (success && target.platform === 'darwin' && !invocation.directory && !invocation.prepareOnly) {
     const paths = desktopTargetBuildPaths(target.name, environment)
     const output = desktopArtifactOutput(paths, invocation)
-    const filename = `lingxi-office-${buildVersion}-mac-${target.arch}${output.suffix}.dmg`
+    const filename = `HiBuddy-${buildVersion}-mac-${target.arch}${output.suffix}.dmg`
     console.log(`DMG: ${join(output.directory, filename)}`)
+    if (!invocation.unsigned && resolveIntranetUpdateUrl(environment) !== undefined) {
+      console.log(`ZIP: ${join(output.directory, `HiBuddy-${buildVersion}-mac-${target.arch}${output.suffix}.zip`)}`)
+    }
   }
 }
 
@@ -478,7 +482,13 @@ export async function packageTarget(
         { cwd: APP_ROOT, env: electronBuilderEnv, timeoutMs: 60_000 })
     })
   }
-  await execute(invocation.unsigned ? ['run', 'build', '--profile', 'local'] : ['run', 'build:official'], buildEnv, REPOSITORY_ROOT)
+  // Official client artifacts keep the product version; --build-version only rewrites Desktop
+  // installer/app identity later through electron-builder. Passing the extended version into
+  // build:official would fail release:pack's official client-record check.
+  const officialClientEnv = { ...buildEnv }
+  delete officialClientEnv[DESKTOP_BUILD_VERSION_ENV]
+  const clientBuildEnv = invocation.unsigned ? buildEnv : officialClientEnv
+  await execute(invocation.unsigned ? ['run', 'build', '--profile', 'local'] : ['run', 'build:official'], clientBuildEnv, REPOSITORY_ROOT)
   let preparationFailure: { error: unknown } | undefined
   const executePreparation = async (args: readonly string[], env: NodeJS.ProcessEnv, cwd?: string): Promise<void> => {
     if (preparationFailure !== undefined) throw preparationFailure.error
@@ -491,7 +501,7 @@ export async function packageTarget(
         ? ['exec', 'tsx', 'apps/desktop/scripts/pack-local-packages.ts']
         : ['run', 'release:pack', '--family', 'dsh']),
       '--out', buildPaths.packedDsh, ...packArguments,
-    ], buildEnv, REPOSITORY_ROOT)
+    ], clientBuildEnv, REPOSITORY_ROOT)
     await executePreparation([
       '--dir',
       'apps/desktop-host',

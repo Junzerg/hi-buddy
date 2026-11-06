@@ -136,3 +136,17 @@ location /site/ {
 修改挂载文件后运行 `docker exec lingxi-office-versions-1 nginx -t`，失败时恢复备份，不切换镜像。切换并强制重建 versions 服务会加载新配置。首页仅使用同源静态资源，无外部字体、CDN 或分析脚本；`noindex` 不是访问控制，内网限制依赖现有网络与服务器配置。
 
 回滚时恢复保存的 `.env`，执行相同的 compose 强制重建命令；若退回没有 `site/` 的旧镜像，同时恢复此次备份的 Nginx 配置。历史发布目录和安装包均保留，不停止或重建 company-login、STG 或其他服务。
+
+## 发布纪律（五道闸门）
+
+每次发布按五道闸门顺序执行，闸门不过不继续。feed 只升不降，因此全部闸门都在切换之前完成——切换之后，已升级的客户端无法通过服务端回滚拉回。
+
+1. 校验和：每个发布包用 `sha256sum -c` 验证（完整哈希不便传递时可接受共享的 6 位十六进制前缀；合并步骤仍会对新安装包做全量字节校验）。
+2. 基线确认：`grep VERSIONS_IMAGE server/.env` 确认在线的上一版镜像符合预期。
+3. 组装与合并：用硬链接继承——`cp -al "releases/$previous" "releases/$release"`（瞬间完成，不重复占磁盘）。**发布目录内的文件绝不原地覆写**（共享 inode 会污染所有历史目录）：先删再拷，或用 `cp --remove-destination`。合并运行会对每个安装包做字节校验。
+4. 镜像构建后在临时容器 `127.0.0.1:18766` 上全量验证：首页、`releases.json` 全量 HEAD 循环（每条记录、双平台、全部 200）、Windows feed 仍指向目标版本（仅发 Mac 时绝不能移动它）、company-login 健康检查。
+5. 切换前真机验证：一台 Windows（自上一版本升级）+ 一台 Mac 实际安装，通过 IAM 登录 → 模型发现 → 对话 → Office 转 PDF。大合并之后，这道闸门是挡运行时回归的唯一防线。
+
+同版本双平台发布到同一目录：先解包 Windows 归档并合并，再以 `--exclude=release-records.json` 解包 Mac 归档（其记录单独留存），用 Mac 记录对刚合并的目录跑第二趟合并。仅 Mac 的补发使用 `<version>-mac-arm64` 目录后缀。
+
+双平台上线并观察完毕后，清理旧分发镜像（保留最近两到三个 tag 供回滚）：`docker images | grep lingxi-office-distribution` 后 `docker rmi <旧tag>`。版本号一旦可能被任何客户端看到即作废——修复一律换新版本号发布，绝不同号重发。

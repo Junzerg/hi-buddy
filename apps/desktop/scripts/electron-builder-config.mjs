@@ -21,7 +21,7 @@ import {
   scrubWindowsSigningEnvironment,
 } from './windows-sign.mjs'
 import { resolveDesktopAutoUpdateConfig } from './desktop-auto-update-environment.mjs'
-import { resolveIntranetUpdateUrl } from './intranet-update-environment.mjs'
+import { isAllowedIntranetPackaging, resolveIntranetUpdateUrl } from './intranet-update-environment.mjs'
 import { resolveDesktopBuildCommit } from './desktop-build-commit.mjs'
 import { resolveDesktopBuildVersion } from './desktop-build-version.mjs'
 import { resolveDesktopPolicyEnvironment } from './desktop-policy-environment.mjs'
@@ -68,8 +68,12 @@ export function createElectronBuilderConfig(
   const packagesMacOS = targetPlatform === 'darwin' || (targetPlatform === undefined && hostPlatform === 'darwin')
   const packagesWindows = resolvedPlatform === 'win32'
   const intranet = resolveIntranetUpdateUrl(env)
-  if (intranet !== undefined && (!packagesWindows || resolvedArch !== 'x64' || !unsigned)) {
-    throw new Error('desktop package: intranet updates require an unsigned Windows x64 build')
+  if (intranet !== undefined && !isAllowedIntranetPackaging(
+    { platform: resolvedPlatform, arch: resolvedArch }, { unsigned })) {
+    throw new Error('desktop package: intranet updates require unsigned Windows x64 or signed macOS arm64/x64')
+  }
+  if (intranet !== undefined && packagesMacOS && skipNotarization) {
+    throw new Error('desktop package: intranet macOS updates require notarization; omit --skip-notarization')
   }
   const policy = (packagesMacOS && unsigned) || intranet !== undefined ? undefined : resolveDesktopPolicyEnvironment(env)
   if (resolvedPlatform === 'win32') installWindowsDirectoryInstaller()
@@ -124,7 +128,7 @@ export function createElectronBuilderConfig(
     // The default copyright uses author.name; this line names the product instead.
     copyright: `Copyright © ${new Date().getFullYear()} \${productName}`,
     // Unsigned builds carry their own suffix so a shared file can never pass for a release artifact.
-    artifactName: `${packagesWindows ? 'HiBuddy' : 'lingxi-office'}-\${version}-\${os}-\${arch}${output.suffix}.\${ext}`,
+    artifactName: `HiBuddy-\${version}-\${os}-\${arch}${output.suffix}.\${ext}`,
     directories: { output: output.directory },
     asar: true,
     electronDist: buildPaths.electron,
