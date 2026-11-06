@@ -16,6 +16,7 @@ This workflow serves maintainers of the company fork. Integrate upstream capabil
 - [Integration workflow](#workflow)
 - [Conflict rules](#conflicts)
 - [Acceptance and recovery](#acceptance)
+- [Lessons from rc.1](#lessons)
 
 <a id="documents"></a>
 
@@ -71,3 +72,17 @@ Acceptance covers session creation and history, sending and cancellation, tool e
 An unresolved core regression or a required check without evidence blocks landing. If an unrelated failure appears, record it separately and assess whether it blocks this integration; do not silently expand repair scope.
 
 Before landing, recovery means retaining the original branch and abandoning or repairing the isolated integration worktree after preserving useful work. After landing, use a reviewed revert or forward fix without rewriting shared history. Code rollback does not reverse data migrations; verify data compatibility separately before running a new build against valuable user data. Deployment rollback follows the intranet reference.
+
+<a id="lessons"></a>
+
+## Lessons from the rc.1 integration
+
+- **Separate upstream tracking from company delivery.** Fetch all upstream branches into `upstream/*`; keep local `master` aligned only after checking for local-only commits and saving a backup. Fetching does not update local branches or `origin`. Integrate a pinned release into `dev/junzerg` through an isolated worktree; never silently replace that target with a newer master.
+- **Preserve behavior, not entire files.** Company colors, layout, interactions, IAM and hidden entries remain the acceptance criteria even when upstream moves their implementation. Merge optional capabilities without enabling their bundles or exposing entries. CUA code was retained with its macOS provider disabled; Linux cannot validate its native permission flow.
+- **Use batches as review boundaries.** Start with a small confirmed scope, keep unresolved choices explicit, and stop at a reviewable result. Preserve principles and exceptional decisions rather than a transcript of every confirmation. If the user chooses consolidated manual acceptance, record that choice instead of requiring repeated previews.
+- **Run integration checks before the final push.** Zero conflict markers is only the first milestone. Runtime compilation, aggregate test typing, generated catalogs, bilingual records, documentation checks and full lint can fail independently. Run each once when its inputs are ready, repair the affected scope, and reuse valid results. A successful UI preview is not evidence for all these checks.
+- **Diagnose browser failures before refreshing expectations.** Old snapshots may retain hidden upstream entries or omit company chrome. Review each captured difference, then run read-only replay. Seed enough sessions to actually overflow the company’s compact rows; do not remove the overflow assertion. A blank-home check should not mount a model replay it never consumes. Locate company controls by their actual accessible names.
+- **Reconcile concurrent work and repository renames explicitly.** Snapshot the main worktree’s staged and unstaged changes before landing. Commit later company edits separately and integrate them without replacing the upstream version. Renaming `lingxi-office` to `hi-buddy` also affected workspace identity checks and absolute Git hook paths; reinstall hooks for both worktrees and verify dependency installation, without changing intranet deployment paths merely because the local folder changed.
+- **Keep recovery and delivery milestones distinct.** Preserve branches for the initial baseline, pre-merge company state, pinned upstream, integrated result and landed result; retain uncommitted patches and merge-index backups outside tracked source. After publication, use a reviewed revert or forward fix rather than resetting shared history. Record conflict resolution, local landing, Web acceptance, remote push, installer acceptance and intranet publication separately. Web acceptance with a simulator does not validate real IAM, model output, fresh installation or incremental updates.
+
+The [rc.1 record](records/2026-11-05-rc.1.md) holds the actual commits, completion state and remaining platform acceptance. Synchronization records may retain exact commit identifiers for rollback; this exception does not relax the prohibited-link check or apply to other documentation.

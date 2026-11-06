@@ -193,7 +193,20 @@
     "@deepseek-ai/dsh-deliverable-file-references": "workspace:*",
     "@deepseek-ai/dsh-client-ui-file-drag": "workspace:*",
     "@deepseek-ai/dsh-client-ui-context-menu": "workspace:*",
-    "@deepseek-ai/dsh-client-ui-file-actions": "workspace:*"
+    "@deepseek-ai/dsh-client-ui-file-actions": "workspace:*",
+    "@deepseek-ai/cordis": "workspace:~",
+    "@deepseek-ai/dsh-agent": "workspace:*",
+    "@deepseek-ai/dsh-api-remote-access": "workspace:*",
+    "@deepseek-ai/dsh-llm": "workspace:*",
+    "@deepseek-ai/dsh-session": "workspace:*",
+    "@deepseek-ai/dsh-session-projection": "workspace:*",
+    "@deepseek-ai/dsh-session-title": "workspace:*",
+    "@deepseek-ai/dsh-storage-domain": "workspace:*",
+    "@deepseek-ai/dsh-subagent": "workspace:*",
+    "@deepseek-ai/dsh-system-prompt": "workspace:*",
+    "@deepseek-ai/dsh-tools": "workspace:*",
+    "@deepseek-ai/dsh-typert-protocol": "workspace:*",
+    "hi-buddy-session-pool-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:~",
@@ -201,14 +214,11 @@
     "@deepseek-ai/dsh-shell-env": "workspace:*"
   },
   "devDependencies": {
-    "@deepseek-ai/cordis": "workspace:~",
     "@deepseek-ai/cordis-plugin-include": "workspace:~",
     "@deepseek-ai/cordis-plugin-loader": "workspace:~",
     "@deepseek-ai/dsh-fs": "workspace:*",
     "@deepseek-ai/dsh-fs-local": "workspace:*",
     "@deepseek-ai/dsh-sandbox-policy": "workspace:*",
-    "@deepseek-ai/dsh-session": "workspace:*",
-    "@deepseek-ai/dsh-session-projection": "workspace:*",
     "@deepseek-ai/dsh-shell-env": "workspace:*",
     "@deepseek-ai/dsh-typert-registry": "workspace:*",
     "@deepseek-ai/libreoffice-kit": "^0.1.5",

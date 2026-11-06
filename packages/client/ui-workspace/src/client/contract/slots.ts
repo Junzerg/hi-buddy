@@ -29,7 +29,7 @@
  * they receive the captured row identity and render together before Archive.
  *
  * The browser entry additionally declares `list` seats per Session row
- * (`sidebar.session.row.leading`, `sidebar.session.row.trailing`, and
+ * (`sidebar.session.title.prefix`, `sidebar.session.row.leading`, `sidebar.session.row.trailing`, and
  * `sidebar.session.row.hover`) for ambient row decorations. They receive only
  * the row's Session identity; a Session binding would activate and retain
  * every listed Session.
@@ -125,6 +125,12 @@ export interface SessionRowScheduleOwnerProps {
   readonly sessionId: SessionId
 }
 
+/** Owner share of title decorations; rendering does not bind the Session. */
+export interface SessionTitlePrefixOwnerProps {
+  /** Session this row shows. */
+  readonly sessionId: SessionId
+}
+
 /** Owner share of the trailing icon list; rendering does not bind the Session. */
 export interface SessionRowTrailingOwnerProps {
   /** Session this row shows. */
@@ -145,6 +151,13 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * hover card only. Session rows draw no status dot.
      */
     'sidebar.session.row.leading': { kind: 'list'; scope: 'root'; inline: true; owner: SessionRowScheduleOwnerProps }
+    /**
+     * Non-interactive decorations between the leading cell and clipped title,
+     * in ascending order. Available on every Session row, including archived
+     * and blank rows. Empty contributions reserve no width. Occupants return
+     * compact inline elements or null and must not bind or retain the Session.
+     */
+    'sidebar.session.title.prefix': { kind: 'list'; scope: 'root'; inline: true; owner: SessionTitlePrefixOwnerProps }
     /**
      * Non-interactive icons after the row's time label, before its pin marker,
      * in ascending `order`. On hover-capable devices, hidden while the row is
@@ -501,6 +514,7 @@ export type WorkspaceBrowserProps =
     | 'sidebar.workspaces.session.row.action'
     | 'sidebar.session.row.trailing'
     | 'sidebar.session.row.leading'
+    | 'sidebar.session.title.prefix'
     | 'sidebar.session.row.hover'
   >
   & PropsStore<WorkspaceViewStoreHandle>

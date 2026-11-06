@@ -161,7 +161,6 @@ describe.skipIf(webSnapshotMode() === 'record').each([
       const open = async (): Promise<void> => {
         if (entry === 'button') {
           await page.getByRole('button', { name: /^选择模型/ }).click()
-          await page.getByRole('menuitem', { name: /^模型/ }).click()
         } else {
           await page.getByRole('button', { name: '添加文件或调用指令', exact: true }).click()
           await page.getByRole('option', { name: /^模型/ }).click()
@@ -295,7 +294,6 @@ describe.skipIf(webSnapshotMode() === 'record').each([
     try {
       await page.setViewportSize({ width: 402, height: 874 })
       await page.getByRole('button', { name: /^选择模型/ }).click()
-      await page.getByRole('menuitem', { name: /^模型/ }).click()
       await cdp.send('Emulation.setPageScaleFactor', { pageScaleFactor: 2.5 })
       for (const height of [874, 500]) {
         await page.setViewportSize({ width: 402, height })
@@ -344,7 +342,9 @@ describe.skipIf(webSnapshotMode() === 'record').each([
       await page.setViewportSize({ width: 1440, height: 1000 })
       const trigger = page.getByRole('button', { name: /^选择模型/ })
       await trigger.click()
-      const menu = page.getByRole('menu', { name: '模型与推理等级', exact: true })
+      // Keep one result so this checks anchor alignment without viewport clamping.
+      await page.getByRole('searchbox', { name: '搜索模型…' }).fill('Origin Large')
+      const menu = page.getByRole('group', { name: '模型与推理等级', exact: true })
       await cdp.send('Emulation.setPageScaleFactor', { pageScaleFactor: 1.5 })
       await expect.poll(() => page.evaluate(() => window.visualViewport!.scale)).toBe(1.5)
       await frames(page)

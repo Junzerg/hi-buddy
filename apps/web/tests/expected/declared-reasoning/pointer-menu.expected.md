@@ -10,3 +10,4 @@
       - menuitemradio "Acme Think"
       - menuitemradio "Acme Swift" [checked]
       - menuitemradio "Acme Lite"
+  - menuitem "推理等级 Max"

@@ -139,21 +139,14 @@ describe.skipIf(MODE === 'record').each([
     onTestFailed(() => saveFailureShot(page, `web-e2e-model-trigger-${engine.name()}`))
     const trigger = page.getByRole('button', { name: /^选择模型/ })
     const menu = page.getByRole('menu')
-    for (const pane of ['root', 'model', 'effort']) {
+    for (const pane of ['model', 'effort']) {
       await page.locator('[data-composer-input][contenteditable="true"]').focus()
       await trigger.click()
-      await expect.poll(() => trigger.evaluate(element => element === document.activeElement)).toBe(true)
-      if (pane === 'root') {
-        await page.keyboard.press('ArrowDown')
-        await expect.poll(() => page.getByRole('menuitem', { name: /^模型/ })
-          .evaluate(element => element === document.activeElement)).toBe(true)
-      } else {
-        await page.getByRole('menuitem', { name: pane === 'model' ? /^模型/ : /推理等级/ }).click()
-        const focused = pane === 'model'
-          ? page.getByRole('searchbox', { name: '搜索模型…' })
-          : page.locator('[role="menuitemradio"][aria-checked="true"]')
-        await expect.poll(() => focused.evaluate(element => element === element.ownerDocument.activeElement)).toBe(true)
-      }
+      if (pane === 'effort') await page.getByRole('menuitem', { name: /推理等级/ }).click()
+      const focused = pane === 'model'
+        ? page.getByRole('searchbox', { name: '搜索模型…' })
+        : page.locator('[role="menuitemradio"][aria-checked="true"]')
+      await expect.poll(() => focused.evaluate(element => element === element.ownerDocument.activeElement)).toBe(true)
       await trigger.click()
       await menu.waitFor({ state: 'detached' })
       await expect.poll(() => trigger.evaluate(element => element === document.activeElement)).toBe(true)
@@ -172,7 +165,6 @@ describe.skipIf(MODE === 'record').each([
     const trigger = page.getByRole('button', { name: /^选择模型/ })
     const menu = page.getByRole('menu')
     await trigger.click()
-    await page.getByRole('menuitem', { name: /^模型/ }).click()
     const current = page.getByRole('menuitemradio', { name: 'Acme Think', exact: true })
     const target = page.getByRole('menuitemradio', { name: 'Acme Swift', exact: true })
     const search = page.getByRole('searchbox', { name: '搜索模型…' })
@@ -201,7 +193,6 @@ describe.skipIf(MODE === 'record').each([
     await menu.waitFor({ state: 'detached' })
 
     await trigger.click()
-    await page.getByRole('menuitem', { name: /^模型/ }).click()
     await target.getByText('Acme Swift', { exact: true }).click()
     await menu.waitFor({ state: 'detached' })
     expect(selections).toBe(1)
@@ -229,7 +220,6 @@ describe.skipIf(MODE === 'record').each([
       })
     }, { times: 1 })
     await trigger.click()
-    await page.getByRole('menuitem', { name: /^模型/ }).click()
     await expect.poll(() => search.evaluate(element => element === element.ownerDocument.activeElement)).toBe(true)
     expect(await search.getAttribute('aria-activedescendant')).toBe(await target.getAttribute('id'))
     await current.click()
@@ -249,7 +239,6 @@ describe.skipIf(MODE === 'record').each([
     await menu.waitFor({ state: 'detached' })
 
     await trigger.click()
-    await page.getByRole('menuitem', { name: /^模型/ }).click()
     await page.locator('[data-composer-input][contenteditable="true"]').focus()
     await menu.waitFor({ state: 'detached' })
     await trigger.click()

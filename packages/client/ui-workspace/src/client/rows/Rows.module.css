@@ -146,6 +146,19 @@
   color: var(--dsw-alias-label-tertiary);
 }
 
+.titlePrefix {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+}
+
+/* The renderer retains an empty slot anchor when every contribution returns null. */
+.titlePrefix:has(> :global([data-slot]) > *) {
+  margin-inline-start: 4px;
+}
+
 .folderActive {
   color: var(--dsw-alias-state-business-primary);
 }

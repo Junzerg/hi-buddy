@@ -1,22 +1,13 @@
 /**
  * ModelSelect: the composer's named model seat (`conversation.input.model`).
- * Two-level selection per figma 496:26454's MenuDropdown: the root menu is
- * the Model / Effort row pair (label + current value + a right chevron),
- * each drilling into its own list — the provider-grouped model list over
- * the shared directory, and the effort levels. The trigger (313:14108's
- * ToggleButton) shows both: model name + effort in the caption tone.
- * Model catalogs above four entries show search, which retains focus while
- * ↑/↓ cycle the highlighted result; Enter and Tab accept it. Smaller model
- * catalogs, root panes, and effort panes move focus between rows. Escape and Shift+Tab leave a drilled pane first and otherwise close
- * back to the trigger. A drilled pane focuses the current effort or model
- * search field. Provider headings paint their background only while pinned
- * by scrolling. Clearing a query restores the full list and search focus.
- * Selecting restores trigger focus without a ring until the trigger loses focus
- * or the menu reopens. Mobile devices restore button focus when opening or
- * drilling; model search takes focus only after explicit user input.
+ * Opens directly on the provider-grouped model list. Models with reasoning
+ * metadata also expose an effort row below the list. Escape and Shift+Tab
+ * close the model list or return from effort choices to their entry row.
+ * Search retains focus while arrow keys highlight models; Enter and Tab
+ * accept the highlighted choice. Small catalogs focus the selected row.
  * Model names match a case-insensitive ordered subsequence
  * within each provider group, ranked by
- * prefix, alignment score, then catalog order. Returning to the root pane
+ * prefix, alignment score, then catalog order. Returning to the model list
  * hands focus back to the cell that opened it. Data and submission ride the
  * same per-session ModelDirectory as the /model popup; exact-model reasoning
  * metadata and the selected effort come from the Host rather than a
@@ -44,8 +35,8 @@ import type { ModelLabelOwner, ModelSelectInjected } from './slots.ts'
 import css from './ModelSelect.module.css'
 import { orderModelProviders } from './provider-order.ts'
 
-/** Which pane the dropdown shows: the two-row root or one drilled-in list. */
-type Pane = 'root' | 'model' | 'effort'
+/** The model list or the selected model's effort choices. */
+type Pane = 'model' | 'effort'
 
 /** One dynamic effort row; undefined means preserve the provider default. */
 interface EffortChoice {
@@ -73,7 +64,7 @@ export function ModelSelect(
     () => directory.getSnapshot(),
   )
   const [open, setOpen] = useState(false)
-  const [pane, setPane] = useState<Pane>('root')
+  const [pane, setPane] = useState<Pane>('model')
   const [query, setQuery] = useState('')
   const [highlightedIndex, setHighlightedIndex] = useState<number | null>(null)
   const [selectionFocus, setSelectionFocus] = useState(false)
@@ -186,9 +177,11 @@ export function ModelSelect(
 
   // Pane switches unmount the focused row; restore focus inside the menu so
   // keyboard navigation remains available.
-  const paneFocus = useRef<'drill' | 'model' | 'effort' | null>(null)
+  const paneFocus = useRef<'drill' | 'effort' | null>(null)
   const previousShowSearch = useRef(showSearch)
   useEffect(() => {
+    // Opening lays out a hidden portal first; focus only after it is placed.
+    if (open && menuPos === null) return
     const changedSearchMode = previousShowSearch.current !== showSearch
     previousShowSearch.current = showSearch
     const intent = paneFocus.current ?? (changedSearchMode && pane === 'model' ? 'drill' : null)
@@ -208,9 +201,9 @@ export function ModelSelect(
       ;(target ?? triggerRef.current)?.focus()
       return
     }
-    const cell = itemRefs.current[intent === 'effort' ? 1 : 0]
+    const cell = itemRefs.current[visibleModels.length]
     ;(cell !== null && cell !== undefined && !cell.disabled ? cell : triggerRef.current)?.focus()
-  }, [open, pane, showSearch])
+  }, [open, pane, showSearch, visibleModels.length, menuPos])
 
   useEffect(() => {
     const viewport = groupsRef.current
@@ -231,8 +224,8 @@ export function ModelSelect(
     triggerRef.current?.focus()
     setQuery('')
     setHighlightedIndex(null)
-    if (currentChoice === undefined) paneFocus.current = 'drill'
-    setPane(currentChoice === undefined ? 'model' : 'root')
+    paneFocus.current = 'drill'
+    setPane('model')
     setOpen(true)
     reload()
   }
@@ -244,7 +237,7 @@ export function ModelSelect(
 
   const close = (restoreFocus = false): void => {
     setOpen(false)
-    setPane('root')
+    setPane('model')
     if (restoreFocus) queueMicrotask(() => { triggerRef.current?.focus() })
   }
 
@@ -260,10 +253,10 @@ export function ModelSelect(
     setPane(next)
   }
 
-  /** Leave a drilled pane for the root one, handing the keyboard back to its cell. */
-  const back = (from: Exclude<Pane, 'root'>): void => {
-    paneFocus.current = from
-    setPane('root')
+  /** Return to the model list and focus the effort entry. */
+  const back = (): void => {
+    paneFocus.current = 'effort'
+    setPane('model')
   }
 
   const moveFocus = (offset: number): void => {
@@ -283,18 +276,27 @@ export function ModelSelect(
     if (event.nativeEvent.isComposing) return
     if (event.key === 'Escape' && open) {
       event.preventDefault()
-      // Escape backs out of a drilled pane first, then closes.
-      if (pane !== 'root' && currentChoice !== undefined) back(pane)
+      // Effort choices return to the model list; the model list closes.
+      if (pane === 'effort') back()
       else close(true)
       return
     }
     if (!open) return
     if (pane === 'model' && showSearch && (event.key === 'ArrowDown' || event.key === 'ArrowUp')) {
       event.preventDefault()
-      if (!busy && visibleModels.length > 0) {
+      if (!busy) {
         const direction = event.key === 'ArrowDown' ? 1 : -1
-        setHighlightedIndex((activeModelIndex + direction + visibleModels.length) % visibleModels.length)
-        searchRef.current?.focus()
+        const effortRow = reasoning === undefined ? undefined : itemRefs.current[visibleModels.length]
+        const onEffort = effortRow != null && document.activeElement === effortRow
+        const next = activeModelIndex + direction
+        if (!onEffort && effortRow != null && visibleModels.length > 0 && (next < 0 || next >= visibleModels.length)) {
+          effortRow.focus()
+        } else if (visibleModels.length > 0) {
+          setHighlightedIndex(onEffort
+            ? (direction > 0 ? 0 : visibleModels.length - 1)
+            : (next + visibleModels.length) % visibleModels.length)
+          searchRef.current?.focus()
+        }
       }
       return
     }
@@ -312,7 +314,7 @@ export function ModelSelect(
     if (event.key === 'Tab') {
       if (event.shiftKey) {
         event.preventDefault()
-        if (pane !== 'root' && currentChoice !== undefined) back(pane)
+        if (pane === 'effort') back()
         else close(true)
         return
       }
@@ -490,25 +492,6 @@ export function ModelSelect(
           aria-label={t('menu.aria')}
           aria-busy={state.status === 'loading' || busy}
         >
-          {pane === 'root' && (
-            <>
-              <button ref={itemRef()} type="button" role="menuitem" className={css.cell} onClick={() => { drill('model') }}>
-                <span className={css.cellLabel}>{t('menu.model')}</span>
-                <span className={css.cellValue}>
-                  {currentChoice === undefined ? modelLabel : renderModelLabel(currentChoice.group.provider, currentChoice.model, 'menu', true)}
-                </span>
-                <IconChevronRightOutlineRegular className={css.cellChevron} />
-              </button>
-              {reasoning !== undefined && (
-                <button ref={itemRef()} type="button" role="menuitem" className={css.cell} onClick={() => { drill('effort') }}>
-                  <span className={css.cellLabel}>{t('menu.effort')}</span>
-                  <span className={css.cellValue}>{effortLabel}</span>
-                  <IconChevronRightOutlineRegular className={css.cellChevron} />
-                </button>
-              )}
-            </>
-          )}
-
           {pane === 'model' && (
             <>
               {showSearch && <div className={css.searchRow}>
@@ -608,6 +591,13 @@ export function ModelSelect(
               </div>
               {state.status === 'ready' && filteredGroups.length === 0 && (
                 <div className={css.empty} role="status">{t(choices.length === 0 ? 'empty.models' : 'search.empty')}</div>
+              )}
+              {reasoning !== undefined && (
+                <button ref={itemRef()} type="button" role="menuitem" className={css.cell} onClick={() => { drill('effort') }}>
+                  <span className={css.cellLabel}>{t('menu.effort')}</span>
+                  <span className={css.cellValue}>{effortLabel}</span>
+                  <IconChevronRightOutlineRegular className={css.cellChevron} />
+                </button>
               )}
             </>
           )}

@@ -151,7 +151,7 @@ export function assertDesktopHostPackageFiles(files: readonly string[]): void {
 export function prepareDesktopPackageSet(
   inputs: readonly string[], output: string, target: ReturnType<typeof desktopTargetPlatform>,
 ): void {
-  const selected = selectDesktopPackageClosure(packedPackages(inputs), target)
+  const selected = selectDesktopPackageClosure(packedPackages([...inputs, join(REPOSITORY_ROOT, 'haiercash/builtin-plugins')]), target)
   const host = selected.find(packed => packed.manifest.name === DESKTOP_HOST_PACKAGE)
   if (host === undefined) throw new Error(`desktop package set: selected closure omits ${DESKTOP_HOST_PACKAGE}`)
   assertDesktopHostPackageFiles(tarballFiles(host.tarball))

@@ -48,6 +48,7 @@ type RowRenderSlots = PropsRenderSlots<
   | 'sidebar.workspaces.session.row.action'
   | 'sidebar.session.row.trailing'
   | 'sidebar.session.row.leading'
+  | 'sidebar.session.title.prefix'
   | 'sidebar.session.row.hover'
 >['renderSlot']
 
@@ -596,6 +597,7 @@ export function SessionNodeItem({
   | 'sidebar.workspaces.session.row.action'
   | 'sidebar.session.row.trailing'
   | 'sidebar.session.row.leading'
+  | 'sidebar.session.title.prefix'
   | 'sidebar.session.row.hover'
 >) {
   const { getTriggerProps } = useContextMenu()
@@ -682,6 +684,9 @@ export function SessionNodeItem({
           archived look — and their live status stays on the hover card only. */}
       <span className={css.slot}>
         {!row.archived && !row.blank && renderSlot('sidebar.session.row.leading', { sessionId: node.id })}
+      </span>
+      <span className={css.titlePrefix}>
+        {renderSlot('sidebar.session.title.prefix', { sessionId: node.id })}
       </span>
       <span
         ref={titleRef}

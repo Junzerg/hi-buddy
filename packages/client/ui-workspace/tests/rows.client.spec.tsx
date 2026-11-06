@@ -34,6 +34,7 @@ type RowSlotName =
   | 'sidebar.workspaces.session.row.action'
   | 'sidebar.session.row.trailing'
   | 'sidebar.session.row.leading'
+  | 'sidebar.session.title.prefix'
   | 'sidebar.session.row.hover'
 type RowRenderSlot = PropsRenderSlots<RowSlotName>['renderSlot']
 type SessionNodeItemProps = ComponentProps<typeof SessionNodeItemComponent>
@@ -267,15 +268,15 @@ describe('workspace browser rows', () => {
     const view = render(<SessionNodeItem node={idle} currentId={undefined} now={0} onOpen={vi.fn()} t={t} />)
     // The cell is the row's first element and holds nothing while the row is
     // idle without an occupant; the title follows it.
-    const cell = screen.getByText('Flat Session').previousElementSibling
+    const cell = screen.getByText('Flat Session').previousElementSibling?.previousElementSibling
     expect(cell?.className).toMatch(/slot/)
     expect(cell?.children).toHaveLength(0)
 
     view.rerender(<SessionNodeItem node={{ ...idle, running: true }} currentId={undefined} now={0}
       onOpen={vi.fn()} t={t} />)
     // A running row keeps the same empty leading cell. Rows draw no status dot.
-    expect(screen.getByText('Flat Session').previousElementSibling?.querySelector('[data-state]')).toBeNull()
-    expect(screen.getByText('Flat Session').previousElementSibling?.children).toHaveLength(0)
+    expect(cell?.querySelector('[data-state]')).toBeNull()
+    expect(cell?.children).toHaveLength(0)
   })
 
   it('renders a selected content-search row and opens only its session', () => {
@@ -882,9 +883,9 @@ describe('workspace browser rows', () => {
       const renderSlot: RowRenderSlot = (name: RowSlotName) => { rendered(name); return null }
       render(<SessionNodeItem node={node} currentId={node.id} now={0} onOpen={vi.fn()} renderSlot={renderSlot} t={t} />)
       // The placeholder has no content yet: no row verbs (neither list is
-      // asked for anything), no "now" stamp.
+      // asked for actions), no "now" stamp. Title decorations remain available.
       expect(screen.queryByRole('button', { name: /会话.*的操作/ })).toBeNull()
-      expect(rendered).not.toHaveBeenCalled()
+      expect(rendered.mock.calls).toEqual([['sidebar.session.title.prefix']])
       expect(screen.queryByText('刚刚')).toBeNull()
       // The hover card keeps title + status but drops the timestamp line.
       const wrapper = screen.getByRole('treeitem').parentElement as HTMLElement
@@ -1411,6 +1412,15 @@ describe('session row decoration seats', () => {
     expect(onOpen).not.toHaveBeenCalled()
   })
 
+  it.each([{}, { archived: true }, { blank: true }])('offers a separate title prefix on row state %j', (state) => {
+    const renderSlot = seatSpy()
+    renderRow({ ...idle, ...state }, renderSlot)
+    const prefix = screen.getByRole('treeitem').querySelector('[data-seat="sidebar.session.title.prefix"]')
+    expect(renderSlot).toHaveBeenCalledWith('sidebar.session.title.prefix', { sessionId: idle.id })
+    expect(prefix?.parentElement?.className).toContain('titlePrefix')
+    expect(prefix?.parentElement?.nextElementSibling?.textContent).toBe(state.blank ? '新会话' : idle.title)
+  })
+
   it('offers the leading seat on an idle row and draws no status dot', () => {
     const renderSlot = seatSpy()
     const view = renderRow(idle, renderSlot)
@@ -1419,13 +1429,14 @@ describe('session row decoration seats', () => {
     expect(renderSlot).toHaveBeenCalledWith('sidebar.session.row.leading', { sessionId: idle.id })
     expect(row.querySelector('[data-state]')).toBeNull()
     // The seat sits in the leading 16px cell, before the clipped title: the
-    // cell is the row's first element, and the title follows the cell.
+    // cell is the row's first element, followed by decorations and the title.
     const assertPlacement = (): void => {
       const cell = screen.getByRole('treeitem')
         .querySelector('[data-seat="sidebar.session.row.leading"]')?.parentElement
       expect(cell?.previousElementSibling ?? null).toBeNull()
-      expect(cell?.nextElementSibling?.textContent).toBe('Idle Session')
-      expect(cell?.nextElementSibling?.nextElementSibling?.textContent).toBe('刚刚')
+      expect(cell?.nextElementSibling?.querySelector('[data-seat="sidebar.session.title.prefix"]')).toBeTruthy()
+      expect(cell?.nextElementSibling?.nextElementSibling?.textContent).toBe('Idle Session')
+      expect(cell?.nextElementSibling?.nextElementSibling?.nextElementSibling?.textContent).toBe('刚刚')
     }
     assertPlacement()
     // Rerender through the same row: the seat stays leading without the flat

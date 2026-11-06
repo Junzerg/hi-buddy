@@ -64,7 +64,7 @@ export type { StartSessionOptions, UiWorkspace } from './navigation.ts'
 export type {
   DirectoryFlowOwnerProps, DirectoryFlowSlotName, DirectoryPickingHooks, DirectoryPickingInjected,
   MenuOpenState, RowToast, SessionRenameTarget, SessionRowOwnerProps, UseMenuOpenState, WorkspaceBrowserInjected,
-  SessionRowScheduleOwnerProps,
+  SessionRowScheduleOwnerProps, SessionTitlePrefixOwnerProps,
   WorkspaceBrowserProps,
   WorkspacePickerInjected, WorkspacePickerProps,
 } from './contract/slots.ts'
@@ -339,6 +339,7 @@ export function apply(ctx: Context): void {
         'sidebar.workspaces.directoryFlow': { kind: 'single', scope: 'root' },
         'sidebar.workspaces.session.row.action': { kind: 'list', scope: 'root' },
         'sidebar.session.row.leading': { kind: 'list', scope: 'root', inline: true },
+        'sidebar.session.title.prefix': { kind: 'list', scope: 'root', inline: true },
         'sidebar.session.row.trailing': { kind: 'list', scope: 'root', inline: true },
         'sidebar.session.row.hover': { kind: 'list', scope: 'root' },
       },

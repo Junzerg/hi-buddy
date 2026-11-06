@@ -1,0 +1,10 @@
+- region "Task pool":
+  - heading "Task pool" [level=1]
+  - button "Refresh"
+  - paragraph: One shared pool for conversations across projects. Select a member to continue its conversation.
+  - paragraph: 2 members
+  - list:
+    - listitem:
+      - button "Open conversation · Pool project 2": Workspace B Idle Pool project 2 Project check complete.
+    - listitem:
+      - button "Open conversation · Pool project 1": Workspace A Idle Pool project 1 No summary yet. It updates after a completed turn.

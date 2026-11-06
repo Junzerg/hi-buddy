@@ -162,3 +162,37 @@ it('copies no macOS tarball into the Windows package set', () => {
   expect(readFileSync(join(output, DESKTOP_PACKAGES_DIR, 'dsh-experimental-cua-macos.tgz')))
     .toEqual(readFileSync(join(inputs, 'dsh-experimental-cua-macos.tgz')))
 })
+
+it('ships the independent session-pool archive and resolves its peers from the local package set', () => {
+  const root = mkdtempSync(join(tmpdir(), 'desktop-kit-packages-'))
+  onTestFinished(() => { rmSync(root, { recursive: true, force: true }) })
+  const inputs = join(root, 'inputs')
+  mkdirSync(inputs)
+  const kitPath = join(import.meta.dirname, '../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz')
+  const kit = JSON.parse(execFileSync('tar', ['-xOzf', kitPath, 'package/package.json'], { encoding: 'utf8' })) as {
+    name: string
+    peerDependencies: Record<string, string>
+  }
+  const manifests: Record<string, Record<string, unknown>> = {
+    '@deepseek-ai/dsh': { dependencies: { [kit.name]: '0.2.1' } },
+    '@deepseek-ai/dsh-desktop-host': {},
+    ...Object.fromEntries(Object.keys(kit.peerDependencies).map(name => [name, {}])),
+  }
+  for (const [name, fields] of Object.entries(manifests)) {
+    const stem = name.replace('@deepseek-ai/', '')
+    const folder = join(root, stem, 'package')
+    mkdirSync(folder, { recursive: true })
+    writeFileSync(join(folder, 'package.json'), JSON.stringify({ name, version: '0.2.2-rc.1', ...fields }))
+    if (name === '@deepseek-ai/dsh-desktop-host') {
+      for (const file of DESKTOP_HOST_RUNTIME_FILES) {
+        mkdirSync(join(folder, file, '..'), { recursive: true })
+        writeFileSync(join(folder, file), '')
+      }
+    }
+    execFileSync('tar', ['-czf', join(inputs, `${stem}.tgz`), '-C', join(folder, '..'), 'package'])
+  }
+  const output = join(root, 'output')
+  prepareDesktopPackageSet([inputs], output, { platform: 'win32', arch: 'x64' })
+  expect(readFileSync(join(output, DESKTOP_PACKAGES_DIR, 'hi-buddy-session-pool-kit-0.2.1.tgz')))
+    .toEqual(readFileSync(kitPath))
+})

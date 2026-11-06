@@ -12,8 +12,8 @@
   en: b3d7daa3778338c7
   zh: 1868fa9e05a9055d
 /haier-upstream-synchronization/contents:
-  en: 1562bbbedfa98971
-  zh: 53e2e32e2c9be4fe
+  en: b50afd1799ed3f71
+  zh: a3339833ee9b25ca
 /haier-upstream-synchronization/documents-and-versions:
   en: b1d77424be7d017e
   zh: d9cd5196409c21fe
@@ -24,5 +24,8 @@
   en: d3915c3357f635ac
   zh: 8be5fdac225f489d
 /haier-upstream-synchronization/acceptance-and-recovery:
-  en: a32ba9b71c0626d6
-  zh: 90fbbd8ffd78e314
+  en: e0525fa7deef0af1
+  zh: 8fdbcdc0feea6f08
+/haier-upstream-synchronization/lessons-from-the-rc-1-integration:
+  en: 66f602d164c583d7
+  zh: 1039749b0ec9b481
