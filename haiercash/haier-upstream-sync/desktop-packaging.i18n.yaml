@@ -1,0 +1,31 @@
+# Bilingual-pair consistency record for desktop-packaging.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/haier-upstream-sync/desktop-packaging.md
+/:
+  en: b77015658b0d7ee0
+  zh: 8f72336aa3770ce4
+/desktop-packaging-handoff:
+  en: ae742502dee5f142
+  zh: 49a388056c91b6cf
+/desktop-packaging-handoff/summary:
+  en: 29cd47355a4a15cc
+  zh: a8a15b0a510718db
+/desktop-packaging-handoff/contents:
+  en: ce5f7e6e7c262326
+  zh: f1f42c9f8a2e83ae
+/desktop-packaging-handoff/prepare-both-machines:
+  en: 395501c0c258a0d1
+  zh: 83648191adce5c45
+/desktop-packaging-handoff/windows-x64:
+  en: 5d0b524a4c691df6
+  zh: f138e0866c481d65
+/desktop-packaging-handoff/mac-arm64:
+  en: b1e69a81e5f25f43
+  zh: dcf9da389a9c87f0
+/desktop-packaging-handoff/acceptance-and-failures:
+  en: 16c7e4c1022a1b2d
+  zh: b1c5562963dde809
+/desktop-packaging-handoff/hand-off-the-next-version:
+  en: 619f5778d8324a27
+  zh: ffa50c1fc5792dc9

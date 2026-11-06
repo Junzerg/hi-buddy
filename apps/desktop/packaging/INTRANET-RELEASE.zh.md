@@ -10,6 +10,8 @@ description: "分别在 Windows 和 Mac 打包 HiBuddy，手动传输发布包�
 
 Linux 用于开发；Windows 和 Mac 拉取同一个确认过的提交，在各自电脑上构建。各平台生成 tar.gz 与 SHA-256，手动传到 236.3，再在服务器继承上一版目录并部署。服务器访问与运行约束见 [INTRANET.md](INTRANET.md)。本文命令需在对应机器执行；真实签名、公证、内网下载和安装验收由发布人员完成。
 
+准备当前安装包时，先读取 [Desktop 打包交接](../../../haiercash/haier-upstream-sync/desktop-packaging.zh.md)及其指向的当前版本记录。
+
 ## 目录
 
 - [确认版本与源码](#source)

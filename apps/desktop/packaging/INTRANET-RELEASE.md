@@ -10,6 +10,8 @@ English | [中文](INTRANET-RELEASE.zh.md)
 
 Use Linux for development. Pull the same confirmed commit on Windows and Mac and build on each machine. Each platform produces a tar.gz and SHA-256 for manual transfer to 236.3; inherit the previous server directory before deploying. See [INTRANET.md](INTRANET.md) for server access and operating constraints. Run these commands on their respective machines; release operators must verify real signing, notarization, intranet downloads, and installed applications.
 
+For current installer preparation, start with the [Desktop packaging handoff](../../../haiercash/haier-upstream-sync/desktop-packaging.md) and its current version record.
+
 ## Contents
 
 - [Confirm version and source](#source)

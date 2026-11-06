@@ -1,0 +1,37 @@
+{
+  "version": "0.2.2-rc.1.20261106.2",
+  "sourceCommit": "6b23e52415d95bd96e7b2fab6576d87d5406c2e0",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    }
+  },
+  "checks": {
+    "sourceBuild": "passed",
+    "packageSet": "22 passed",
+    "freshProfileWeb": "passed",
+    "modelSelectionBrowser": "known failures; unresolved"
+  },
+  "published": false
+}
