@@ -3,7 +3,7 @@ import type {} from '@deepseek-ai/dsh-client-product-analytics/client'
 import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import { createSnapshotStore } from '@deepseek-ai/dsh-client-store'
 import { resolveSlotLabel } from '@deepseek-ai/dsh-client-ui-slots'
-import type { IWorkspaces } from '@deepseek-ai/dsh-api-workspace-controller/client'
+import type {} from '@deepseek-ai/dsh-api-workspace-controller/client'
 import type { MainPanelId } from '@deepseek-ai/dsh-client-ui-layout/client'
 // Type-only: pulls the locale plugin's Context merge (ctx.locale).
 import type {} from '@deepseek-ai/dsh-client-locale/client'
@@ -128,7 +128,7 @@ export function apply(ctx: ClientContext): void {
   }
   const archivedSessionIds = createSnapshotStore<readonly string[]>([])
   ctx.effect(() => {
-    const workspaces = ctx.get('workspaces') as IWorkspaces | undefined
+    const workspaces = ctx.get('workspaces')
     if (workspaces === undefined) return () => {}
     const publish = (): void => {
       const next = workspaces.list.getSnapshot().archivedSessionIds

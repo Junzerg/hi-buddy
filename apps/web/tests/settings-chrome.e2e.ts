@@ -142,7 +142,7 @@ describe('web e2e: settings modal and General preferences', () => {
     })
     try {
       // The entry is hidden; a DOM click verifies its retained handler and RPC.
-      await openDocument.evaluate(button => (button as HTMLButtonElement).click())
+      await openDocument.evaluate((button) => { (button as HTMLButtonElement).click() })
       await expect.poll(() => openRequests, { timeout: 5_000 }).toBe(1)
       await expect.poll(() => openDocument.isEnabled(), { timeout: 5_000 }).toBe(true)
     } finally {

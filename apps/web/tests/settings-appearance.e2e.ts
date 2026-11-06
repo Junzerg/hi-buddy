@@ -195,7 +195,7 @@ it('shares settings card materials and control sizes in both palettes', async ()
     await plugin.waitFor()
     expect(await appearance(plugin)).toMatchObject(material)
 
-    await dialog.locator('[data-settings-section="agent-presets"]').evaluate(button => (button as HTMLButtonElement).click())
+    await dialog.locator('[data-settings-section="agent-presets"]').evaluate((button) => { (button as HTMLButtonElement).click() })
     const preset = dialog.locator('li').first()
     await preset.waitFor()
     expect((await appearance(preset)).radius).toBe('20px')

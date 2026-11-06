@@ -59,7 +59,7 @@ describe('Connection binary RPC', () => {
         req.end(init.body as string)
       }))
       const result = await rpc.call('/api', 'fixture/read', {})
-      expect(result).toEqual({ ok: true, value: { data: expect.any(Uint8Array), bytes: data.length } })
+      expect(result).toEqual({ ok: true, value: { data: expect.any(Uint8Array) as unknown, bytes: data.length } })
       // Compare every byte natively; matcher traversal of 1 MiB can exhaust the test budget under concurrency.
       const received = (result as { ok: true; value: { data: Uint8Array } }).value.data
       expect(Buffer.compare(received, data)).toBe(0)

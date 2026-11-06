@@ -142,6 +142,21 @@ describe('maintained repository reference policy', () => {
     }
   })
 
+  it('permits commit identifiers only inside company synchronization records', () => {
+    const hash = 'abcdef1234'
+    const commits = new Set([hash])
+    const file = 'haiercash/haier-upstream-sync/records/fixture.json'
+    expect(findRepositoryReferences(file, hash, commits)).toEqual([])
+    expect(findRepositoryReferences(file, organizationUrl, commits)).toEqual([
+      { file, line: 1, kind: 'organization-url' },
+    ])
+    for (const other of ['haiercash/haier-upstream-sync/README.md', 'haiercash/haier-upstream-sync/records-other/fixture.json']) {
+      expect(findRepositoryReferences(other, hash, commits)).toEqual([
+        { file: other, line: 1, kind: 'commit-hash' },
+      ])
+    }
+  })
+
   it('permits only the independent kit repository and its source URLs', () => {
     for (const suffix of ['', '.git', '/tree/main/packages/entry']) {
       expect(findRepositoryReferences('package.json', `${organizationUrl}/libreoffice-kit${suffix}`, new Set())).toEqual([])

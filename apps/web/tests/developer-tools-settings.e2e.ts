@@ -30,7 +30,7 @@ it('persists Coding Tools and limits the built-in PTC and Minimal choices in ses
   await openSettings(page, 'en')
   await expect.poll(() => toggle.getAttribute('aria-checked')).toBe('false')
 
-  await page.locator('[data-settings-section="agent-presets"]').evaluate(button => (button as HTMLButtonElement).click())
+  await page.locator('[data-settings-section="agent-presets"]').evaluate((button) => { (button as HTMLButtonElement).click() })
   await expect.poll(() => page.getByRole('heading', { name: 'Agent presets', exact: true }).count()).toBe(1)
   const settings = page.getByRole('dialog', { name: 'Settings', exact: true })
   expect(await settings.getByRole('switch').count()).toBe(0)
@@ -98,7 +98,7 @@ it('persists Coding Tools and limits the built-in PTC and Minimal choices in ses
   await openSettings(page, 'en')
   await settings.getByRole('button', { name: 'General', exact: true }).click()
   await expect.poll(() => toggle.getAttribute('aria-checked')).toBe('false')
-  await settings.locator('[data-settings-section="agent-presets"]').evaluate(button => (button as HTMLButtonElement).click())
+  await settings.locator('[data-settings-section="agent-presets"]').evaluate((button) => { (button as HTMLButtonElement).click() })
   await expect.poll(visiblePresets).toEqual(['standard', 'cordis', 'custom'])
   await settings.getByRole('button', { name: 'New task default: Standard mode', exact: true }).waitFor()
   await settings.getByRole('button', { name: 'Let the agent help me create a preset', exact: true }).click()
