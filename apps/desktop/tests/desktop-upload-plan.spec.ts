@@ -50,7 +50,7 @@ async function fixture(
   await writeFile(join(appRoot, 'package.json'), `${JSON.stringify({ version })}\n`)
 
   const [os, arch] = target.split('-') as ['mac' | 'win', 'arm64' | 'x64']
-  const base = `${os === 'win' ? 'HiBuddy' : 'lingxi-office'}-${version}-${os}-${arch}`
+  const base = `HiBuddy-${version}-${os}-${arch}`
   const origin = environment === 'test'
     ? TEST_ORIGIN
     : 'https://download.deepseek.com'
@@ -213,9 +213,9 @@ describe('desktop upload plan', () => {
       bucket: TEST_BUCKET,
     })
     expect(plan.artifacts.map(artifact => artifact.filename)).toEqual([
-      'lingxi-office-1.2.3-mac-arm64.dmg',
-      'lingxi-office-1.2.3-mac-arm64.zip',
-      'lingxi-office-1.2.3-mac-arm64.zip.blockmap',
+      'HiBuddy-1.2.3-mac-arm64.dmg',
+      'HiBuddy-1.2.3-mac-arm64.zip',
+      'HiBuddy-1.2.3-mac-arm64.zip.blockmap',
       'nightly-mac.yml',
     ])
     expect(plan.artifacts.at(-1)).toMatchObject({
@@ -255,9 +255,9 @@ describe('desktop upload plan', () => {
     const paths = await fixture('mac-arm64', '1.2.3-alpha.4')
     const plan = await createDesktopUploadPlan('mac-arm64', paths)
     expect(plan.artifacts.map(artifact => artifact.filename)).toEqual([
-      'lingxi-office-1.2.3-alpha.4-mac-arm64.dmg',
-      'lingxi-office-1.2.3-alpha.4-mac-arm64.zip',
-      'lingxi-office-1.2.3-alpha.4-mac-arm64.zip.blockmap',
+      'HiBuddy-1.2.3-alpha.4-mac-arm64.dmg',
+      'HiBuddy-1.2.3-alpha.4-mac-arm64.zip',
+      'HiBuddy-1.2.3-alpha.4-mac-arm64.zip.blockmap',
       'nightly-mac.yml',
     ])
   })
@@ -311,7 +311,7 @@ describe('desktop upload plan', () => {
     expect(plan.version).toBe('1.2.3')
     await expect(createDesktopUploadPlan('mac-arm64', { ...paths, packagedProductVersion: '1.2.4' }))
       .rejects.toThrow(/completion record/u)
-    await writeFile(join(paths.artifactsRoot, 'lingxi-office-1.2.3-mac-arm64.zip'), 'tampered')
+    await writeFile(join(paths.artifactsRoot, 'HiBuddy-1.2.3-mac-arm64.zip'), 'tampered')
     await expect(createDesktopUploadPlan('mac-arm64', { ...paths, packagedProductVersion: '1.2.3' }))
       .rejects.toThrow(/size.*metadata/u)
   })
@@ -319,7 +319,7 @@ describe('desktop upload plan', () => {
   it('rejects stale architecture metadata and modified updater bytes', async () => {
     const paths = await fixture('mac-arm64')
     const metadataPath = join(paths.artifactsRoot, 'nightly-mac.yml')
-    const zipPath = join(paths.artifactsRoot, 'lingxi-office-1.2.3-mac-arm64.zip')
+    const zipPath = join(paths.artifactsRoot, 'HiBuddy-1.2.3-mac-arm64.zip')
     await writeFile(zipPath, 'modified')
     await expect(createDesktopUploadPlan('mac-arm64', paths)).rejects.toThrow(/size.*metadata/u)
 
@@ -327,7 +327,7 @@ describe('desktop upload plan', () => {
     await writeFile(metadataPath, `${JSON.stringify({
       version: '1.2.3',
       files: [{
-        url: 'lingxi-office-1.2.3-mac-x64.zip',
+        url: 'HiBuddy-1.2.3-mac-x64.zip',
         size: Buffer.byteLength(x64),
         sha512: digest(x64),
       }],

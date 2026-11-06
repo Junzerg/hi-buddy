@@ -155,7 +155,9 @@ bash apps/desktop/scripts/macos-runner-service.sh status "$HOME/dsh-ci/runner"
 
 静态下载页面将列表中的最新版本固定在顶部，历史版本每页显示五个，仅在需要时显示翻页按钮。页面使用同一 Nginx 端口的 `/versions` 路径，安装包链接使用 `/versions/<version>/HiBuddy-<version>.exe`。打包后运行 `node apps/desktop/scripts/prepare-intranet-site.mjs apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts apps/desktop/.desktop-build/intranet-site`，验证安装包哈希并准备页面、版本列表、更新文件和安装包。将生成的 `versions/` 和 `updates/` 目录传到 `/srv/lingxi-office/`；先传安装包，后传更新元数据。保留本地发布目录以维护版本列表。服务器只需要 Nginx，无需运行 Node.js 服务进程。
 
-Windows x64 未签名安装包如需在应用内更新，将 [intranet.env.example](../config/intranet.env.example) 复制为 `apps/desktop/.env.windows`，不选择机器 preset。`DSH_DESKTOP_INTRANET_UPDATE_URL` 指定 HTTP(S) 更新目录；该模式启用普通版本检查和下载，省略强制更新策略和测试登录。该模式拒绝签名构建和 macOS 构建，不支持 COS 上传工具。HTTP 和未签名程序依赖内网及服务器的访问控制；文件哈希用于检测损坏，不能验证发布者身份。
+Windows x64 未签名安装包如需在应用内更新，将 [intranet.env.example](../config/intranet.env.example) 复制为 `apps/desktop/.env.windows`，不选择机器 preset。`DSH_DESKTOP_INTRANET_UPDATE_URL` 指定 HTTP(S) 更新目录；该模式启用普通版本检查和下载，省略强制更新策略和测试登录。Windows 内网模式拒绝签名构建，不支持 COS 上传工具。HTTP 和未签名程序依赖内网及服务器的访问控制；文件哈希用于检测损坏，不能验证发布者身份。
+
+macOS 内网应用内更新必须使用 **Developer ID 签名并公证** 的构建（不要 `--skip-notarization`，也不要用未签名 Mac 包做自动更新，否则 Gatekeeper 容易拦截）。将 [intranet-mac.env.example](../config/intranet-mac.env.example) 合并进 `apps/desktop/.env.macos`，把 `DSH_DESKTOP_INTRANET_UPDATE_URL` 设为对应架构目录，例如 `http://172.28.236.3:18765/updates/mac-arm64/`。确认版本后运行 `pnpm run package:desktop:mac:arm64 --build-version <confirmed-version>`，保留产物目录中的 DMG、ZIP、`.zip.blockmap` 与 `nightly-mac.yml`。再运行 `node apps/desktop/scripts/prepare-intranet-mac-site.mjs apps/desktop/.desktop-build/targets/mac-arm64/artifacts apps/desktop/.desktop-build/intranet-site arm64`，把 `versions/` 与 `updates/mac-arm64/` 同步到服务器；先传 ZIP／blockmap／DMG，最后替换 `nightly-mac.yml`。首装仍用 `/versions` 的 DMG；之后客户端从 updates feed 做差分升级。App 须安装在 `/Applications`。
 
 确认完整版本号后运行 `pnpm run package:desktop:win:x64:unsigned --build-version <confirmed-version>`。保留 `apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/` 中的 EXE、对应 `.exe.blockmap` 和 `nightly.yml`。每次新版的版本号必须大于已安装版本。分发前检查生成的版本文件，并用两个版本验证下载、确认、安装及重新启动。
 
@@ -182,7 +184,7 @@ pnpm run package:desktop:mac:arm64:unsigned
 pnpm run package:desktop:mac:x64:unsigned
 ```
 
-添加 `--check` 仅验证本地配置和工具而不构建，或添加 `--dir` 只生成解包应用。DMG 路径为 `apps/desktop/.desktop-build/targets/<target>/unsigned-artifacts/lingxi-office-<version>-mac-<arch>-unsigned.dmg`。所有检查通过后，命令打印 `DMG:` 及其绝对路径。打开后将应用复制到本地测试目录。
+添加 `--check` 仅验证本地配置和工具而不构建，或添加 `--dir` 只生成解包应用。DMG 路径为 `apps/desktop/.desktop-build/targets/<target>/unsigned-artifacts/HiBuddy-<version>-mac-<arch>-unsigned.dmg`。所有检查通过后，命令打印 `DMG:` 及其绝对路径。打开后将应用复制到本地测试目录。
 
 这些命令忽略 `.env.macos` 和继承的发布配置，使用 `com.deepseek.harness` 作为应用 ID，并省略自动更新和强制更新配置。构建工具、标准网络代理与 `DSH_DESKTOP_NPM_REGISTRY` 仍可从 shell 提供。它们跳过 Developer ID 签名、Apple 公证、临时签名钥匙串和公证代理修改。Electron 使用无需证书的本地 ad-hoc 签名，以便修改后的可执行文件能够运行；DMG 不签名。准备阶段和组装后的应用仍执行运行时完整性与冒烟检查。本地构建不生成更新源、ZIP 或发布完成记录，上传命令无法发布这些产物。macOS 可能要求在“系统设置 → 隐私与安全性”中批准打开未经公证的应用。
 

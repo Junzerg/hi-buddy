@@ -29,6 +29,32 @@ describe('installer preparation preserves application dependencies', () => {
     expect(config.electronLanguages).toEqual(['en', 'zh-CN'])
     expect(config.extraMetadata).not.toHaveProperty('dshMandatoryUpdatePolicy')
   })
+  it('enables a signed notarized Mac intranet feed without mandatory policy', async () => {
+    const { createElectronBuilderConfig } = await import('../scripts/electron-builder-config.mjs')
+    const config = createElectronBuilderConfig({
+      DSH_DESKTOP_APP_ID: 'com.deepseek.dsh',
+      DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/mac-arm64/',
+      DSH_DESKTOP_MACOS_SIGNING_IDENTITY: 'Example Company (TEAMID1234)',
+      DSH_DESKTOP_MACOS_TEAM_ID: 'TEAMID1234',
+      CSC_LINK: 'signing.p12',
+      CSC_KEY_PASSWORD: 'export-secret',
+      APPLE_ID: 'dev@example.com',
+      APPLE_APP_SPECIFIC_PASSWORD: 'app-specific',
+      APPLE_TEAM_ID: 'TEAMID1234',
+    }, 'darwin', 'arm64')
+    expect(config.publish).toEqual([{ provider: 'generic', url: 'http://172.28.236.3:18765/updates/mac-arm64/', channel: 'nightly' }])
+    expect(config.mac).toMatchObject({ notarize: true, target: ['dmg', 'zip'] })
+    expect(config.extraMetadata).not.toHaveProperty('dshMandatoryUpdatePolicy')
+    expect(() => createElectronBuilderConfig({
+      DSH_DESKTOP_APP_ID: 'com.deepseek.dsh',
+      DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/mac-arm64/',
+      DSH_DESKTOP_MACOS_SIGNING_IDENTITY: 'Example Company (TEAMID1234)',
+      DSH_DESKTOP_MACOS_TEAM_ID: 'TEAMID1234',
+      DSH_DESKTOP_MACOS_SKIP_NOTARIZATION: '1',
+      CSC_LINK: 'signing.p12',
+      CSC_KEY_PASSWORD: 'export-secret',
+    }, 'darwin', 'arm64')).toThrow(/require notarization/u)
+  })
   it.each(['win32', 'darwin'] as const)('rejects a missing production policy before signing on %s', async (platform) => {
     const { createElectronBuilderConfig } = await import('../scripts/electron-builder-config.mjs')
     expect(() => createElectronBuilderConfig({ DSH_DESKTOP_APP_ID: 'com.example.installer',

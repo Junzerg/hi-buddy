@@ -12,11 +12,17 @@ const RELEASE_ID = '0123456789abcdef0123456789abcdef'
 
 describe('desktop auto-update environment', () => {
   it('uses an intranet feed without official deployment settings and refuses COS uploads', () => {
-    const environment = { DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/win-x64' }
-    expect(resolveDesktopAutoUpdateConfig(environment, 'win32', 'x64').publicUrl)
-      .toBe('http://172.28.236.3:18765/updates/win-x64/')
-    expect(() => resolveDesktopAutoUpdateConfig(environment, 'darwin', 'arm64')).toThrow(/Windows x64/u)
-    expect(() => resolveDesktopUploadConfig(environment, 'win32', 'x64')).toThrow(/COS/u)
+    const windows = { DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/win-x64' }
+    expect(resolveDesktopAutoUpdateConfig(windows, 'win32', 'x64')).toMatchObject({
+      publicUrl: 'http://172.28.236.3:18765/updates/win-x64/',
+      target: 'win-x64',
+    })
+    const mac = { DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/mac-arm64' }
+    expect(resolveDesktopAutoUpdateConfig(mac, 'darwin', 'arm64')).toMatchObject({
+      publicUrl: 'http://172.28.236.3:18765/updates/mac-arm64/',
+      target: 'mac-arm64',
+    })
+    expect(() => resolveDesktopUploadConfig(windows, 'win32', 'x64')).toThrow(/COS/u)
     for (const url of ['', 'file:///tmp/feed', 'http://user:password@host/', 'http://host/?token=1', 'http://host/#feed']) {
       expect(() => resolveDesktopAutoUpdateConfig({ DSH_DESKTOP_INTRANET_UPDATE_URL: url }, 'win32', 'x64')).toThrow()
     }

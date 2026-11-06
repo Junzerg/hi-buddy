@@ -13,7 +13,7 @@ import { resolveMacOSPackageSettings } from './macos-package-settings.mjs'
 import { resolveWindowsSignatureCacheDirectory } from './windows-signature-cache-directory.mjs'
 import { resolveWindowsPackageSettings } from './windows-package-settings.mjs'
 import { resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
-import { resolveIntranetUpdateUrl } from './intranet-update-environment.mjs'
+import { isAllowedIntranetPackaging, resolveIntranetUpdateUrl } from './intranet-update-environment.mjs'
 
 const APP_ROOT = fileURLToPath(new URL('..', import.meta.url))
 const SHARED_SETTING = /^(?:DSH_DESKTOP_(?:APP_ID|AUTO_UPDATE_ENV|NPM_REGISTRY|MANDATORY_UPDATE_(?:CONFIG|(?:TEST|PROD)_ORIGIN))|DOWNLOAD_TEST_RELEASE_ID|DOWNLOAD_PROD_EO_ZONE_ID|DOWNLOAD_(?:TEST|PROD)_(?:ORIGIN|COS_BUCKET|COS_SECRET_ID|COS_SECRET_KEY))$/u
@@ -72,7 +72,7 @@ export function loadDesktopPackageEnvironment(platform, environment = process.en
     ? /^DSH_DESKTOP_WINDOWS_(?:SIGNATURE_CACHE_(?:DIR|CONCURRENCY)|PACK_CONCURRENCY|COMPRESSION_LEVEL)$/u
     : /^DSH_DESKTOP_MACOS_(?:SIGNATURE_CACHE_DIR|PACK_CONCURRENCY|ZIP_COMPRESSION_LEVEL|DOWNLOAD_PROXY|NOTARIZATION_PROXY)$/u
   const settings = readSettings(path, name => preset === undefined
-    ? SHARED_SETTING.test(name) || platformSetting.test(name) || (platform === 'win32' && name === 'DSH_DESKTOP_INTRANET_UPDATE_URL')
+    ? SHARED_SETTING.test(name) || platformSetting.test(name) || name === 'DSH_DESKTOP_INTRANET_UPDATE_URL'
     : /^(?:DSH_DESKTOP_(?:APP_ID|AUTO_UPDATE_ENV|NPM_REGISTRY|MANDATORY_UPDATE_(?:CONFIG|(?:TEST|PROD)_ORIGIN))|DOWNLOAD_TEST_(?:ORIGIN|RELEASE_ID))$/u.test(name) || publicPlatformSetting.test(name))
   if (preset !== undefined) {
     if (settings.DSH_DESKTOP_AUTO_UPDATE_ENV !== preset) throw new Error('desktop package: preset deployment must match its name')
@@ -155,8 +155,11 @@ function requireReadableFile(environment, name) {
  */
 export function validateDesktopPackageEnvironment(environment, target, options = {}) {
   const intranet = resolveIntranetUpdateUrl(environment)
-  if (intranet !== undefined && (target.platform !== 'win32' || target.arch !== 'x64' || !options.unsigned)) {
-    throw new Error('desktop package: intranet updates require an unsigned Windows x64 build')
+  if (intranet !== undefined && !isAllowedIntranetPackaging(target, options)) {
+    throw new Error('desktop package: intranet updates require unsigned Windows x64 or signed macOS arm64/x64')
+  }
+  if (intranet !== undefined && target.platform === 'darwin' && options.skipNotarization) {
+    throw new Error('desktop package: intranet macOS updates require notarization; omit --skip-notarization')
   }
   resolveDesktopTargetBuildPaths(environment, target.platform, target.arch)
   resolveDesktopAppId(environment)
@@ -166,7 +169,7 @@ export function validateDesktopPackageEnvironment(environment, target, options =
   if (target.platform === 'darwin') resolveMacOSPackageSettings(environment)
   else resolveWindowsPackageSettings(environment)
   if (options.unsigned) return
-  if (!options.prepareOnly) resolveDesktopAutoUpdateConfig(environment, target.platform, target.arch)
+  if (!options.prepareOnly && intranet === undefined) resolveDesktopAutoUpdateConfig(environment, target.platform, target.arch)
   if (target.platform === 'win32') {
     if (!options.prepareOnly) createWindowsTokenSigner({
       certificateFile: environment.DSH_DESKTOP_WINDOWS_CER_FILE,

@@ -6,16 +6,41 @@ import { loadDesktopPackageEnvironment, localMacOSPackageEnvironment, validateDe
 import { resolveWindowsPackageSettings } from '../scripts/windows-package-settings.mjs'
 
 describe('intranet packaging', () => {
-  const environment = {
+  const windows = {
     DSH_DESKTOP_APP_ID: 'com.deepseek.dsh',
     DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/win-x64/',
   }
+  const mac = {
+    DSH_DESKTOP_APP_ID: 'com.deepseek.dsh',
+    DSH_DESKTOP_INTRANET_UPDATE_URL: 'http://172.28.236.3:18765/updates/mac-arm64/',
+    DSH_DESKTOP_MACOS_SIGNING_IDENTITY: 'Example Company (TEAMID1234)',
+    DSH_DESKTOP_MACOS_TEAM_ID: 'TEAMID1234',
+    CSC_LINK: 'signing.p12',
+    CSC_KEY_PASSWORD: 'export-secret',
+    APPLE_ID: 'dev@example.com',
+    APPLE_APP_SPECIFIC_PASSWORD: 'app-specific',
+    APPLE_TEAM_ID: 'TEAMID1234',
+  }
   it('accepts unsigned Windows packaging without a mandatory-update service', () => {
-    expect(() => { validateDesktopPackageEnvironment(environment, { platform: 'win32', arch: 'x64' }, { unsigned: true }) }).not.toThrow()
+    expect(() => { validateDesktopPackageEnvironment(windows, { platform: 'win32', arch: 'x64' }, { unsigned: true }) }).not.toThrow()
   })
-  it('rejects signed and macOS intranet packaging', () => {
-    expect(() => { validateDesktopPackageEnvironment(environment, { platform: 'win32', arch: 'x64' }) }).toThrow(/unsigned Windows/u)
-    expect(() => { validateDesktopPackageEnvironment(environment, { platform: 'darwin', arch: 'arm64' }, { unsigned: true }) }).toThrow(/unsigned Windows/u)
+  it('accepts signed notarized Mac intranet packaging without a mandatory-update service', async () => {
+    await withDirectory(async (directory) => {
+      await writeFile(join(directory, 'signing.p12'), 'p12')
+      expect(() => {
+        validateDesktopPackageEnvironment({ ...mac, CSC_LINK: join(directory, 'signing.p12') },
+          { platform: 'darwin', arch: 'arm64' })
+      }).not.toThrow()
+    })
+  })
+  it('rejects unsigned Mac and signed Windows intranet packaging, and Mac skip-notarization', () => {
+    expect(() => { validateDesktopPackageEnvironment(windows, { platform: 'win32', arch: 'x64' }) })
+      .toThrow(/unsigned Windows x64 or signed macOS/u)
+    expect(() => { validateDesktopPackageEnvironment(mac, { platform: 'darwin', arch: 'arm64' }, { unsigned: true }) })
+      .toThrow(/unsigned Windows x64 or signed macOS/u)
+    expect(() => {
+      validateDesktopPackageEnvironment(mac, { platform: 'darwin', arch: 'arm64' }, { skipNotarization: true })
+    }).toThrow(/require notarization/u)
   })
 })
 

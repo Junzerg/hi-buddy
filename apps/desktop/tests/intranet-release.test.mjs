@@ -10,7 +10,7 @@ import { mergeReleases, compareVersions } from '../scripts/merge-intranet-releas
 
 const version = '0.2.1-rc.3.20261105.1'
 const win = { version, url: `/versions/${version}/HiBuddy-${version}.exe`, bytes: 3 }
-const mac = { version, url: `/versions/${version}/lingxi-office-${version}-mac-arm64.dmg`, bytes: 3, arch: 'arm64' }
+const mac = { version, url: `/versions/${version}/HiBuddy-${version}-mac-arm64.dmg`, bytes: 3, arch: 'arm64' }
 
 test('merge preserves Windows and Mac at one version and refuses replacement or downgrade', () => {
   assert.deepEqual(new Set(mergeReleases([win], [mac]).map(row => row.url)), new Set([win.url, mac.url]))
@@ -45,7 +45,7 @@ for (const prefix of ['HiBuddy', 'lingxi-office']) test(`real overlay accepts ${
   await extract({ file: winTar, cwd: site })
   const winRecords = JSON.parse(await readFile(join(site, 'release-records.json'), 'utf8'))
   const previous = join(root, 'previous.json'); await writeFile(previous, JSON.stringify(winRecords))
-  await writeFile(join(source, `lingxi-office-${version}-mac-arm64.dmg`), bytes)
+  await writeFile(join(source, `HiBuddy-${version}-mac-arm64.dmg`), bytes)
   const macTar = join(root, 'mac.tar.gz'); pack('mac-arm64', macTar)
   await extract({ file: macTar, cwd: site })
   assert.equal(await readFile(join(site, 'updates/win-x64/nightly.yml'), 'utf8'), feed)
@@ -53,7 +53,7 @@ for (const prefix of ['HiBuddy', 'lingxi-office']) test(`real overlay accepts ${
   assert.match(merge(), /Merged 2 releases/)
   assert.equal(JSON.parse(await readFile(join(site, 'versions/releases.json'), 'utf8')).length, 2)
   assert.match(await readFile(join(site, 'site/index.html'), 'utf8'), /HiBuddy/)
-  const macInstaller = join(site, 'versions', version, `lingxi-office-${version}-mac-arm64.dmg`)
+  const macInstaller = join(site, 'versions', version, `HiBuddy-${version}-mac-arm64.dmg`)
   await writeFile(macInstaller, Buffer.alloc(bytes.length))
   assert.throws(merge, /SHA-256 mismatch/)
   await writeFile(macInstaller, bytes)

@@ -28,13 +28,20 @@ try {
     if (![ `HiBuddy-${version}-win-x64-unsigned.exe`, `lingxi-office-${version}-win-x64-unsigned.exe` ].includes(filename)) throw new Error('Windows filename does not match the requested version')
   } else {
     const names = await readdir(source)
-    const matches = names.filter(name => name === `lingxi-office-${version}-mac-${arch}.dmg` || name === `lingxi-office-${version}-mac-${arch}-unsigned.dmg`)
+    const matches = names.filter(name => [
+      `HiBuddy-${version}-mac-${arch}.dmg`,
+      `HiBuddy-${version}-mac-${arch}-unsigned.dmg`,
+      `lingxi-office-${version}-mac-${arch}.dmg`,
+      `lingxi-office-${version}-mac-${arch}-unsigned.dmg`,
+    ].includes(name))
     if (matches.length !== 1) throw new Error('Expected exactly one signed or unsigned DMG matching the version and architecture')
     filename = matches[0]
   }
   const installer = await readFile(join(source, filename))
   if (!installer.length) throw new Error('Installer is empty')
-  const publishedName = target === 'win-x64' ? `HiBuddy-${version}.exe` : filename
+  const publishedName = target === 'win-x64'
+    ? `HiBuddy-${version}.exe`
+    : `HiBuddy-${version}-mac-${arch}${filename.includes('-unsigned') ? '-unsigned' : ''}.dmg`
   const record = { version, url: `/versions/${version}/${publishedName}`, bytes: installer.length,
     ...(target !== 'win-x64' ? { arch } : {}), sha256: createHash('sha256').update(installer).digest('hex') }
   await mkdir(join(work, 'versions', version), { recursive: true })
