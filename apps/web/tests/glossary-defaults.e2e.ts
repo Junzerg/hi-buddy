@@ -2,9 +2,9 @@
 import { chromium } from 'playwright'
 import { expect, it, onTestFinished } from 'vitest'
 import { launchWebScaffold, watchConsole } from './scaffold.ts'
-import { newEnglishPage } from './support.ts'
+import { newEnglishPage, openSettings } from './support.ts'
 
-it('enables the glossary with default terms while keeping the session pool disabled', async () => {
+it('enables the glossary while hiding built-in plugin settings and disabling the session pool', async () => {
   const scaffold = await launchWebScaffold()
   onTestFinished(() => scaffold.close())
   const entries = [...scaffold.ctx.loader.entries()]
@@ -14,6 +14,9 @@ it('enables the glossary with default terms while keeping the session pool disab
   expect(glossary[0]!.disabled).toBe(false)
   expect(pool).toHaveLength(1)
   expect(pool[0]!.disabled).toBe(true)
+  const pluginSettings = entries.filter(entry => entry.options.name === '@deepseek-ai/dsh-client-ui-settings-plugins')
+  expect(pluginSettings).toHaveLength(1)
+  expect(pluginSettings[0]!.disabled).toBe(true)
   const browser = await chromium.launch()
   try {
     const page = await newEnglishPage(browser)
@@ -26,6 +29,10 @@ it('enables the glossary with default terms while keeping the session pool disab
       await toggle.waitFor()
       expect(await toggle.getAttribute('aria-checked')).toBe('true')
     }
+    await openSettings(page, 'en')
+    const settings = page.getByRole('dialog', { name: 'Settings', exact: true })
+    await settings.getByRole('button', { name: 'General', exact: true }).waitFor()
+    expect(await settings.getByRole('button', { name: 'Built-in plugins', exact: true }).count()).toBe(0)
     expect(console.pageErrors).toEqual([])
   } finally {
     await browser.close()

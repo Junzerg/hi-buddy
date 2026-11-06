@@ -455,6 +455,7 @@
     # are the companion rows below.
     - id: ui-settings-plugins
       name: '@deepseek-ai/dsh-client-ui-settings-plugins'
+      disabled: true
 
     # The official settings pages: one companion package per host-plane
     # namespace, each registering its page into the Plugins page while the
