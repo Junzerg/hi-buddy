@@ -37,6 +37,9 @@
 # `dsh.client` rows are the browser roster the modules node half scans into
 # window.__DSH_BOOT__; the modules row is simultaneously a host row.
 - insert:
+    - id: project-glossary
+      name: hi-buddy-glossary-kit
+
     - id: session-pool
       name: hi-buddy-session-pool-kit
       disabled: true

@@ -30,6 +30,7 @@
     "tests/context-menus.e2e.ts",
     "tests/rich-text-quotes.e2e.ts",
     "tests/selection-actions.e2e.ts",
+    "tests/glossary-defaults.e2e.ts",
     "tests/session-pool.e2e.ts",
     "tests/session-title-prefix.e2e.ts",
     "tests/hover-input.e2e.ts",

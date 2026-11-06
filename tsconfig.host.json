@@ -14,6 +14,7 @@
     "apps/web/tests/unsupported-locales.e2e.ts",
     "apps/web/tests/rich-text-quotes.e2e.ts",
     "apps/web/tests/selection-actions.e2e.ts",
+    "apps/web/tests/glossary-defaults.e2e.ts",
     "apps/web/tests/session-pool.e2e.ts",
     "apps/web/tests/session-title-prefix.e2e.ts",
     "apps/web/tests/hover-input.e2e.ts",

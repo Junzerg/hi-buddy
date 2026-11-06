@@ -163,18 +163,21 @@ it('copies no macOS tarball into the Windows package set', () => {
     .toEqual(readFileSync(join(inputs, 'dsh-experimental-cua-macos.tgz')))
 })
 
-it('ships the independent session-pool archive and resolves its peers from the local package set', () => {
+it.each([
+  ['hi-buddy-session-pool-kit', '0.2.1'],
+  ['hi-buddy-glossary-kit', '0.3.0-rc.1'],
+])('ships %s and resolves its peers from the local package set', (name, version) => {
   const root = mkdtempSync(join(tmpdir(), 'desktop-kit-packages-'))
   onTestFinished(() => { rmSync(root, { recursive: true, force: true }) })
   const inputs = join(root, 'inputs')
   mkdirSync(inputs)
-  const kitPath = join(import.meta.dirname, '../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz')
+  const kitPath = join(import.meta.dirname, `../../../haiercash/builtin-plugins/${name}-${version}.tgz`)
   const kit = JSON.parse(execFileSync('tar', ['-xOzf', kitPath, 'package/package.json'], { encoding: 'utf8' })) as {
     name: string
     peerDependencies: Record<string, string>
   }
   const manifests: Record<string, Record<string, unknown>> = {
-    '@deepseek-ai/dsh': { dependencies: { [kit.name]: '0.2.1' } },
+    '@deepseek-ai/dsh': { dependencies: { [kit.name]: version } },
     '@deepseek-ai/dsh-desktop-host': {},
     ...Object.fromEntries(Object.keys(kit.peerDependencies).map(name => [name, {}])),
   }
@@ -192,7 +195,9 @@ it('ships the independent session-pool archive and resolves its peers from the l
     execFileSync('tar', ['-czf', join(inputs, `${stem}.tgz`), '-C', join(folder, '..'), 'package'])
   }
   const output = join(root, 'output')
-  prepareDesktopPackageSet([inputs], output, { platform: 'win32', arch: 'x64' })
-  expect(readFileSync(join(output, DESKTOP_PACKAGES_DIR, 'hi-buddy-session-pool-kit-0.2.1.tgz')))
-    .toEqual(readFileSync(kitPath))
+  for (const target of [{ platform: 'win32', arch: 'x64' }, { platform: 'darwin', arch: 'arm64' }] as const) {
+    prepareDesktopPackageSet([inputs], output, target)
+    expect(readFileSync(join(output, DESKTOP_PACKAGES_DIR, `${name}-${version}.tgz`)))
+      .toEqual(readFileSync(kitPath))
+  }
 })

@@ -3380,6 +3380,9 @@ importers:
       commander:
         specifier: ^15.0.0
         version: 15.0.0
+      hi-buddy-glossary-kit:
+        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz
+        version: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)
       hi-buddy-session-pool-kit:
         specifier: file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz
         version: file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-agent@packages+core+agent)(@deepseek-ai/dsh-api-remote-access@packages+api+remote-access)(@deepseek-ai/dsh-api-session-controller@packages+api+session-controller)(@deepseek-ai/dsh-llm@packages+llm+llm)(@deepseek-ai/dsh-session-projection@packages+session+session-projection)(@deepseek-ai/dsh-session-title@packages+session+session-title)(@deepseek-ai/dsh-session@packages+core+session)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-subagent@packages+subagent+subagent)(@deepseek-ai/dsh-system-prompt@packages+core+system-prompt)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@deepseek-ai/dsh-workspace@packages+workspace+workspace)
@@ -23588,6 +23591,16 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
+  hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz:
+    resolution: {integrity: sha512-UjBN6kAcLGm/fJSm6SM4Fjy05cTvLCJiBh3k2pqNc/Hc7c/WqSAb0i360acuwcAiUwRDQWYBTzngKvxBzG/reg==, tarball: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz}
+    version: 0.3.0-rc.1
+    engines: {dsh: '>=0.2.2-rc.1 <0.2.2-rc.2', node: '>=24.9'}
+    peerDependencies:
+      '@deepseek-ai/cordis': 4.1.0
+      '@deepseek-ai/dsh-storage-domain': '>=0.2.2-rc.1 <0.2.2-rc.2'
+      '@deepseek-ai/dsh-tools': '>=0.2.2-rc.1 <0.2.2-rc.2'
+      '@deepseek-ai/dsh-typert-protocol': '>=0.2.2-rc.1 <0.2.2-rc.2'
+
   hi-buddy-session-pool-kit@file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz:
     resolution: {integrity: sha512-Bzg1g13YPzWc6e6wMUYB2a5IXOnpCYH3zZaU6JX+wD4G4cIk/j0r0nzctbySrvCieaVD2ky5NN83c0OvkXfQVw==, tarball: file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz}
     version: 0.2.1
@@ -31481,6 +31494,14 @@ snapshots:
       '@types/hast': 3.0.5
 
   he@1.2.0: {}
+
+  hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol):
+    dependencies:
+      '@deepseek-ai/cordis': link:vendor/cordis
+      '@deepseek-ai/dsh-storage-domain': link:packages/storage/storage-domain
+      '@deepseek-ai/dsh-tools': link:packages/core/tools
+      '@deepseek-ai/dsh-typert-protocol': link:packages/typert/protocol
+      zod: 4.4.3
 
   hi-buddy-session-pool-kit@file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-agent@packages+core+agent)(@deepseek-ai/dsh-api-remote-access@packages+api+remote-access)(@deepseek-ai/dsh-api-session-controller@packages+api+session-controller)(@deepseek-ai/dsh-llm@packages+llm+llm)(@deepseek-ai/dsh-session-projection@packages+session+session-projection)(@deepseek-ai/dsh-session-title@packages+session+session-title)(@deepseek-ai/dsh-session@packages+core+session)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-subagent@packages+subagent+subagent)(@deepseek-ai/dsh-system-prompt@packages+core+system-prompt)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@deepseek-ai/dsh-workspace@packages+workspace+workspace):
     dependencies:
