@@ -1,9 +1,9 @@
 {
   "version": "0.2.2-rc.1.20261106.2",
-  "sourceCommit": "6ba59f46e4a39c6474b039d8b1938700ed139165",
+  "sourceCommit": "738afe65c598bda090b3094be95a9e61d95b2bf6",
   "sourceBranch": "dev/junzerg",
   "status": "prepared",
-  "notes": "Mac signed packaging requires the HiBuddy artifact-promotion fix; previous pin 7b6aa9df failed after notarization while looking for lingxi-office-* filenames.",
+  "notes": "Mac signed packaging requires the HiBuddy artifact-promotion fix; previous pin 7b6aa9df failed after notarization while looking for lingxi-office-* filenames. Windows packaging additionally requires the fail-closed portable VC++ runtime fix; the exe built from pin 6ba59f4 omitted it and its Office previews failed on hosts with old system MSVCP140.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
