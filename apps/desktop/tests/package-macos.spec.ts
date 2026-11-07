@@ -36,7 +36,7 @@ async function fixture(arch: 'arm64' | 'x64' = 'arm64') {
     publicUrl: `https://desktop-updates.example.com/dsh-desk/0123456789abcdef0123456789abcdef/feeds/mac-${arch}/`,
   }, 'deepseek-harness-updater')
   const version = '1.2.3-alpha.1'
-  const base = `lingxi-office-${version}-mac-${arch}`
+  const base = `HiBuddy-${version}-mac-${arch}`
   const request = { arch, artifactsRoot, version, environment }
   const apple: MacOSArtifactOperations = {
     copyApp: async (source, destination) => {
