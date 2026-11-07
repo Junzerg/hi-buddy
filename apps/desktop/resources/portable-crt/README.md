@@ -1,5 +1,7 @@
 # Portable VC++ runtime for the Windows LibreOffice engine
 
+English | [中文](README.zh.md)
+
 `prepare-dsh.ts` copies every `msvcp140*`/`vcruntime140*` DLL from this directory beside
 `node_modules/@deepseek-ai/libreoffice-kit-win32-x64/bin/libreoffice-kit.exe` in each Windows
 Desktop package. Intranet hosts whose system MSVCP140.dll predates the engine's toolchain

@@ -1,8 +1,9 @@
 {
   "version": "0.2.2-rc.1.20261107.1",
-  "sourceCommit": "6ba59f46e4a39c6474b039d8b1938700ed139165",
+  "sourceCommit": "738afe65c598bda090b3094be95a9e61d95b2bf6",
   "sourceBranch": "dev/junzerg",
   "status": "prepared",
+  "notes": "Portable VC++ runtime fix release: bundles the repository-stock CRT DLLs beside the Windows LibreOffice engine and fails the package build when required DLLs are missing. Replaces the rolled-back 0.2.2-rc.1.20261106.2, whose Office previews crashed with 0xC0000005 on hosts with old system MSVCP140.dll; that version identity is void and must not be republished.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
@@ -28,12 +29,10 @@
     }
   },
   "checks": {
-    "sourceBuild": "carried from prior preparation",
-    "packageSet": "carried from prior preparation",
-    "freshProfileWeb": "carried from prior preparation",
-    "macArtifactNaming": "package-macos, macos-signature, and installer-packaging tests passed after HiBuddy promotion fix",
+    "sourceBuild": "pending package build",
+    "packageSet": "22 passed; inputs unchanged since 0.2.2-rc.1.20261106.2",
+    "portableCrtUnit": "5 passed",
     "modelSelectionBrowser": "known failures; unresolved"
   },
-  "published": false,
-  "supersedes": "0.2.2-rc.1.20261106.2"
+  "published": false
 }

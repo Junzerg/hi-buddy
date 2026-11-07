@@ -1,19 +1,19 @@
 {
   "version": "0.2.2-rc.1.20261106.2",
-  "sourceCommit": "738afe65c598bda090b3094be95a9e61d95b2bf6",
+  "sourceCommit": "6ba59f46e4a39c6474b039d8b1938700ed139165",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "Mac signed packaging requires the HiBuddy artifact-promotion fix; previous pin 7b6aa9df failed after notarization while looking for lingxi-office-* filenames. Windows packaging additionally requires the fail-closed portable VC++ runtime fix; the exe built from pin 6ba59f4 omitted it and its Office previews failed on hosts with old system MSVCP140.",
+  "status": "rolled-back",
+  "notes": "Published to the intranet from 6ba59f46e4 on both platforms, then rolled back after Office document previews crashed with 0xC0000005 on a host whose system MSVCP140.dll predates the LibreOffice engine toolchain; exactly one client had installed it. The version identity is void and must never be republished under the same number. A later repin to 738afe65c5 (portable VC++ runtime fix) was reverted: the fix ships as 0.2.2-rc.1.20261107.1 instead, because a same-number republication could never auto-update the client that installed this build. Mac signed packaging for this record additionally required the HiBuddy artifact-promotion fix after the first notarized attempt failed on lingxi-office-* filenames.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
-      "installer": null,
-      "sha256": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261106.2-win-x64-unsigned.exe",
+      "sha256": "042753B4D491242A73A9F0D606389A6B9292E7E6F4368157689C60EB38346A39",
       "installationVerified": false
     },
     "mac-arm64": {
       "signing": "signed-notarized",
-      "installer": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261106.2-mac-arm64.dmg",
       "sha256": null,
       "installationVerified": false
     }
