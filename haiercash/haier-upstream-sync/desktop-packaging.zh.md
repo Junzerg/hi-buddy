@@ -38,6 +38,8 @@ pnpm --version
 
 使用 Windows x64 PowerShell。保留 `apps/desktop/.env.windows`；文件不存在时，将[内网模板](../../apps/desktop/config/intranet.env.example)复制到该位置。核对更新地址为 `http://172.28.236.3:18765/updates/win-x64/`。本次不要另选打包 preset 或签名命令。预检会检查本机打包工具，先按其错误提示补齐缺少的工具再继续。
 
+Windows 包会自动把 `apps/desktop/resources/portable-crt/` 里的 VC++ 运行库捆绑到 LibreOffice 引擎旁；内网机器系统 MSVCP140.dll 过旧时，缺少这些 DLL 会让 Office 预览崩溃（0xC0000005）。DLL 缺失时打包直接失败，正常打包不需要任何环境变量。`DSH_DESKTOP_PORTABLE_CRT_DIR` 只能在会话环境中指定替代目录——绝不能写进 `.env.windows`（未知变量名会被拒绝）。
+
 ```powershell
 $ErrorActionPreference = 'Stop'
 $pointer = Get-Content haiercash/haier-upstream-sync/current-desktop-build.json -Raw | ConvertFrom-Json
@@ -60,6 +62,9 @@ pnpm run package:desktop:win:x64:unsigned --build-version $version
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
 Get-Item "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe"
 Get-FileHash "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe" -Algorithm SHA256
+$engineBin = 'apps/desktop/.desktop-build/targets/win-x64/dsh/node_modules/@deepseek-ai/libreoffice-kit-win32-x64/bin'
+if (-not ((Test-Path (Join-Path $engineBin 'msvcp140.dll')) -and (Test-Path (Join-Path $engineBin 'vcruntime140.dll')))) { throw 'Portable VC++ runtime DLLs are missing beside the LibreOffice engine; Office previews would fail on intranet hosts' }
+Write-Host "Portable CRT DLLs beside the engine: $((Get-ChildItem $engineBin -Filter '*.dll').Count)"
 node apps/desktop/scripts/prepare-intranet-release.mjs win-x64 apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts $version "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
 if ($LASTEXITCODE -ne 0) { throw 'Intranet release archive failed' }
 Get-Item "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
@@ -101,7 +106,7 @@ DMG 是首次安装使用的文件。`lingxi-office-release-<version>-mac-arm64.
 <a id="acceptance"></a>
 ## 验收与失败处理
 
-打包前读取所选记录的 `checks`，不得把未解决的失败当作通过。成功后报告实际提交号、工作区干净状态、版本号、安装文件路径、字节数、SHA-256、适用的签名／公证结果，以及 `lingxi-office-release-*.tar.gz` 路径与 SHA-256。缺少发布归档时不得声称打包完成。在目标系统安装，验证启动、公司登录、模型发现与对话、配置的插件默认状态及重启后的数据保留。已有 profile 可以保留用户设置。仅有安装文件不能代表安装验收通过。
+打包前读取所选记录的 `checks`，不得把未解决的失败当作通过。成功后报告实际提交号、工作区干净状态、版本号、安装文件路径、字节数、SHA-256、适用的签名／公证结果，以及 `lingxi-office-release-*.tar.gz` 路径与 SHA-256。缺少发布归档时不得声称打包完成。在目标系统安装，验证启动、公司登录、模型发现与对话、Office 文档预览（例如 .pptx）、配置的插件默认状态及重启后的数据保留。已有 profile 可以保留用户设置。仅有安装文件不能代表安装验收通过。
 
 失败时停止，保留 `apps/desktop/.desktop-build/packaging-runs/` 和失败命令的日志。报告第一个失败阶段，不暴露秘密；不要删除凭据、绕过验证或发布不完整产物。服务器合并、镜像切换与回滚仍须单独发布授权后，才执行[内网发布指南](../../apps/desktop/packaging/INTRANET-RELEASE.md)中的服务器步骤。
 

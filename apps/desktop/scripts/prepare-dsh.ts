@@ -33,6 +33,7 @@ import {
   signMacOSRuntime,
 } from './macos-runtime.ts'
 import { desktopTargetPlatform, resolveDesktopBuildTarget, resolveDesktopTargetBuildPaths } from './desktop-build-paths.mjs'
+import { resolvePortableCrtDirectory } from './portable-crt.mjs'
 import { desktopRuntimeFileExclusion } from './runtime-file-policy.ts'
 import { selectOfficeEngine } from '../../../scripts/libreoffice-packages.mjs'
 
@@ -153,14 +154,19 @@ async function main(): Promise<void> {
     })
     // Fork-local: bundle current VC++ runtime DLLs beside the LibreOffice engine so it starts on
     // hosts whose system MSVCP140.dll predates the engine's toolchain (crashes with 0xC0000005).
-    // Inert unless DSH_DESKTOP_PORTABLE_CRT_DIR names a directory of redist DLLs.
+    // Windows builds fail closed; the repository directory satisfies this without any environment.
     await packagingStep(process.env.DSH_DESKTOP_PACKAGING_RUN_DIR, 'runtime:portable-crt', async () => {
-      const crtDirectory = process.env.DSH_DESKTOP_PORTABLE_CRT_DIR
+      const crtDirectory = resolvePortableCrtDirectory(process.env, target.platform,
+        join(APP_ROOT, 'resources', 'portable-crt'))
       if (crtDirectory === undefined) return
-      if (target.platform !== 'win32') throw new Error('desktop runtime: portable CRT applies to Windows targets only')
       const engineBin = join(DSH_OUTPUT_ROOT, 'node_modules', '@deepseek-ai', `libreoffice-kit-${officeEngine}`, 'bin')
       const libraries = readdirSync(crtDirectory).filter(file => /^(?:msvcp140|vcruntime140)[^/]*\.dll$/iu.test(file))
-      if (libraries.length === 0) throw new Error(`desktop runtime: ${crtDirectory} contains no VC++ runtime DLLs`)
+      const required = ['msvcp140.dll', 'vcruntime140.dll'] as const
+      const names = new Set(libraries.map(file => file.toLowerCase()))
+      const missing = required.filter(file => !names.has(file))
+      if (missing.length > 0) {
+        throw new Error(`desktop runtime: ${crtDirectory} omits required VC++ runtime DLL(s): ${missing.join(', ')}`)
+      }
       for (const file of libraries) copyFileSync(join(crtDirectory, file), join(engineBin, file))
       console.log(`desktop runtime: bundled ${libraries.length} portable CRT DLL(s) beside the ${officeEngine} engine`)
     })

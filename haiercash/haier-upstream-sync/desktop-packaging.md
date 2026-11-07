@@ -38,6 +38,8 @@ Read [current-desktop-build.json](current-desktop-build.json), then the record i
 
 Use Windows x64 PowerShell. Preserve `apps/desktop/.env.windows`; if absent, copy [the intranet template](../../apps/desktop/config/intranet.env.example) there. Verify its update URL is `http://172.28.236.3:18765/updates/win-x64/`. Do not select a different packaging preset or a signing command for this build. The preflight checks the local packaging tools; resolve its reported missing tools before continuing.
 
+Windows packages bundle the VC++ runtime from `apps/desktop/resources/portable-crt/` beside the LibreOffice engine automatically; intranet hosts with an old system MSVCP140.dll crash Office previews without it (0xC0000005). Packaging fails when those DLLs are missing, so no environment variable is required. `DSH_DESKTOP_PORTABLE_CRT_DIR` may name an alternative directory in the session environment only — never write it into `.env.windows`, which rejects unknown settings.
+
 ```powershell
 $ErrorActionPreference = 'Stop'
 $pointer = Get-Content haiercash/haier-upstream-sync/current-desktop-build.json -Raw | ConvertFrom-Json
@@ -60,6 +62,9 @@ pnpm run package:desktop:win:x64:unsigned --build-version $version
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
 Get-Item "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe"
 Get-FileHash "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe" -Algorithm SHA256
+$engineBin = 'apps/desktop/.desktop-build/targets/win-x64/dsh/node_modules/@deepseek-ai/libreoffice-kit-win32-x64/bin'
+if (-not ((Test-Path (Join-Path $engineBin 'msvcp140.dll')) -and (Test-Path (Join-Path $engineBin 'vcruntime140.dll')))) { throw 'Portable VC++ runtime DLLs are missing beside the LibreOffice engine; Office previews would fail on intranet hosts' }
+Write-Host "Portable CRT DLLs beside the engine: $((Get-ChildItem $engineBin -Filter '*.dll').Count)"
 node apps/desktop/scripts/prepare-intranet-release.mjs win-x64 apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts $version "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
 if ($LASTEXITCODE -ne 0) { throw 'Intranet release archive failed' }
 Get-Item "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
@@ -101,7 +106,7 @@ The DMG is the first-install file. `lingxi-office-release-<version>-mac-arm64.ta
 <a id="acceptance"></a>
 ## Acceptance and failures
 
-Read the selected record's `checks` before building; unresolved failures are not passing evidence. After success, report the actual commit, clean-worktree state, version, installer path, byte size, SHA-256, signing/notarization result where applicable, and the `lingxi-office-release-*.tar.gz` path with its SHA-256. Do not claim packaging is complete without that archive. Install on the target system and verify startup, company login, model discovery and conversation, configured plugin defaults, and persistence after restart. Existing profiles may retain user settings. A file's existence alone is not installation acceptance.
+Read the selected record's `checks` before building; unresolved failures are not passing evidence. After success, report the actual commit, clean-worktree state, version, installer path, byte size, SHA-256, signing/notarization result where applicable, and the `lingxi-office-release-*.tar.gz` path with its SHA-256. Do not claim packaging is complete without that archive. Install on the target system and verify startup, company login, model discovery and conversation, Office document preview (for example a .pptx), configured plugin defaults, and persistence after restart. Existing profiles may retain user settings. A file's existence alone is not installation acceptance.
 
 On failure, stop and retain `apps/desktop/.desktop-build/packaging-runs/` and the failing command's log. Report the first failing stage without secrets; do not delete credentials, bypass validation, or publish partial artifacts. Server merge, image cutover, and rollback still require separate publication authorization before following the server steps in [the intranet release guide](../../apps/desktop/packaging/INTRANET-RELEASE.md).
 
