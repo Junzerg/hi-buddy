@@ -8,7 +8,7 @@ English | [中文](desktop-packaging.zh.md)
 
 ## Summary
 
-Use this stable runbook after pulling the repository on each packaging machine. [The current pointer](current-desktop-build.json) selects one version record; historical records remain available. Packaging, installation acceptance, and publication are separate states. Linux cannot generate the Windows or signed Mac installers in this procedure.
+Use this stable runbook after pulling the repository on each packaging machine. [The current pointer](current-desktop-build.json) selects one version record; historical records remain available. Packaging must produce both the installer and `lingxi-office-release-*.tar.gz`; installation acceptance and server cutover stay separately authorized. Linux cannot generate the Windows or signed Mac installers in this procedure.
 
 ## Contents
 
@@ -60,9 +60,13 @@ pnpm run package:desktop:win:x64:unsigned --build-version $version
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
 Get-Item "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe"
 Get-FileHash "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe" -Algorithm SHA256
+node apps/desktop/scripts/prepare-intranet-release.mjs win-x64 apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts $version "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
+if ($LASTEXITCODE -ne 0) { throw 'Intranet release archive failed' }
+Get-Item "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
+Get-FileHash "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz" -Algorithm SHA256
 ```
 
-The EXE is the installable Windows file. Keep its adjacent build record, blockmap, and update metadata for a separately authorized release. An unsigned installer is not a signed release artifact.
+The EXE is the installable Windows file. `lingxi-office-release-<version>.tar.gz` is the archive handed to the server operator; stopping after the EXE alone does not finish this handoff. Keep the adjacent build record, blockmap, and update metadata. An unsigned installer is not a signed release artifact, and producing the tar.gz does not switch the live server.
 
 <a id="mac"></a>
 ## Mac arm64
@@ -86,17 +90,20 @@ pnpm run package:desktop:mac:arm64 --build-version "$version" --check
 pnpm run package:desktop:mac:arm64 --build-version "$version"
 ls -lh "apps/desktop/.desktop-build/targets/mac-arm64/artifacts/HiBuddy-$version-mac-arm64.dmg"
 shasum -a 256 "apps/desktop/.desktop-build/targets/mac-arm64/artifacts/HiBuddy-$version-mac-arm64.dmg"
+node apps/desktop/scripts/prepare-intranet-release.mjs mac-arm64 apps/desktop/.desktop-build/targets/mac-arm64/artifacts "$version" "apps/desktop/.desktop-build/lingxi-office-release-$version-mac-arm64.tar.gz"
+ls -lh "apps/desktop/.desktop-build/lingxi-office-release-$version-mac-arm64.tar.gz"
+shasum -a 256 "apps/desktop/.desktop-build/lingxi-office-release-$version-mac-arm64.tar.gz"
 )
 ```
 
-The DMG is the first-install file. Keep the signed ZIP, blockmap, update metadata, and build record for a separately authorized release. A successful `--check` verifies configuration and tools, not actual signing or notarization.
+The DMG is the first-install file. `lingxi-office-release-<version>-mac-arm64.tar.gz` is the archive handed to the server operator; stopping after the DMG/ZIP alone does not finish this handoff. Keep the signed ZIP, blockmap, update metadata, and build record. A successful `--check` verifies configuration and tools, not actual signing or notarization, and producing the tar.gz does not switch the live server.
 
 <a id="acceptance"></a>
 ## Acceptance and failures
 
-Read the selected record's `checks` before building; unresolved failures are not passing evidence. After success, report the actual commit, clean-worktree state, version, installer path, byte size, SHA-256, and signing/notarization result where applicable. Install on the target system and verify startup, company login, model discovery and conversation, configured plugin defaults, and persistence after restart. Existing profiles may retain user settings. A file's existence alone is not installation acceptance.
+Read the selected record's `checks` before building; unresolved failures are not passing evidence. After success, report the actual commit, clean-worktree state, version, installer path, byte size, SHA-256, signing/notarization result where applicable, and the `lingxi-office-release-*.tar.gz` path with its SHA-256. Do not claim packaging is complete without that archive. Install on the target system and verify startup, company login, model discovery and conversation, configured plugin defaults, and persistence after restart. Existing profiles may retain user settings. A file's existence alone is not installation acceptance.
 
-On failure, stop and retain `apps/desktop/.desktop-build/packaging-runs/` and the failing command's log. Report the first failing stage without secrets; do not delete credentials, bypass validation, or publish partial artifacts. Follow [the intranet release guide](../../apps/desktop/packaging/INTRANET-RELEASE.md) only after separate publication authorization.
+On failure, stop and retain `apps/desktop/.desktop-build/packaging-runs/` and the failing command's log. Report the first failing stage without secrets; do not delete credentials, bypass validation, or publish partial artifacts. Server merge, image cutover, and rollback still require separate publication authorization before following the server steps in [the intranet release guide](../../apps/desktop/packaging/INTRANET-RELEASE.md).
 
 <a id="next"></a>
 ## Hand off the next version

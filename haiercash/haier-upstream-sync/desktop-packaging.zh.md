@@ -8,7 +8,7 @@ description: "Windows x64 和 Apple Silicon macOS 从同一版本记录构建当
 
 ## 概述
 
-在每台打包机器拉取仓库后，使用这份固定操作指南。[当前入口](current-desktop-build.json)只选择一份版本记录；历史记录继续保留。打包、安装验收和发布分别记录状态。本流程不能在 Linux 上生成 Windows 或已签名 Mac 安装包。
+在每台打包机器拉取仓库后，使用这份固定操作指南。[当前入口](current-desktop-build.json)只选择一份版本记录；历史记录继续保留。打包必须同时产出安装包与 `lingxi-office-release-*.tar.gz`；安装验收和服务器切换仍分别授权。本流程不能在 Linux 上生成 Windows 或已签名 Mac 安装包。
 
 ## 目录
 
@@ -60,9 +60,13 @@ pnpm run package:desktop:win:x64:unsigned --build-version $version
 if ($LASTEXITCODE -ne 0) { throw 'Installer build failed' }
 Get-Item "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe"
 Get-FileHash "apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts/HiBuddy-$version-win-x64-unsigned.exe" -Algorithm SHA256
+node apps/desktop/scripts/prepare-intranet-release.mjs win-x64 apps/desktop/.desktop-build/targets/win-x64/unsigned-artifacts $version "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
+if ($LASTEXITCODE -ne 0) { throw 'Intranet release archive failed' }
+Get-Item "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz"
+Get-FileHash "apps/desktop/.desktop-build/lingxi-office-release-$version.tar.gz" -Algorithm SHA256
 ```
 
-EXE 就是可安装的 Windows 文件。保留同目录的构建记录、blockmap 和更新元数据，供另行授权的发布使用。未签名安装包不是已签名发布产物。
+EXE 就是可安装的 Windows 文件。`lingxi-office-release-<version>.tar.gz` 是交给服务器的发布归档；只打出 EXE 不算本交接完成。保留同目录的构建记录、blockmap 和更新元数据。未签名安装包不是已签名发布产物；生成 tar.gz 也不等于已在服务器切换上线。
 
 <a id="mac"></a>
 ## Mac arm64
@@ -86,17 +90,20 @@ pnpm run package:desktop:mac:arm64 --build-version "$version" --check
 pnpm run package:desktop:mac:arm64 --build-version "$version"
 ls -lh "apps/desktop/.desktop-build/targets/mac-arm64/artifacts/HiBuddy-$version-mac-arm64.dmg"
 shasum -a 256 "apps/desktop/.desktop-build/targets/mac-arm64/artifacts/HiBuddy-$version-mac-arm64.dmg"
+node apps/desktop/scripts/prepare-intranet-release.mjs mac-arm64 apps/desktop/.desktop-build/targets/mac-arm64/artifacts "$version" "apps/desktop/.desktop-build/lingxi-office-release-$version-mac-arm64.tar.gz"
+ls -lh "apps/desktop/.desktop-build/lingxi-office-release-$version-mac-arm64.tar.gz"
+shasum -a 256 "apps/desktop/.desktop-build/lingxi-office-release-$version-mac-arm64.tar.gz"
 )
 ```
 
-DMG 是首次安装使用的文件。保留已签名 ZIP、blockmap、更新元数据和构建记录，供另行授权的发布使用。`--check` 成功只表示配置和工具通过检查，不代表已实际签名或公证。
+DMG 是首次安装使用的文件。`lingxi-office-release-<version>-mac-arm64.tar.gz` 是交给服务器的发布归档；只打出 DMG／ZIP 不算本交接完成。保留已签名 ZIP、blockmap、更新元数据和构建记录。`--check` 成功只表示配置和工具通过检查，不代表已实际签名或公证；生成 tar.gz 也不等于已在服务器切换上线。
 
 <a id="acceptance"></a>
 ## 验收与失败处理
 
-打包前读取所选记录的 `checks`，不得把未解决的失败当作通过。成功后报告实际提交号、工作区干净状态、版本号、安装文件路径、字节数、SHA-256 和适用的签名／公证结果。在目标系统安装，验证启动、公司登录、模型发现与对话、配置的插件默认状态及重启后的数据保留。已有 profile 可以保留用户设置。仅有安装文件不能代表安装验收通过。
+打包前读取所选记录的 `checks`，不得把未解决的失败当作通过。成功后报告实际提交号、工作区干净状态、版本号、安装文件路径、字节数、SHA-256、适用的签名／公证结果，以及 `lingxi-office-release-*.tar.gz` 路径与 SHA-256。缺少发布归档时不得声称打包完成。在目标系统安装，验证启动、公司登录、模型发现与对话、配置的插件默认状态及重启后的数据保留。已有 profile 可以保留用户设置。仅有安装文件不能代表安装验收通过。
 
-失败时停止，保留 `apps/desktop/.desktop-build/packaging-runs/` 和失败命令的日志。报告第一个失败阶段，不暴露秘密；不要删除凭据、绕过验证或发布不完整产物。只有得到单独发布授权后，才执行[内网发布指南](../../apps/desktop/packaging/INTRANET-RELEASE.md)。
+失败时停止，保留 `apps/desktop/.desktop-build/packaging-runs/` 和失败命令的日志。报告第一个失败阶段，不暴露秘密；不要删除凭据、绕过验证或发布不完整产物。服务器合并、镜像切换与回滚仍须单独发布授权后，才执行[内网发布指南](../../apps/desktop/packaging/INTRANET-RELEASE.md)中的服务器步骤。
 
 <a id="next"></a>
 ## 交接下一版本

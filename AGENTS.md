@@ -33,4 +33,4 @@ Use pnpm and Node >=24.9. [package.json](package.json) owns the commands; `dev:d
 
 Read the [packaging guide](apps/desktop/packaging/README.zh.md) for builds and [intranet release reference](apps/desktop/packaging/INTRANET.md) before release preparation, diagnosis, publishing, or rollback. This machine cannot reach the intranet server: do not probe it or assume SSH access; provide commands for the user to run there.
 
-For Desktop packaging, start with [the packaging handoff](haiercash/haier-upstream-sync/desktop-packaging.md) and its current version record. Each new version needs a confirmed source pin and fresh acceptance state; update and push the handoff before platform builds, and retain earlier records.
+For Desktop packaging, start with [the packaging handoff](haiercash/haier-upstream-sync/desktop-packaging.md) and its current version record. Follow that runbook through the installer and the `lingxi-office-release-*.tar.gz` step; do not stop after the DMG/EXE alone. Each new version needs a confirmed source pin and fresh acceptance state; update and push the handoff before platform builds, and retain earlier records.
