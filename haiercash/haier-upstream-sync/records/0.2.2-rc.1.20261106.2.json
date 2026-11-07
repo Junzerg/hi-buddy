@@ -1,8 +1,9 @@
 {
   "version": "0.2.2-rc.1.20261106.2",
-  "sourceCommit": "7b6aa9dfb04d6447098b0b0dbd8f87fdfd6dfda3",
+  "sourceCommit": "6ba59f46e4a39c6474b039d8b1938700ed139165",
   "sourceBranch": "dev/junzerg",
   "status": "prepared",
+  "notes": "Mac signed packaging requires the HiBuddy artifact-promotion fix; previous pin 7b6aa9df failed after notarization while looking for lingxi-office-* filenames.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
