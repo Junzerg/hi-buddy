@@ -1,0 +1,39 @@
+{
+  "version": "0.2.2-rc.1.20261107.1",
+  "sourceCommit": "6ba59f46e4a39c6474b039d8b1938700ed139165",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    }
+  },
+  "checks": {
+    "sourceBuild": "carried from prior preparation",
+    "packageSet": "carried from prior preparation",
+    "freshProfileWeb": "carried from prior preparation",
+    "macArtifactNaming": "package-macos, macos-signature, and installer-packaging tests passed after HiBuddy promotion fix",
+    "modelSelectionBrowser": "known failures; unresolved"
+  },
+  "published": false,
+  "supersedes": "0.2.2-rc.1.20261106.2"
+}
