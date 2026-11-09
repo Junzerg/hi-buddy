@@ -1,4 +1,5 @@
 /** Exercise the bundled kit through the real Web carrier without calling a model API. */
+import { execFileSync } from 'node:child_process'
 import { appendFile, mkdir, mkdtemp, writeFile } from 'node:fs/promises'
 import { basename, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -24,6 +25,8 @@ it('browses native Claude history and uses company models for a new session', as
     value: [{ id: 'volces-glm5', name: 'GLM fixture' }],
   }])
   await expect.poll(() => scaffold.ctx.llm.listModels('company-gateway')).toMatchObject([{ id: 'volces-glm5' }])
+  execFileSync('git', ['init', '--quiet', scaffold.workspaceCwd])
+  await writeFile(join(scaffold.workspaceCwd, 'claude-preview.txt'), 'Preview fixture change\n')
   const sessionId = '49be37e0-fc3f-4fe0-a57a-f678a963effa'
   const projectDir = join(scaffold.harnessHome, 'claude-native', 'projects', scaffold.workspaceCwd.replace(/[^a-zA-Z0-9]/g, '-'))
   await mkdir(projectDir, { recursive: true })
@@ -47,12 +50,14 @@ it('browses native Claude history and uses company models for a new session', as
   await page.getByRole('button', { name: basename(scaffold.workspaceCwd), exact: true }).click()
   await page.getByRole('button', { name: 'Native session fixture', exact: true }).click()
   await page.getByText('Saved native reply', { exact: true }).waitFor()
+  const changes = page.getByRole('complementary', { name: '改动', exact: true })
+  await changes.getByRole('button', { name: 'claude-preview.txt 新增', exact: true }).click()
+  await changes.getByText('Preview fixture change', { exact: false }).first().waitFor()
   await appendFile(nativeFile, JSON.stringify(nativeMessage('7d29f8ad-9400-447b-9335-00861972325d', '3341feeb-4d9d-4148-b25a-f4c7c34f605b', 'assistant', 'Reply appended outside the app')) + '\n')
   await page.getByRole('button', { name: '刷新', exact: true }).click()
   await page.getByText('Reply appended outside the app', { exact: true }).waitFor()
-  await page.getByRole('button', { name: '返回会话', exact: true }).click()
   await page.getByRole('button', { name: '新建会话', exact: true }).click()
-  await page.getByText('HaierCash · GLM fixture', { exact: true }).waitFor()
+  await page.getByText('GLM fixture', { exact: true }).waitFor()
   // The missing path belongs to this test's temporary workspace, regardless of installed CLIs.
   const environment = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: '运行环境' }) })
   if (await environment.getAttribute('open') === null) await environment.locator('summary').click()
