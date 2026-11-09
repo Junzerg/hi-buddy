@@ -3383,6 +3383,9 @@ importers:
       commander:
         specifier: ^15.0.0
         version: 15.0.0
+      hi-buddy-claude-kit:
+        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.0.tgz
+        version: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.0.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-home-paths@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))
       hi-buddy-glossary-kit:
         specifier: file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz
         version: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)
@@ -18741,9 +18744,19 @@ packages:
   '@antfu/install-pkg@1.1.0':
     resolution: {integrity: sha512-MGQsmw10ZyI+EJo45CdSER4zEb+p31LpDAFp2Z3gkSd1yqVZGi0Ebx++YTEMonJy4oChEMLsxZ64j8FH6sSqtQ==}
 
+  '@anthropic-ai/claude-agent-sdk-darwin-arm64@0.3.218':
+    resolution: {integrity: sha512-foTI71ua2r5lJo7sfcw/3UafBCJYjxPmOXZ98wOz1UWIJxaP/Oq9Xp4sUavBd1efFVRxPnAcRnrZ5yrmXK1xUw==}
+    cpu: [arm64]
+    os: [darwin]
+
   '@anthropic-ai/claude-agent-sdk-darwin-arm64@0.3.263':
     resolution: {integrity: sha512-H4eLd4Tkx3rJkt739CHb+9AcaKiiOpibU4tYsmma47mV+2zAPjUyFxpuE2N57VSmpAgbLQxu44du0TFN+UH5dg==}
     cpu: [arm64]
+    os: [darwin]
+
+  '@anthropic-ai/claude-agent-sdk-darwin-x64@0.3.218':
+    resolution: {integrity: sha512-rAdlR2ukJd01Osfsb7nPPv31MCVJBennBDaL7ZP/bv+dednwNuY6thuPO5PMFJUM+54Gbnziqm+hqoNTgndqDg==}
+    cpu: [x64]
     os: [darwin]
 
   '@anthropic-ai/claude-agent-sdk-darwin-x64@0.3.263':
@@ -18751,11 +18764,23 @@ packages:
     cpu: [x64]
     os: [darwin]
 
+  '@anthropic-ai/claude-agent-sdk-linux-arm64-musl@0.3.218':
+    resolution: {integrity: sha512-qfFBwOf0uh/mAtNGEkBJlLWt1XIgFqcQeeX966g2NexasCdSJGnwfc0YWA0QOeAAU/5xk6tSCW/Nn0zHGBO/3A==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
   '@anthropic-ai/claude-agent-sdk-linux-arm64-musl@0.3.263':
     resolution: {integrity: sha512-TiOmi9mqYvu3uGgM+0eQrUQzgXb7pgTzqahtRyEjpJrNigddGoANHcbNKL7P7y4etJpyIuYXGuVh5SLJzySYVA==}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
+
+  '@anthropic-ai/claude-agent-sdk-linux-arm64@0.3.218':
+    resolution: {integrity: sha512-Y6vFEnz6wwd+rYpVGsPqgeXZuZP7NvQg6vjkC+N6cs1+I41LdKjfs+F+WG3daIqgt+vJBz/EB5Q0PByABkwufA==}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
 
   '@anthropic-ai/claude-agent-sdk-linux-arm64@0.3.263':
     resolution: {integrity: sha512-2KPY1wu1hdjpVsw+Tg3i50uhxhhetO1fB24wjUJAQJ8YPSogqO32UbtYPJ6I3F17lBNHb/Mq3nRYGAuSU5yjtg==}
@@ -18763,11 +18788,23 @@ packages:
     os: [linux]
     libc: [glibc]
 
+  '@anthropic-ai/claude-agent-sdk-linux-x64-musl@0.3.218':
+    resolution: {integrity: sha512-e47oi8dYWnS0wx2/F6FL3YhaD2HedMd2nhI/nududP4PBzytuXeaDE/sJ0eIqtUVkl6/bn5uBhtIEHHWoj37JQ==}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
   '@anthropic-ai/claude-agent-sdk-linux-x64-musl@0.3.263':
     resolution: {integrity: sha512-PWctt/XjebBxtI37i2xx2OMxSscPMnKmxU82MWdtIvoAyJ40U5yfqpm92fm45R02eLn9j4LQpvNocVTcRAHv+g==}
     cpu: [x64]
     os: [linux]
     libc: [musl]
+
+  '@anthropic-ai/claude-agent-sdk-linux-x64@0.3.218':
+    resolution: {integrity: sha512-gCq/i7yRXeuoQXidGQynuiw5AeczQXSIifxH5Vpr9OFDyHCBNotS1mQ8qutuclZeFpLOPkJ2ic/nvEgHJvfXdg==}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
 
   '@anthropic-ai/claude-agent-sdk-linux-x64@0.3.263':
     resolution: {integrity: sha512-un7HJzTT+DSQLgM33emQ0qHAwIY3CXIwe8JXoD9PaT7pdLepK4Ffa4r5j84pHTVS5uoGqxcf196tBgqb5/Z7FA==}
@@ -18775,15 +18812,33 @@ packages:
     os: [linux]
     libc: [glibc]
 
+  '@anthropic-ai/claude-agent-sdk-win32-arm64@0.3.218':
+    resolution: {integrity: sha512-D0UKI8jOpEsWO1A+i0DlIrgjXFKEZX3RrID2l49S4pShUlLsnSLJGMTPy4nQt6CCl5MzPqWiJDE/lCpImFTDcg==}
+    cpu: [arm64]
+    os: [win32]
+
   '@anthropic-ai/claude-agent-sdk-win32-arm64@0.3.263':
     resolution: {integrity: sha512-n8owOwNSSi7/KpONb/ut+uXRjBIp9N6EjwADiB+YygPwGRtpWP+PR/qFsGdTVBE5cpPwhgKVAf27xEZEfNvcSQ==}
     cpu: [arm64]
+    os: [win32]
+
+  '@anthropic-ai/claude-agent-sdk-win32-x64@0.3.218':
+    resolution: {integrity: sha512-pgE39WnKPPSRsiRJ2pm5NETxQgtVhrquqg7UByZxne0xQw2gNS0Qy+9ZumrsNBNlfrrnQCVDU1I2ks3ZLrEa8Q==}
+    cpu: [x64]
     os: [win32]
 
   '@anthropic-ai/claude-agent-sdk-win32-x64@0.3.263':
     resolution: {integrity: sha512-EwqzsOLxIJTX6RIXtQ21ekOKmYBNfwbtGtqaPqdWZGzpMbHaie8kGsM630h9RFaoxeytS/jbg8B3fPCdUKfhPw==}
     cpu: [x64]
     os: [win32]
+
+  '@anthropic-ai/claude-agent-sdk@0.3.218':
+    resolution: {integrity: sha512-lbVOmgdzjBdSUCTbxElpoTxxP/u9jY8gpG/3cr5l1jSSvSY5FrANdRcze/z6gM330xo32SHH6WPGFd4+K0fMoQ==}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@anthropic-ai/sdk': '>=0.93.0'
+      '@modelcontextprotocol/sdk': ^1.29.0
+      zod: ^4.0.0
 
   '@anthropic-ai/claude-agent-sdk@0.3.263':
     resolution: {integrity: sha512-0QWoHgWWlSmgXfEqZRbVYRoXT9p4tx/yKaZ4eLJ8l1MR65SIvMGR+cd5ZXUpGYZpj9RzbYiYU9LoFg90mdIjmw==}
@@ -19097,6 +19152,21 @@ packages:
   '@csstools/css-tokenizer@4.0.0':
     resolution: {integrity: sha512-QxULHAm7cNu72w97JUNCBFODFaXpbDg+dP8b/oWFAZ2MTRppA3U00Y2L1HqaS4J6yBqxwa/Y3nMBaxVKbB/NsA==}
     engines: {node: '>=20.19.0'}
+
+  '@deepseek-ai/dsh-brand@0.2.2-rc.1':
+    resolution: {integrity: sha512-ShGNEmNuEQA+bfkspWC2kGrdbrM4dFNhqlrNHIWsHO+PgVH1KoTKTLSraT1pt0A8YYk/moKE0gL2gY9dNBU+rw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ~4.1.0
+
+  '@deepseek-ai/dsh-credentials@0.2.2-rc.1':
+    resolution: {integrity: sha512-yo6G/wjwFhykAFXJhRdxh+LosWoq5ULYf+zFG9Wreyf6oDQHGP+OHk13+XboNWBkqsUhz/LdWNRwuwFjc/1xwg==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ~4.1.0
+
+  '@deepseek-ai/dsh-home-paths@0.2.2-rc.1':
+    resolution: {integrity: sha512-aSmGSng1Esg6RWkJtskFAU600qDmazzuto/QT0f2Tf3+qDS4yDTM68/YeWn/Jc5JxwvTJTc17njKCyRSXJhTrw==}
+    peerDependencies:
+      '@deepseek-ai/cordis': ~4.1.0
 
   '@deepseek-ai/libreoffice-kit-darwin-arm64@0.1.5':
     resolution: {integrity: sha512-SjeXmyaTevEq2TxK7reb1rhCrQZ4QOXmXt/qEwfQD5Fx3odU0ILx2uiXN+nphSCQ95LFCzrElHGgv2c7a824yg==}
@@ -23598,6 +23668,17 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
+  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.0.tgz:
+    resolution: {integrity: sha512-6jV94C0oR+3J63zbgqVKALypDaAZZaZYtAyoZ8WRQIgIBNNdWgpcmwkJTrGCfQF/1baYQ/kkEmpmN5pilIAKAw==, tarball: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.0.tgz}
+    version: 0.1.0-alpha.0
+    engines: {dsh: '>=0.2.2-rc.1 <0.2.2-rc.2', node: '>=24.9'}
+    peerDependencies:
+      '@deepseek-ai/cordis': 4.1.0
+      '@deepseek-ai/dsh-credentials': '>=0.2.2-rc.1 <0.2.2-rc.2'
+      '@deepseek-ai/dsh-home-paths': '>=0.2.2-rc.1 <0.2.2-rc.2'
+      '@deepseek-ai/dsh-storage-domain': '>=0.2.2-rc.1 <0.2.2-rc.2'
+      '@deepseek-ai/dsh-typert-protocol': '>=0.2.2-rc.1 <0.2.2-rc.2'
+
   hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz:
     resolution: {integrity: sha512-UjBN6kAcLGm/fJSm6SM4Fjy05cTvLCJiBh3k2pqNc/Hc7c/WqSAb0i360acuwcAiUwRDQWYBTzngKvxBzG/reg==, tarball: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz}
     version: 0.3.0-rc.1
@@ -26572,29 +26653,68 @@ snapshots:
       package-manager-detector: 1.6.0
       tinyexec: 1.2.4
 
+  '@anthropic-ai/claude-agent-sdk-darwin-arm64@0.3.218':
+    optional: true
+
   '@anthropic-ai/claude-agent-sdk-darwin-arm64@0.3.263':
+    optional: true
+
+  '@anthropic-ai/claude-agent-sdk-darwin-x64@0.3.218':
     optional: true
 
   '@anthropic-ai/claude-agent-sdk-darwin-x64@0.3.263':
     optional: true
 
+  '@anthropic-ai/claude-agent-sdk-linux-arm64-musl@0.3.218':
+    optional: true
+
   '@anthropic-ai/claude-agent-sdk-linux-arm64-musl@0.3.263':
+    optional: true
+
+  '@anthropic-ai/claude-agent-sdk-linux-arm64@0.3.218':
     optional: true
 
   '@anthropic-ai/claude-agent-sdk-linux-arm64@0.3.263':
     optional: true
 
+  '@anthropic-ai/claude-agent-sdk-linux-x64-musl@0.3.218':
+    optional: true
+
   '@anthropic-ai/claude-agent-sdk-linux-x64-musl@0.3.263':
+    optional: true
+
+  '@anthropic-ai/claude-agent-sdk-linux-x64@0.3.218':
     optional: true
 
   '@anthropic-ai/claude-agent-sdk-linux-x64@0.3.263':
     optional: true
 
+  '@anthropic-ai/claude-agent-sdk-win32-arm64@0.3.218':
+    optional: true
+
   '@anthropic-ai/claude-agent-sdk-win32-arm64@0.3.263':
+    optional: true
+
+  '@anthropic-ai/claude-agent-sdk-win32-x64@0.3.218':
     optional: true
 
   '@anthropic-ai/claude-agent-sdk-win32-x64@0.3.263':
     optional: true
+
+  '@anthropic-ai/claude-agent-sdk@0.3.218(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))(zod@4.4.3)':
+    dependencies:
+      '@anthropic-ai/sdk': 0.129.0(zod@4.4.3)
+      '@modelcontextprotocol/sdk': 1.31.0(supports-color@9.4.0)(zod@4.4.3)
+      zod: 4.4.3
+    optionalDependencies:
+      '@anthropic-ai/claude-agent-sdk-darwin-arm64': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-darwin-x64': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-linux-arm64': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-linux-arm64-musl': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-linux-x64': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-linux-x64-musl': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-win32-arm64': 0.3.218
+      '@anthropic-ai/claude-agent-sdk-win32-x64': 0.3.218
 
   '@anthropic-ai/claude-agent-sdk@0.3.263(@anthropic-ai/sdk@0.93.0(zod@4.4.3))(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))(zod@4.4.3)':
     dependencies:
@@ -27048,6 +27168,19 @@ snapshots:
       css-tree: 3.2.1
 
   '@csstools/css-tokenizer@4.0.0': {}
+
+  '@deepseek-ai/dsh-brand@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)':
+    dependencies:
+      '@deepseek-ai/cordis': link:vendor/cordis
+
+  '@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)':
+    dependencies:
+      '@deepseek-ai/cordis': link:vendor/cordis
+      '@deepseek-ai/dsh-brand': 0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)
+
+  '@deepseek-ai/dsh-home-paths@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)':
+    dependencies:
+      '@deepseek-ai/cordis': link:vendor/cordis
 
   '@deepseek-ai/libreoffice-kit-darwin-arm64@0.1.5':
     optional: true
@@ -31503,6 +31636,19 @@ snapshots:
       '@types/hast': 3.0.5
 
   he@1.2.0: {}
+
+  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.0.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-home-paths@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3)):
+    dependencies:
+      '@anthropic-ai/claude-agent-sdk': 0.3.218(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))(zod@4.4.3)
+      '@deepseek-ai/cordis': link:vendor/cordis
+      '@deepseek-ai/dsh-credentials': 0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)
+      '@deepseek-ai/dsh-home-paths': 0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)
+      '@deepseek-ai/dsh-storage-domain': link:packages/storage/storage-domain
+      '@deepseek-ai/dsh-typert-protocol': link:packages/typert/protocol
+      zod: 4.4.3
+    transitivePeerDependencies:
+      - '@anthropic-ai/sdk'
+      - '@modelcontextprotocol/sdk'
 
   hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol):
     dependencies:

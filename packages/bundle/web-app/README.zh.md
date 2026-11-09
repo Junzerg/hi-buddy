@@ -44,6 +44,8 @@ dsh --profile web --no-open --port 8080
 
 已保存的模型选择覆盖组合默认值。设置卡接受兼容 Messages 的 API 地址与凭据引用。
 
+内置 Claude 页面通过 `hi-buddy-claude-kit` 0.1.0-alpha.0 提供独立的原生 Claude Code 会话。在 Host 所在机器安装 Claude CLI 2.1.218，并在「设置 → 模型」中明确配置 Anthropic Messages 路由、模型及凭据。插件读取这些 Host 设置，包括公司网关和非 Claude 模型 ID。插件不安装 CLI，也不使用个人 Claude 登录凭据；Windows/macOS 执行和内网推理仍需在目标环境验收。
+
 ### 配置
 
 `minimal` agent preset 使用持久 Shell、`read_image` 工具和固定 persona，支持自动历史压缩以及会话空闲时的 `/compact` 命令。它复用 Host token meter，并拥有隔离的压缩后端。[压缩配置与保留策略](../../compaction/compaction-basic/README.zh.md#use-this-package) 沿用现有后端。图片读取复用 Host 文件系统和附件存储，要求模型支持图片输入；不加载文本读取、写入和编辑工具。

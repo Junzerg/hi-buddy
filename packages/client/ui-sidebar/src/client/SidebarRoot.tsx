@@ -26,6 +26,7 @@ const SIDEBAR_PANEL_ALLOWLIST: readonly string[] = [
   'project-glossary',
   'doclib',
   'session-pool',
+  'hi-buddy-claude',
 ]
 
 /**
