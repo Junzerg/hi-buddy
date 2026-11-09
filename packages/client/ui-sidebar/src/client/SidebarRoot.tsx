@@ -24,6 +24,7 @@ import css from './SidebarRoot.module.css'
 const SIDEBAR_PANEL_ALLOWLIST: readonly string[] = [
   'schedules',
   'project-glossary',
+  'doclib',
   'session-pool',
 ]
 

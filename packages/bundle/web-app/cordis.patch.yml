@@ -40,6 +40,9 @@
     - id: project-glossary
       name: hi-buddy-glossary-kit
 
+    - id: doclib
+      name: '@local/dsh-plugin-doclib'
+
     - id: session-pool
       name: hi-buddy-session-pool-kit
       disabled: true

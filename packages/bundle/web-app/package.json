@@ -207,7 +207,8 @@
     "@deepseek-ai/dsh-tools": "workspace:*",
     "@deepseek-ai/dsh-typert-protocol": "workspace:*",
     "hi-buddy-glossary-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz",
-    "hi-buddy-session-pool-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz"
+    "hi-buddy-session-pool-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz",
+    "@local/dsh-plugin-doclib": "file:../../../haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:~",

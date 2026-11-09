@@ -166,6 +166,7 @@ it('copies no macOS tarball into the Windows package set', () => {
 it.each([
   ['hi-buddy-session-pool-kit', '0.2.1'],
   ['hi-buddy-glossary-kit', '0.3.0-rc.1'],
+  ['local-dsh-plugin-doclib', '0.1.0'],
 ])('ships %s and resolves its peers from the local package set', (name, version) => {
   const root = mkdtempSync(join(tmpdir(), 'desktop-kit-packages-'))
   onTestFinished(() => { rmSync(root, { recursive: true, force: true }) })
@@ -174,12 +175,12 @@ it.each([
   const kitPath = join(import.meta.dirname, `../../../haiercash/builtin-plugins/${name}-${version}.tgz`)
   const kit = JSON.parse(execFileSync('tar', ['-xOzf', kitPath, 'package/package.json'], { encoding: 'utf8' })) as {
     name: string
-    peerDependencies: Record<string, string>
+    peerDependencies?: Record<string, string>
   }
   const manifests: Record<string, Record<string, unknown>> = {
     '@deepseek-ai/dsh': { dependencies: { [kit.name]: version } },
     '@deepseek-ai/dsh-desktop-host': {},
-    ...Object.fromEntries(Object.keys(kit.peerDependencies).map(name => [name, {}])),
+    ...Object.fromEntries(Object.keys(kit.peerDependencies ?? {}).map(name => [name, {}])),
   }
   for (const [name, fields] of Object.entries(manifests)) {
     const stem = name.replace('@deepseek-ai/', '')
