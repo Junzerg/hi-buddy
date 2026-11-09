@@ -139,8 +139,8 @@
             displayName: HaierCash
             apiKeyEnv: COMPANY_GATEWAY_API_KEY
             accountRequired: true
-            api: openai-completions
-            baseURL: http://ai-gateway.haierxj.cn/v1
+            api: anthropic-messages
+            baseURL: http://ai-gateway.haierxj.cn
             models: []
 
     - id: session-persistence-jsonl

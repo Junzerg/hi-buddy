@@ -41,8 +41,8 @@ async function mockPlatform() {
       })
       return
     }
-    if (req.url === '/v1/models') {
-      if (req.headers.authorization !== 'Bearer sk-company-fixture') { res.writeHead(401).end(); return }
+    if (req.url === '/v1/models?limit=1000') {
+      if (req.headers['x-api-key'] !== 'sk-company-fixture' || req.headers['anthropic-version'] !== '2023-06-01') { res.writeHead(401).end(); return }
       res.setHeader('content-type', 'application/json')
       res.end(JSON.stringify({ data: [{ id: 'company-test', name: 'Company test', context_window: 32000, max_tokens: 4096 }] }))
       return

@@ -49,8 +49,8 @@ it('upgrades .3 settings automatically during release preparation and preserves 
   })
   expect(rows.findLast(row => row.id === 'llm-pi-ai')?.config).toMatchObject({ providers: {
     custom: { models: [{ id: 'custom-model' }] },
-    'company-gateway': { displayName: 'HaierCash', api: 'openai-completions',
-      apiKeyEnv: 'COMPANY_GATEWAY_API_KEY', baseURL: 'http://ai-gateway.haierxj.cn/v1', models: [{ id: 'saved-model' }] },
+    'company-gateway': { displayName: 'HaierCash', api: 'anthropic-messages',
+      apiKeyEnv: 'COMPANY_GATEWAY_API_KEY', baseURL: 'http://ai-gateway.haierxj.cn', models: [{ id: 'saved-model' }] },
   } })
   expect(rows.findLast(row => row.id === 'llm-deepseek')?.disabled).toBe(true)
   expect(rows.find(row => row.id === 'locale')?.config).toEqual({ preference: 'zh' })
@@ -104,4 +104,19 @@ it('repairs a stale development port back to the shared Desktop IAM port', async
   const rows = yaml.load(readFileSync(f.file, 'utf8'), { schema: entryListSchema }) as { id: string; config?: Record<string, unknown> }[]
   expect(rows.findLast(row => row.id === 'webserver')?.config).toMatchObject({ port: 18743 })
   expect(readFileSync(f.credentials, 'utf8')).toBe('legacy-personal-key: fixture-private-value\n')
+})
+
+it('migrates a saved OpenAI company route to Anthropic without changing models or credentials', async () => {
+  const original = '- id: llm-pi-ai\n  config:\n    providers:\n      company-gateway:\n        api: openai-completions\n        baseURL: http://ai-gateway.haierxj.cn/v1\n        models: [{id: volces-glm5}]\n      personal:\n        api: openai-completions\n        baseURL: https://personal.example/v1\n        models: [{id: personal-model}]\n'
+  const f = fixture(original)
+  await upgradeCompanyProfile(f.runtime, f.paths.profile)
+  const after = readFileSync(f.file, 'utf8')
+  const rows = yaml.load(after, { schema: entryListSchema }) as { config: { providers: Record<string, unknown> } }[]
+  expect(rows.at(-1)?.config.providers).toMatchObject({
+    'company-gateway': { api: 'anthropic-messages', baseURL: 'http://ai-gateway.haierxj.cn', models: [{ id: 'volces-glm5' }] },
+    personal: { api: 'openai-completions', baseURL: 'https://personal.example/v1', models: [{ id: 'personal-model' }] },
+  })
+  expect(readFileSync(f.credentials, 'utf8')).toBe('legacy-personal-key: fixture-private-value\n')
+  await upgradeCompanyProfile(f.runtime, f.paths.profile)
+  expect(readFileSync(f.file, 'utf8')).toBe(after)
 })

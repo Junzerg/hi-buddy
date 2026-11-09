@@ -40,7 +40,7 @@ getPlatformSession 仅在已存授权的 issuer 与 platformOrigin 一致时导�
 
 公司账号快照在已保存授权含有经过验证的 IAM 资料时提供 `authenticationMethod: iam`，手工公司授权则为 `api-key`。重启后保留这一区别。Desktop 只接受 IAM 授权，手工填写 provider Key 不能解锁工作区。
 
-`completeApiKeySignIn` 与 IAM 完成流程在已注册的 `company-gateway` provider（`openai-completions`、`http://ai-gateway.haierxj.cn/v1`）发现模型，保留仍可用的公司默认模型或选择首个模型，并在激活成功后保存 Key 和账号授权。空模型目录会失败，激活失败会清除已同步的访问配置。退出等待已开始的同步完成，无论 Key 是否改变都删除 `COMPANY_GATEWAY_API_KEY`，清空公司模型和公司默认模型，再删除授权并发布已退出状态。清理失败会向调用方报错，可再次重试。启动时删除没有账号授权的遗留公司 Key。内置连接列出模型和发起推理均须有效登录授权，已存储或环境中的 Key 无法授权未登录请求。provider 连接信息保留，供再次登录使用。
+`completeApiKeySignIn` 与 IAM 完成流程在已注册的 `company-gateway` provider（`anthropic-messages`、`http://ai-gateway.haierxj.cn`）发现模型，保留仍可用的公司默认模型或选择首个模型，并在激活成功后保存 Key 和账号授权。空模型目录会失败，激活失败会清除已同步的访问配置。退出等待已开始的同步完成，无论 Key 是否改变都删除 `COMPANY_GATEWAY_API_KEY`，清空公司模型和公司默认模型，再删除授权并发布已退出状态。清理失败会向调用方报错，可再次重试。启动时删除没有账号授权的遗留公司 Key。内置连接列出模型和发起推理均须有效登录授权，已存储或环境中的 Key 无法授权未登录请求。provider 连接信息保留，供再次登录使用。
 
 公司激活失败时，`attempt.errorStage` 提供不含凭据的阶段：`configuration`、`model-discovery`、`model-selection`、`credential-reset`、`model-settings`、`default-model`、`credential-save`、`grant-save` 或 `rollback`。账号订阅与登录失败日志提供相同阶段，不包含原始异常或响应正文。`rollback` 失败表示清理未完成。
 

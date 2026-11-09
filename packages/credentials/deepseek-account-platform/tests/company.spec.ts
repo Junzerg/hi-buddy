@@ -144,7 +144,7 @@ it.each(['lingxi-office_other', 'another-system_employee', 'employee'])('rejects
     'code', 'client', 'auth', new AbortController().signal)).rejects.toMatchObject({ code: 'protocol' })
 })
 
-async function keyFixture() {
+async function keyFixture(api = 'anthropic-messages') {
   const home = await mkdtemp(join(tmpdir(), 'company-key-'))
   cleanups.push(() => rm(home, { recursive: true, force: true }))
   const ctx = new Context()
@@ -158,7 +158,7 @@ async function keyFixture() {
   const save = vi.fn(async (next: typeof selection) => { selection = next })
   ctx.provide('llm', { discoverModels: discover } as never)
   ctx.provide('settings', { describe: () => [{ ns: 'llm-pi-ai', value: { providers: { 'company-gateway': {
-    api: 'openai-completions', baseURL: 'http://ai-gateway.haierxj.cn/v1', apiKeyEnv: COMPANY_KEY_REF,
+    api, baseURL: 'http://ai-gateway.haierxj.cn', apiKeyEnv: COMPANY_KEY_REF,
   } } } }], update } as never)
   ctx.provide('agentDefaultModel', { currentSelection: () => selection, saveSelection: save } as never)
   const accountConfig = { companyLogin: true, platformOrigin: 'https://iam-stg.haierxj.com',
@@ -168,12 +168,12 @@ async function keyFixture() {
   return { ctx, discover, update, save, accountFiber, accountConfig }
 }
 
-it('completes manual keys through the provider and preserves an available default', async () => {
-  const f = await keyFixture()
+it.each(['anthropic-messages', 'openai-completions'])('completes manual keys through %s and preserves an available default', async (api) => {
+  const f = await keyFixture(api)
   await f.ctx.deepseekAccount.completeApiKeySignIn('fixture-key')
   expect(await f.ctx.deepseekAccount.getState()).toMatchObject({ status: 'credential-stored', authenticationMethod: 'api-key' })
   expect(f.discover).toHaveBeenCalledWith('llm-pi-ai', {
-    api: 'openai-completions', baseURL: 'http://ai-gateway.haierxj.cn/v1', apiKey: 'fixture-key',
+    api, baseURL: 'http://ai-gateway.haierxj.cn', apiKey: 'fixture-key',
   }, expect.any(AbortSignal))
   expect(f.save).toHaveBeenCalledExactlyOnceWith({ provider: 'company-gateway', model: 'second' })
   expect((await f.ctx.credentials.resolve(credentialRef(COMPANY_KEY_REF)))?.value).toBe('fixture-key')

@@ -530,7 +530,7 @@ export class PlatformAccount extends DeepSeekAccount {
       const namespace = settings.describe({ redactSecrets: true }).find(item => item.ns === 'llm-pi-ai')
       const value = namespace?.value as { providers?: Record<string, { api?: string; baseURL?: string; apiKeyEnv?: string }> } | undefined
       const provider = value?.providers?.[COMPANY_PROVIDER]
-      if (provider?.api !== 'openai-completions' || !provider.baseURL || provider.apiKeyEnv !== COMPANY_KEY_REF) throw new PlatformAuthError('protocol')
+      if ((provider?.api !== 'anthropic-messages' && provider?.api !== 'openai-completions') || !provider.baseURL || provider.apiKeyEnv !== COMPANY_KEY_REF) throw new PlatformAuthError('protocol')
       onStage?.('model-discovery')
       const models = await llm.discoverModels('llm-pi-ai', { api: provider.api, baseURL: provider.baseURL, apiKey }, AbortSignal.timeout(this.requestTimeout))
       const first = models[0]
