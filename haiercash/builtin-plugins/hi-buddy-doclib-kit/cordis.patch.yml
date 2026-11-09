@@ -8,4 +8,4 @@
     - id: doclib
       name: '@local/dsh-plugin-doclib'
       config:
-        root: 'C:\Users\jiasida\Documents\deepseek-harness\default-workspace\docs'
+        root: docs
