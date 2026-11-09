@@ -1,6 +1,6 @@
 {
   "version": "0.2.2-rc.1.20261109.1",
-  "sourceCommit": "ef282fdf2cb8e8202ecc6eb37c6c65354786f123",
+  "sourceCommit": "fbcb6606d5c7be4c53cd9fc21515484e743978b2",
   "sourceBranch": "dev/junzerg",
   "status": "prepared",
   "notes": "Company gateway defaults to Anthropic Messages at http://ai-gateway.haierxj.cn. Desktop migrates saved company connection overrides while preserving models and credentials. Claude kit is not included. Platform builds and intranet inference acceptance remain pending.",
