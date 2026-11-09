@@ -44,7 +44,7 @@ After startup you see a `dsh web:` line whose root URL carries a fresh process t
 
 Saved model selections override the composition default. The settings card accepts a Messages-compatible API address and a credential reference.
 
-The built-in Claude page uses `hi-buddy-claude-kit` 0.1.0-alpha.0 for independent native Claude Code sessions. Install Claude CLI 2.1.218 on the Host machine and configure an explicit Anthropic Messages route with models and credentials in Settings → Models. The kit reads those Host settings, including the company gateway and non-Claude model IDs. It does not install the CLI or use personal Claude login credentials; Windows/macOS execution and intranet inference still require target-environment acceptance.
+The built-in Claude page uses `hi-buddy-claude-kit` 0.1.0-alpha.1 for independent native Claude Code sessions. Install Claude CLI 2.1.218 on the Host machine and configure an explicit Anthropic Messages route with models and credentials in Settings → Models. The kit reads those Host settings, including the company gateway and non-Claude model IDs. It does not install the CLI or use personal Claude login credentials; Windows/macOS execution and intranet inference still require target-environment acceptance.
 
 ### Configuration
 
