@@ -1,0 +1,46 @@
+{
+  "version": "0.2.2-rc.1.20261109.1",
+  "sourceCommit": "ef282fdf2cb8e8202ecc6eb37c6c65354786f123",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Company gateway defaults to Anthropic Messages at http://ai-gateway.haierxj.cn. Desktop migrates saved company connection overrides while preserving models and credentials. Claude kit is not included. Platform builds and intranet inference acceptance remain pending.",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.0",
+      "enabled": true
+    }
+  },
+  "checks": {
+    "sourceBuild": "passed: pnpm run build; no installers generated",
+    "unit": "72 passed: company profile upgrade, company account synchronization, pi-ai discovery",
+    "hostE2E": "3 passed: built Desktop Host with local Anthropic gateway fixture",
+    "webE2E": "1 passed: built-in company provider address and protocol in settings",
+    "docs": "passed: 43 doc-sync gates",
+    "lint": "passed with existing unused-disable warnings",
+    "targetNetwork": "pending: real model discovery, streaming inference and tool call",
+    "previousModelSelectionRegressions": "earlier record reports unresolved browser failures; not revalidated by the focused gateway test"
+  },
+  "published": false
+}
