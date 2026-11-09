@@ -9,6 +9,8 @@ description: "doclib 文档库插件按「文档 / 元数据 / 上下文 / wiki�
 
 这份文档只回答一件事：**四条概念线各自要在哪个文件里、按什么顺序、改出什么形状**。
 
+> **实施状态（2026-11-09）**：P0、P1 已落地。源码在 `haiercash/builtin-plugins/hi-buddy-doclib-kit/`（`index.js` 只做装配，`client.js` 保持单文件）；实测数字与验收见 `evals/p1-results.json`，口径回写见 §10。下文保留原始论证，与代码冲突时以 §10 为准。
+
 ---
 
 ## 0. 结论先行
@@ -29,9 +31,9 @@ description: "doclib 文档库插件按「文档 / 元数据 / 上下文 / wiki�
 
 这三条不定，后面每一项都会返工。
 
-### 1.1 源码归位（阻塞）
+### 1.1 源码归位（已解决：方案 A）
 
-仓库里现在只有 `haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz`，没有可编辑的源码目录；`node_modules/.pnpm/` 下那份是解包副本，不能作为开发位置。三个选项：
+**2026-11-09 已完成**：源码在 `haiercash/builtin-plugins/hi-buddy-doclib-kit/`，已进入 `pnpm-workspace.yaml`，`packages/bundle/web-app` 以 `workspace:*` 引用，`local-dsh-plugin-doclib-0.1.0.tgz` 只是旧产物。以下为当时的决策记录：
 
 | 方案 | 做法 | 代价 |
 |---|---|---|
@@ -55,35 +57,36 @@ P0 就要建 15 条查询，且**必须同时记录命中的重复条数**。原
 
 ## 2. 现状基线（代码级事实）
 
-| 项 | 实测 | 出处 |
+| 项 | 实测（2026-11-09，仓库 `docs/` 语料） | 出处 |
 |---|---|---|
-| 索引版本 | `INDEX_VERSION = 2` | `index.js:31` |
-| 主键 | `docKeyOf(sessionId, identity)` —— 出处当主键 | `index.js:220` |
-| 索引体积 | 835 KB，其中 0.58 MB 是 `chunk.text`（73%） | `.doclib-index.json` 实测 |
-| 记录 / 不同路径 | 70 / 35 | 同上 |
-| 检索块 / 重复块 | 638 / 507 | 同上 |
-| 类型分布 | `generated` 61 / 70 | 同上 |
-| TTL | 单一 `ttlSeconds = 120` | `index.js:37, 131` |
-| 工具 | 4 个：`doc_search` / `doc_read` / `doc_list` / `doc_status` | `index.js:1073+` |
-| 面板路由 | 7 条：`/status /tree /search /doc /raw /text /reindex` | `index.js:1376–1487` |
-| 注入 | 无。`inject = ['tools', 'fs']` 只有服务依赖 | `index.js:250` |
-| `doc_read` 分页 | 按字符 `offset / maxChars`，**不是行号** | `index.js:1138` |
-| `doc_list` 过滤 | `workspace / session / prefix / limit`，**无时间窗** | `index.js:1208` |
+| 索引版本 | v2 = 2；实现已升 v3 | `store/index-store.js` |
+| 主键 | v2 `docKeyOf(sessionId, identity)`；v3 `pathKey` | `shared/pathKey.js` |
+| 索引体积 | v2 10.88 MB → v3 355 KB（−96.8%，378 B/篇） | `evals/p1-results.json` |
+| 记录 / 不同路径 | 962 / 962（v2 的 `path` 实际只有 1 个值：`[object Object]`） | 同上 |
+| 检索块 | 7824 | 同上 |
+| 类型分布 | v2 `folder` 962/962；v3 按扩展名分 `doc/code/config/data` | `shared/typeClass.js` |
+| TTL | v2 单一 `ttlSeconds = 120`；v3 默认 0（只按写事件 + 指纹失效） | `index.js` `Config` |
+| 工具 | 4 个不变：`doc_search` / `doc_read` / `doc_list` / `doc_status` | `tools/` |
+| 面板路由 | 7 条 + `/context` | `http/routes.js` |
+| 注入 | 无（P4） | — |
+| `doc_read` 分页 | 仍按字符 `offset / maxChars`（P3 再加行号） | `tools/read.js` |
+| `doc_list` 过滤 | `workspace / session / prefix / limit`，无时间窗 | `tools/list.js` |
+| 上下文 | `<root>/.doclib/context.jsonl`，只追加 | `store/context-store.js` |
 
-### 必须最先修的 bug
+### 必须最先修的 bug（已修复）
 
-`index.js:857`：
+原 `index.js:857`：
 
 ```js
 path: entry.target ? String(entry.target) : '',
 ```
 
-`entry.target` 是宿主 fs 句柄对象，`String()` 得到 `"[object Object]"`。实测 4 篇 `folder` 文档的 `path` 全是这个假值。两层后果：
+`entry.target` 是宿主 fs 的 `FsTarget` 对象（`{ targetKey, displayPath }`），`String()` 得到 `"[object Object]"`。**2026-11-09 实测不是 4 篇，而是 962 篇全部命中**，`path` 的不同值只有 1 个。两层后果：
 
-1. `doc_read({ path })` 对这 4 篇永远失败，只能靠 `key` 兜底；
-2. **按 path 去重会把这 4 篇内容完全不同的文档聚成 1 篇**，用户看到的是数据丢失。
+1. `doc_read({ path })` 对目录文档永远失败，只能靠 `key` 兜底；
+2. **按 path 去重会把 962 篇内容完全不同的文档聚成 1 篇**，用户看到的是数据丢失。
 
-修法：`path: path.resolve(rootPath, rel)`。
+修法（已落地）：`sources/folder-source.js` 用 `path.resolve(rootPath, rel)` 产出真实绝对路径；路径查找先归一到 `pathKey`（`index/lookup.js`），不再依赖 `cwdKey` 模糊匹配。
 
 这条 bug 说明一个顺序问题：**去重不能先做**。聚合键建立在 path 之上，path 是假的，去重就是在放大错误。所以 P0 修 bug，P1 才能动索引，P2 才谈去重。
 
@@ -292,36 +295,44 @@ local-dsh-plugin-doclib/
 
 先定格式，再写代码。三份契约任何一处改动都要同步改本文档。
 
-### 5.1 索引 v3
+### 5.1 索引 v3（已按实现回写）
 
-正文不进索引，`chunks` 运行时派生并按 `contentHash` 缓存。
+正文不进索引，分片按 `contentHash` 内容寻址落在 `<root>/.doclib/chunks/<前两位>/<32hex>.json`。
 
 ```jsonc
 {
-  "v": 3,
+  "version": 3,
   "generatedAt": 1794190870256,
   "mode": "sessions",
+  "truncated": false,
+  "root": "/…/docs",
+  "workspaces": [
+    {
+      "id": "w1", "title": "仓库", "path": "/…/repo",
+      "sessions": [
+        { "id": "s1", "title": "…", "createdAt": 0, "updatedAt": 0,
+          "live": false, "error": null,
+          "documents": ["wb:w1/docs/architecture.md"] }
+      ]
+    }
+  ],
   "docs": {
-    "wb:haiercash/docs/architecture.md": {
-      "pathKey": "wb:haiercash/docs/architecture.md",
-      "rel": "docs/architecture.md",
-      "name": "architecture.md",
-      "ext": ".md",
-      "typeClass": "doc",
-      "size": 12345,
-      "lines": 312,
-      "contentHash": "sha256:9f2c…",
-      "mtimeMs": 1794190000000,
-      "kind": "generated",
-      "workspaceId": "haiercash",
-      "sessionIds": ["s1", "s2", "s3"],
-      "refs": ["docs/deploy.sh"],
-      "searchable": true,
-      "oversized": false
+    "wb:w1/docs/architecture.md": {
+      "typeClass": "doc", "size": 12345, "lines": 312, "chunkCount": 14,
+      "contentHash": "sha256:9f2c…", "fingerprint": "12345:ab12…",
+      "kind": "generated", "sessionIds": ["s1", "s2", "s3"],
+      "refs": ["docs/deploy.sh"], "searchable": true
     }
   }
 }
 ```
+
+与初版契约的三处必要差异：
+
+- **`pathKey` 就是 `docs` 的 map key**；`rel` / `name` / `ext` / `abs` 在读取时回推（`normalizeStoredDoc`），不重复落盘。
+- **`fingerprint = size + hash(后端 version)`**：`FsInfo` 只有 `size` 与不透明 `version`，没有 `mtimeMs`，所以不能按 mtime 建指纹。
+- **默认值省略**（`false` / `0` / `[]`）由读取端恢复；962 篇下这一条省下约 40 KB。
+- `workspaces` 只保留「工作区 → 会话 → 文档 key」骨架，供面板分组；同一文档只存一份，多出处靠 `sessionIds`。
 
 ### 5.2 上下文事件
 
@@ -358,8 +369,8 @@ supersedes: [decision/old-identity]
 
 | 期 | 内容 | 验收 | 回退 |
 |---|---|---|---|
-| **P0** 校准 | 修 `index.js:857`；建 15 条评测集（含 `dup@1`）；清 `locale/` 死引用 | 一条命令输出 `hit@1 / hit@3 / dup@1`；4 篇 folder 文档 path 为真实路径 | 纯增量，可逐条 revert |
-| **P1** 索引 | v3 去正文；`pathKey` 唯一实现；指纹 + 脏标记 + 上下文存储 | 索引 < 80 KB、冷启动 < 50 ms；写完立刻可搜；`context.jsonl` 重建后字节不变 | 保留 v2 读取分支，`v` 字段分支 |
+| **P0** 校准 | 修 folder 文档 path 假值；建 15 条评测集（含 `dup@1`）；核验 `locale/` 仍在被宿主读取 | `node scripts/eval.mjs` 一条命令输出 `hit@1 / hit@3 / dup@1`；962 篇 path 均为真实绝对路径 | 纯增量，可逐条 revert |
+| **P1** 索引 | v3 去正文；`pathKey` 唯一实现；指纹 + 脏标记 + 上下文存储；内容寻址分片 | 索引 355 KB（相对 v2 −96.8%、378 B/篇）；冷启动 5 ms；首搜 264 ms；写完立刻可搜；`context.jsonl` 重建后 SHA-256 不变；改 1 个文件只重读 1 次 | 保留 v2 读取分支（内存迁移），`version` 字段分支 |
 | **P2** 检索 | `pathKey` 聚合；标题进倒排；类型权重；时效分带；停用词与查询预算 | `hit@1` 相对基线 ≥ +20%；`dup@1 = 0`；搜 `index` 只返回 1 条，角标 3 个会话 | 排序策略走 `rules/`，可整份换回 |
 | **P3** 定位 | 标题级切块记 `heading/endLine`；`doc_read` 支持行号区间；附件文本落盘 | 结果能报 `docs/x.md:120（§2.3 消息协议）`；按行读与按字符读同区间一致 | 字符分页保留为默认 |
 | **P4** 注入 | L1 目录 + 使用规则；L3 `@` 源；L2 召回（默认关） | 12 条指令 ≥ 10 条一次选对工具；注入 ≤ 1200 字符；关闭时零注入 | 单开关全关 |
@@ -394,12 +405,15 @@ supersedes: [decision/old-identity]
 ### 已定的
 
 - ~~`ctx.on('tool/call')` 是否可拦截~~ → 不可拦（会话事件），改用 `fs/write-intent`（见 §2）。
+- ~~源码放 A / B / C~~ → 已按 A 完成，见 §1.1。
+- ~~`locale/` 是死引用~~ → **不是**。`packages/boot/app-boot/src/package-meta.ts` 通过 `exports['./locale/*.json']` 读取 `meta.title/description`；删除会丢面板标题。P0 改为「核验 locale 生效」。
+- ~~`client.js` 也按 §4 拆分~~ → 不可行：浏览器侧由 `packages/client/modules` 原样串成 combo 脚本执行，`prepareSource` 不重写 import，且本 kit 不在 `tsdown.config.ts` 的 client workspace 内。§4 的拆分只作用于宿主 `index.js`。
 
 ### 仍需拍板的
 
 | # | 问题 | 影响 | 建议 |
 |---|---|---|---|
-| 1 | 源码放 A / B / C | 阻塞全部工作 | 选 A，见 §1.1 |
+| 1 | ~~源码放 A / B / C~~ 已定 A | — | 见 §1.1 |
 | 2 | `contested` 由谁判定 | 蒸馏一次还是两次 | 先 LLM 自评 + 记录分值，攒够样本再做独立 lint |
 | 3 | 遗忘曲线多久开始降权 | 排序行为 | 先只「标记」不「降权」——没有真实使用数据前任何数字都是猜的 |
 | 4 | 文件移动后 `pathKey` 变更，历史怎么迁 | 引用计数挂错行 | 靠 `contentHash` 迁移，时机未定；先做「迁移时打日志」 |
@@ -424,3 +438,50 @@ supersedes: [decision/old-identity]
 5. wiki 最后建，但页格式现在就要定。
 
 判断任何一个新需求该不该做，用这条：**它能不能省掉一次读盘，或者省掉一次「该不该查」的决策。** 两者都不能，就不进这个插件。
+
+---
+
+## 10. P0 / P1 落地回写（2026-11-09）
+
+### 代码落点
+
+```
+hi-buddy-doclib-kit/
+  index.js                 # 装配：配置、服务、注册、订阅、预热（632 行）
+  client.js                # 未拆，只渲染
+  shared/                  # pathKey / typeClass / hash / doc-record / text
+  sources/                 # session / folder / attachment
+  index/                   # build-index / aggregate / lookup / chunk / fingerprint / refs / dirty
+  search/                  # tokenize / postings / rank
+  store/                   # index-store / chunk-store / context-store
+  tools/                   # search / read / list / status
+  http/                    # routes / json
+  scripts/                 # eval / golden / check-incremental / lib
+  evals/                   # queries.json / baseline-docs.json / golden-docs.json / p1-results.json
+```
+
+`package.json` 的 `files` 已补上这些目录，`exports` 入口不变（宿主相对 import，客户端仍只有 `client.js`）。
+
+### 验收命令
+
+```bash
+pnpm --filter @local/dsh-plugin-doclib eval     # hit@1 / hit@3 / dup@1
+pnpm --filter @local/dsh-plugin-doclib check    # 9 条结构断言
+```
+
+### 与原文数字的偏差（以实测为准）
+
+| 项 | 原文 | 实测 / 实现 | 原因 |
+|---|---|---|---|
+| 索引体积 | < 80 KB | 355 KB（−96.8%） | 80 KB 是按 35 篇推的；962 篇下每篇 378 B 已接近元数据下限 |
+| 冷启动 | < 50 ms | 5 ms | 只读索引 + 建视图，不碰正文 |
+| 首搜 | 未单列 | 264 ms（962 分片 + 建倒排） | 正文不进索引的必然代价，后续查询 1 ms |
+| 记录 / 块 | 70 / 638 | 962 / 7824 | 语料已变大；`dup@1` 在单副本目录语料下恒为 0，聚合另用合成用例覆盖 |
+| P0 修的 folder 文档 | 4 篇 | 962 篇 | v2 索引里所有 folder 文档的 `path` 都是假值 |
+
+### 有意留到后续
+
+- **排序仍可能被大文档主导**（tf 跨全部分片求和），`hit@1` 33% 是 P2 的起点，不是 P1 的回退。
+- 目录文档 `updatedAt` 仍为 0：`FsDirEntry` 不带时间，`FsInfo.version` 不透明，面板显示 `—` 与改前一致。
+- 引用图的 `rel` 命名空间按文档各自基准（`wb:` 相对工作区、`folder:` 相对 root），跨工作区引用暂不解析。
+- 首搜 264 ms 可后续换成持久化倒排或分片预热；当前作为已知成本记录在 `evals/p1-results.json`。

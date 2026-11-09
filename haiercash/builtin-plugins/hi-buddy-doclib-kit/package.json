@@ -15,8 +15,21 @@
     "client.js",
     "cordis.patch.yml",
     "locale/*.json",
-    "icon.svg"
+    "icon.svg",
+    "shared/*.js",
+    "sources/*.js",
+    "index/*.js",
+    "search/*.js",
+    "store/*.js",
+    "tools/*.js",
+    "http/*.js"
   ],
+  "scripts": {
+    "eval": "node scripts/eval.mjs",
+    "check": "node scripts/check-incremental.mjs",
+    "golden:record": "node scripts/golden.mjs --record",
+    "golden:check": "node scripts/golden.mjs --check"
+  },
   "dsh": {
     "bundle": {
       "patch": "./cordis.patch.yml"

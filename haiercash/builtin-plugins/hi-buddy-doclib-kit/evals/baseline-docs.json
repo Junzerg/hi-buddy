@@ -1,0 +1,199 @@
+{
+  "version": 1,
+  "corpus": "docs",
+  "indexShape": "v2",
+  "capturedAt": "2026-11-09",
+  "note": "P0 基线：v2 索引（962 篇、path 全为 [object Object]）+ 未改动的排序。P1 不承诺 hit@1 提升（那是 P2），本文件用于证明结构与口径未被破坏。",
+  "summary": {
+    "shape": "v2",
+    "index": "docs/.doclib-index.json",
+    "documents": 962,
+    "searchable": 962,
+    "queries": 15,
+    "hit1": 0.3333333333333333,
+    "hit3": 0.4666666666666667,
+    "dup1": 0
+  },
+  "rows": [
+    {
+      "query": "capability seam",
+      "expect": "capability-seams.md",
+      "top": [
+        "capability-seams.md",
+        "capability-seams.zh.md",
+        "subsystems/web.md"
+      ],
+      "hit1": true,
+      "hit3": true,
+      "dup1": 0
+    },
+    {
+      "query": "测试策略",
+      "expect": "testing.zh.md",
+      "top": [
+        "testing.zh.md",
+        "cookbook/adding-a-session-format-version.zh.md",
+        "upgrade-guide/v0.2.1-alpha.1/desktop-test-auth-popup/guide.zh.md"
+      ],
+      "hit1": true,
+      "hit3": true,
+      "dup1": 0
+    },
+    {
+      "query": "session format version",
+      "expect": "session-format-status.md",
+      "top": [
+        "dependency-catalog.json",
+        "persistence-changes/historical-formats/v3.i18n.yaml",
+        "persistence-changes/historical-formats/v2.i18n.yaml"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "corner-radius standard",
+      "expect": "ui-radius.md",
+      "top": [
+        "ui-radius.md",
+        "ui-radius.i18n.yaml",
+        "ui-radius.zh.md"
+      ],
+      "hit1": true,
+      "hit3": true,
+      "dup1": 0
+    },
+    {
+      "query": "event producer consumer",
+      "expect": "event-producer-consumer.md",
+      "top": [
+        "subsystems/jobs.md",
+        "subsystems/llm-streaming.md",
+        "event-producer-consumer.zh.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "vendored package rescope",
+      "expect": "rescope.md",
+      "top": [
+        "cookbook/adding-a-vendored-package.md",
+        "rescope.md",
+        "rescope.i18n.yaml"
+      ],
+      "hit1": false,
+      "hit3": true,
+      "dup1": 0
+    },
+    {
+      "query": "持久化类型",
+      "expect": "persistence-catalog.zh.md",
+      "top": [
+        "persistence-changes/historical-formats/v3.zh.md",
+        "persistence-changes/historical-formats/v2.zh.md",
+        "persistence-changes/historical-formats/v0.zh.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "turn and step lifecycle",
+      "expect": "agent-lifecycle.md",
+      "top": [
+        "subsystems/core.md",
+        "subsystems/core.zh.md",
+        "subsystems/session.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "插件配置",
+      "expect": "config-catalog.zh.md",
+      "top": [
+        "i18n/terminology.md",
+        "user/develop/basic/publish.zh.md",
+        "user/develop/basic/config.zh.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "cordis primer",
+      "expect": "cordis-primer.md",
+      "top": [
+        "cordis-primer.i18n.yaml",
+        "subsystems/extensions.md",
+        "subsystems/extensions.zh.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "tool execution pipeline",
+      "expect": "tool-execution-pipeline.md",
+      "top": [
+        "subsystems/tools.md",
+        "subsystems/tools.zh.md",
+        "tool-catalog.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "文档图",
+      "expect": "graph-atlas.zh.md",
+      "top": [
+        "graph-atlas.zh.md",
+        "i18n/README.zh.md",
+        "cookbook/adding-a-plugin-preview.zh.md"
+      ],
+      "hit1": true,
+      "hit3": true,
+      "dup1": 0
+    },
+    {
+      "query": "设置卡片",
+      "expect": "web-styling.zh.md",
+      "top": [
+        "ui-radius.zh.md",
+        "web-styling.zh.md",
+        "user/guide/providers.zh.md"
+      ],
+      "hit1": false,
+      "hit3": true,
+      "dup1": 0
+    },
+    {
+      "query": "with-key policy",
+      "expect": "testing.md",
+      "top": [
+        "config-catalog.md",
+        "config-catalog.zh.md",
+        "subsystems/typert.md"
+      ],
+      "hit1": false,
+      "hit3": false,
+      "dup1": 0
+    },
+    {
+      "query": "共享实例依赖关系图",
+      "expect": "module-graph.zh.md",
+      "top": [
+        "module-graph.zh.md",
+        "tool-catalog.zh.md",
+        "cordis-tutorial/03-services.zh.md"
+      ],
+      "hit1": true,
+      "hit3": true,
+      "dup1": 0
+    }
+  ]
+}
