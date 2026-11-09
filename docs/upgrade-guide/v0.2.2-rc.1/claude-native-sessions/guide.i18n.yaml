@@ -1,0 +1,16 @@
+# Bilingual-pair consistency record for guide.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write docs/upgrade-guide/v0.2.2-rc.1/claude-native-sessions/guide.md
+/:
+  en: 805a25f862327afd
+  zh: 480aad71e11b060a
+/claude-kit-uses-native-session-history:
+  en: 211dc04745c1755c
+  zh: c73900d656e6ac9e
+/claude-kit-uses-native-session-history/change:
+  en: 913c54b454c625e2
+  zh: 0397e2c414d697d1
+/claude-kit-uses-native-session-history/migration:
+  en: 49cbdfdd332c8b98
+  zh: fa1e29393828c2e4
