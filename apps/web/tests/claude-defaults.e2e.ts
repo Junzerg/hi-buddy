@@ -22,9 +22,12 @@ it('browses native Claude history and uses company models for a new session', as
   }))
   await scaffold.ctx.settings.mutate('llm-pi-ai', [{
     op: 'set', path: ['providers', 'company-gateway', 'models'],
-    value: [{ id: 'volces-glm5', name: 'GLM fixture' }],
+    value: [
+      { id: 'volces-glm5', name: 'GLM fixture' },
+      { id: 'volces-glm5-fast', name: 'GLM fast fixture' },
+    ],
   }])
-  await expect.poll(() => scaffold.ctx.llm.listModels('company-gateway')).toMatchObject([{ id: 'volces-glm5' }])
+  await expect.poll(() => scaffold.ctx.llm.listModels('company-gateway')).toMatchObject([{ id: 'volces-glm5' }, { id: 'volces-glm5-fast' }])
   execFileSync('git', ['init', '--quiet', scaffold.workspaceCwd])
   await writeFile(join(scaffold.workspaceCwd, 'claude-preview.txt'), 'Preview fixture change\n')
   const sessionId = '49be37e0-fc3f-4fe0-a57a-f678a963effa'
@@ -120,6 +123,14 @@ it('browses native Claude history and uses company models for a new session', as
   await compactCommand.waitFor({ state: 'hidden' })
   await composer.fill('/compact keep the date logic')
   await expect.poll(() => page.getByRole('button', { name: '发送', exact: true }).isEnabled()).toBe(true)
+  await composer.fill('/mo')
+  await page.getByRole('menuitem', { name: /^\/model/ }).click()
+  const fastModel = page.getByRole('menuitem', { name: /^GLM fast fixture · / })
+  await fastModel.waitFor()
+  await page.screenshot({ path: join(run, 'model-command.png'), fullPage: true })
+  await fastModel.click()
+  await chat.getByRole('button', { name: '宿主模型', exact: true }).getByText('GLM fast fixture', { exact: true }).waitFor()
+  expect(await composer.inputValue()).toBe('')
   expect(await page.getByRole('alert').count()).toBe(0)
   expect(console.pageErrors).toEqual([])
 })
