@@ -31,14 +31,21 @@ it('browses native Claude history and uses company models for a new session', as
   const projectDir = join(scaffold.harnessHome, 'claude-native', 'projects', scaffold.workspaceCwd.replace(/[^a-zA-Z0-9]/g, '-'))
   await mkdir(projectDir, { recursive: true })
   const nativeFile = join(projectDir, `${sessionId}.jsonl`)
-  const nativeMessage = (uuid: string, parentUuid: string | null, type: 'user' | 'assistant', text: string) => ({
+  const nativeMessage = (uuid: string, parentUuid: string | null, type: 'user' | 'assistant', content: string | object[]) => ({
     uuid, parentUuid, sessionId, cwd: scaffold.workspaceCwd, isSidechain: false,
     timestamp: '2026-11-09T00:00:00.000Z', type,
-    message: { role: type, content: [{ type: 'text', text }] },
+    message: { role: type, content: typeof content === 'string' ? [{ type: 'text', text: content }] : content },
   })
   await writeFile(nativeFile, [
     nativeMessage('cf10170f-cb2d-40fc-a0e4-bd7d64b200ea', null, 'user', 'Native session fixture'),
-    nativeMessage('3341feeb-4d9d-4148-b25a-f4c7c34f605b', 'cf10170f-cb2d-40fc-a0e4-bd7d64b200ea', 'assistant', 'Saved native reply'),
+    nativeMessage('3341feeb-4d9d-4148-b25a-f4c7c34f605b', 'cf10170f-cb2d-40fc-a0e4-bd7d64b200ea', 'assistant', [
+      { type: 'thinking', thinking: 'Inspect the fixture before replying.' },
+      { type: 'tool_use', id: 'toolu_fixture', name: 'Read', input: { file_path: 'claude-preview.txt' } },
+    ]),
+    nativeMessage('33162dc3-80b3-47f0-9b79-07268949db43', '3341feeb-4d9d-4148-b25a-f4c7c34f605b', 'user', [
+      { type: 'tool_result', tool_use_id: 'toolu_fixture', content: 'Native Read result' },
+    ]),
+    nativeMessage('cbfdc41f-7ba0-4e6e-abf7-9dffca413388', '33162dc3-80b3-47f0-9b79-07268949db43', 'assistant', 'Saved native reply'),
   ].map(row => JSON.stringify(row)).join('\n') + '\n')
   const browser = await chromium.launch()
   onTestFinished(() => browser.close())
@@ -57,15 +64,26 @@ it('browses native Claude history and uses company models for a new session', as
   await page.getByRole('menuitem', { name: 'Native session fixture', exact: true }).click()
   await page.getByText('Saved native reply', { exact: true }).waitFor()
   expect(await sessions.getByRole('button', { name: 'Native session fixture', exact: true }).getAttribute('aria-current')).toBe('page')
+  const artifacts = fileURLToPath(new URL('../../../.artifacts/claude/', import.meta.url))
+  await mkdir(artifacts, { recursive: true })
+  const run = await mkdtemp(join(artifacts, 'run-'))
+  const thinking = chat.getByRole('button', { name: '思考过程', exact: true })
+  const thought = chat.getByText('Inspect the fixture before replying.', { exact: true })
+  await thinking.click()
+  await thought.waitFor()
+  await thinking.click()
+  await thought.waitFor({ state: 'hidden' })
+  const read = chat.getByRole('button', { name: /^读取.*claude-preview\.txt.*已完成/ })
+  await read.click()
+  await chat.getByText('Native Read result', { exact: true }).waitFor()
+  await page.screenshot({ path: join(run, 'session-transcript.png'), fullPage: true })
+  await read.click()
   await chat.getByRole('button', { name: '文件', exact: true }).click()
   const files = page.getByRole('complementary', { name: '文件', exact: true })
   await files.getByText('claude-preview.txt', { exact: true }).click()
   const preview = files.getByRole('region', { name: '文件预览', exact: true })
   await preview.getByText('Preview fixture change', { exact: false }).first().waitFor()
   await composer.waitFor()
-  const artifacts = fileURLToPath(new URL('../../../.artifacts/claude/', import.meta.url))
-  await mkdir(artifacts, { recursive: true })
-  const run = await mkdtemp(join(artifacts, 'run-'))
   await page.screenshot({ path: join(run, 'workspace-files.png'), fullPage: true })
 
   await chat.getByRole('button', { name: '改动', exact: true }).click()
@@ -81,7 +99,7 @@ it('browses native Claude history and uses company models for a new session', as
   await changes.getByRole('button', { name: '查看文件', exact: true }).click()
   await preview.getByText('Preview fixture change', { exact: false }).first().waitFor()
   await files.getByRole('button', { name: '关闭面板', exact: true }).click()
-  await appendFile(nativeFile, JSON.stringify(nativeMessage('7d29f8ad-9400-447b-9335-00861972325d', '3341feeb-4d9d-4148-b25a-f4c7c34f605b', 'assistant', 'Reply appended outside the app')) + '\n')
+  await appendFile(nativeFile, JSON.stringify(nativeMessage('7d29f8ad-9400-447b-9335-00861972325d', 'cbfdc41f-7ba0-4e6e-abf7-9dffca413388', 'assistant', 'Reply appended outside the app')) + '\n')
   await page.getByRole('button', { name: '刷新', exact: true }).click()
   await page.getByText('Reply appended outside the app', { exact: true }).waitFor()
   await chat.getByRole('button', { name: '新建会话', exact: true }).click()
@@ -92,6 +110,7 @@ it('browses native Claude history and uses company models for a new session', as
   await composer.fill('/')
   await contextCommand.waitFor()
   await compactCommand.waitFor()
+  await page.getByRole('menuitem', { name: /^\/code-review/ }).waitFor()
   await page.screenshot({ path: join(run, 'slash-commands.png'), fullPage: true })
   await composer.fill('/comp')
   await contextCommand.waitFor({ state: 'hidden' })
