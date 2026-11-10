@@ -71,11 +71,11 @@ export function migrateLegacyIndex(raw, { rootPath = '' } = {}) {
           updatedAt: Number(session?.updatedAt) || 0,
         })
         if (!record) continue
-        const withProvenance = {
+        const withSessionId = {
           ...record,
           sessionIds: isFolderBucket || !session?.id ? [] : [String(session.id)],
         }
-        docs[record.pathKey] = mergeDocRecords(docs[record.pathKey], withProvenance)
+        docs[record.pathKey] = mergeDocRecords(docs[record.pathKey], withSessionId)
         if (!keys.includes(record.pathKey)) keys.push(record.pathKey)
       }
       sessions.push(normalizeSession(session, keys))
@@ -90,7 +90,7 @@ export function migrateLegacyIndex(raw, { rootPath = '' } = {}) {
   }
 
   // A key reached from two sessions must render once: keep the first listing,
-  // drop later ones, and let `sessionIds` carry the other provenance.
+  // drop later ones, and let `sessionIds` carry the other session.
   const claimed = new Set()
   for (const workspace of workspaces) {
     for (const session of workspace.sessions) {
@@ -148,7 +148,7 @@ export function normalizeIndex(raw, { rootPath = '' } = {}) {
     )),
   }))
 
-  // A key listed by two sessions renders once; the extra provenance stays in
+  // A key listed by two sessions renders once; the extra session ids stay in
   // `sessionIds`. Hand-edited or duplicated indexes are cropped here rather
   // than trusted downstream.
   const claimed = new Set()

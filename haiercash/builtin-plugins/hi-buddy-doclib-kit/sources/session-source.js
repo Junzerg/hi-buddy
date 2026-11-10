@@ -1,9 +1,10 @@
 /**
  * Session-backed source: the files a session uploaded, and the files it wrote.
  *
- * The source only derives location identity and provenance. Reading text,
- * hashing, and reuse decisions belong to the index builder, so a rebuild can
- * skip every unchanged file without this module knowing about fingerprints.
+ * The source only derives location identity and the producing `sessionId`.
+ * Reading text, hashing, and reuse decisions belong to the index builder, so a
+ * rebuild can skip every unchanged file without this module knowing about
+ * fingerprints.
  */
 import path from 'node:path'
 import { comparablePath, isInside, pathKeyOf, relativeWithin } from '../shared/pathKey.js'

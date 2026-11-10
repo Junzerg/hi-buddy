@@ -8,7 +8,7 @@
  *   4. three sessions writing one file produce one row with three sessionIds;
  *   5. rebuilding never rewrites `context.jsonl`, and index persistence refuses
  *      to target it;
- *   6. search returns that one row, with the provenance count attached.
+ *   6. search returns that one row, with the `sessionIds` count attached.
  *
  * Runs the production modules against a temporary corpus; no harness needed.
  */
@@ -162,7 +162,7 @@ async function main() {
     const { index } = await library.build({ sessionSource, includeFolder: false })
     const doc = index.docs['wb:w1/shared.md']
     assert.ok(doc, 'one document survives')
-    assert.deepEqual(doc.sessionIds, ['s1', 's2', 's3'], 'provenance ordered newest first')
+    assert.deepEqual(doc.sessionIds, ['s1', 's2', 's3'], 'sessionIds ordered newest first')
     const view = buildRuntimeView(index, { rootPath: root })
     const listed = view.workspaces.flatMap((workspace) => workspace.sessions.flatMap((session) => session.documents))
     assert.equal(listed.filter((entry) => entry.key === 'wb:w1/shared.md').length, 1, 'rendered exactly once')

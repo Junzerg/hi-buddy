@@ -207,7 +207,7 @@ assert(!rebuildTouches(contextPath), 'context.jsonl 不得随索引重建被删�
 **三条硬约束**（对应 Karpathy 三层必须偏离的三处）：
 
 1. **反向索引**：`source.contentHash` → 页。源改了页必须知道，否则 wiki 静默腐烂。
-2. **来源标记**：`provenance: external | agent | mixed`。61/70 是 agent 自产，整条链路 `agent 写 → 蒸成 wiki → 注入回 agent` 是闭环，错误会被放大而非纠正。注入时标「未经外部核验」。
+2. **来源标记**：`contentSource: external | agent | mixed`。61/70 是 agent 自产，整条链路 `agent 写 → 蒸成 wiki → 注入回 agent` 是闭环，错误会被放大而非纠正。注入时标「未经外部核验」。
 3. **双作者**：人改过的段落加 `<!-- human -->` 标记，下次蒸馏跳过该段。否则人工修正会被静默吞掉。
 
 **validator 的四条规则**（不通过就不入队）：
@@ -349,7 +349,7 @@ local-dsh-plugin-doclib/
 pageKey: decision/doc-identity
 pageType: decision          # decision | retro | concept
 status: active              # active | superseded | contested
-provenance: mixed           # external | agent | mixed
+contentSource: mixed        # external | agent | mixed
 frozen: false
 sources:
   - pathKey: wb:haiercash/docs/architecture.md
@@ -375,7 +375,7 @@ supersedes: [decision/old-identity]
 | **P3** 定位 | 标题级切块记 `heading/endLine`；`doc_read` 支持行号区间；附件文本落盘 | 结果能报 `docs/x.md:120（§2.3 消息协议）`；按行读与按字符读同区间一致 | 字符分页保留为默认 |
 | **P4** 注入 | L1 目录 + 使用规则；L3 `@` 源；L2 召回（默认关） | 12 条指令 ≥ 10 条一次选对工具；注入 ≤ 1200 字符；关闭时零注入 | 单开关全关 |
 | **P5** 面板 | 同 `pathKey` 合并一行 + 来源角标；类型筛选默认隐藏代码；引用卡片 + 定位联动 | 表格行数 = 去重后文档数；点 `[1]` 能落到面板对应段落 | 客户端独立发版 |
-| **P6** 沉淀 | 复盘/决策/概念页；`page_sources`；validator；`provenance`；双作者保护 | 改 1/5 来源 → 「1/5 已更新」仍可用；单篇来源候选页被拒 | wiki 作为内部挂载的第二插件，关掉零注入零成本 |
+| **P6** 沉淀 | 复盘/决策/概念页；`page_sources`；validator；`contentSource`；双作者保护 | 改 1/5 来源 → 「1/5 已更新」仍可用；单篇来源候选页被拒 | wiki 作为内部挂载的第二插件，关掉零注入零成本 |
 
 依赖：`P0 → P1 → P2 → {P3, P4, P5} → P6`。P6 额外硬依赖 P2 的两项产出（聚合与类型准入）——它们决定「哪些文档进蒸馏队列」。
 
@@ -421,7 +421,7 @@ supersedes: [decision/old-identity]
 
 ### 结构性的
 
-- **自产内容闭环**：`agent 写 → 蒸 wiki → 注入回 agent`。61/70 是自产，错误会放大。三重防线：`provenance` 标记、注入标注「未经外部核验」、冲突不静默。
+- **自产内容闭环**：`agent 写 → 蒸 wiki → 注入回 agent`。61/70 是自产，错误会放大。三重防线：`contentSource` 标记、注入标注「未经外部核验」、冲突不静默。
 - **两处做聚合**：搜索去重了、表格没去重。已在 §1.3 定死「服务端一次」。
 - **工具 schema 吃 token**：工具数封顶 4 个，详细规则放注入片段，不再加工具。
 
