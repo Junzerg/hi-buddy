@@ -2,9 +2,9 @@
  * Host half of the local document library — assembly only.
  *
  * A document's identity is its location (`pathKey`), its version is its
- * content hash, and its provenance is an array of sessions. The index keeps
- * metadata, chunk text lives in content-addressed shards, and the context log
- * records facts that must survive every rebuild.
+ * content hash, and `sessionIds` lists the sessions that produced it. The
+ * index keeps metadata, chunk text lives in content-addressed shards, and the
+ * context log records facts that must survive every rebuild.
  *
  * Where the data comes from (all optional at runtime, resolved lazily so a
  * service that mounts late is still picked up):

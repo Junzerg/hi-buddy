@@ -2,8 +2,9 @@
  * The one document shape.
  *
  * Every source produces these fields and every consumer reads them, so a field
- * added here is added everywhere. Provenance (`sessionIds`) is an array, not a
- * primary key: a file written by three sessions is still one document.
+ * added here is added everywhere. `sessionIds` is an array of the producing
+ * sessions, not a primary key: a file written by three sessions is still one
+ * document.
  */
 import path from 'node:path'
 import { normalizeRel, pathKeyOf, relOfPathKey } from './pathKey.js'
@@ -84,7 +85,7 @@ function normalizeAttachment(value) {
 
 /**
  * Merge a freshly collected record into an existing one, keeping every
- * provenance link. The most recent producer supplies the visible fields.
+ * `sessionIds` entry. The most recent producer supplies the visible fields.
  */
 export function mergeDocRecords(existing, incoming) {
   if (!existing) return incoming

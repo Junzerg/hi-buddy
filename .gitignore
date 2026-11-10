@@ -5,6 +5,8 @@ apps/desktop/.env.macos
 apps/desktop/*.p12
 node_modules/
 lib/
+# `lib/` above means build output; the doclib kit keeps harness source under scripts/lib/.
+!haiercash/builtin-plugins/hi-buddy-doclib-kit/scripts/lib/
 *.tsbuildinfo
 pnpm-debug.log
 .pnpm-store/
