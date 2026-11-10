@@ -2,13 +2,13 @@
   "version": "0.2.2-rc.1.20261110.1",
   "sourceCommit": "bde50fb12d609a0eec63ddb9cb495f7d265c40f7",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "Includes Claude kit alpha.7 with automatic CLI discovery and non-blocking notices for unverified CLI versions. CLI is installed separately. Includes dev/jsd document library updates. Platform builds and target-network inference acceptance are pending.",
+  "status": "published",
+  "notes": "Includes Claude kit alpha.7 with automatic CLI discovery and non-blocking notices for unverified CLI versions. CLI is installed separately. Includes dev/jsd document library updates. Published on the intranet on 2026-11-10 using the monolithic Dockerfile; the per-version layered Dockerfile applies from the next release. Target-network inference acceptance results are pending operator report.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
-      "installer": null,
-      "sha256": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261110.1-win-x64-unsigned.exe",
+      "sha256": "D38972C3009BB9FE38A5C02F57707FB842C3E8650063F86C9BD44C1F84C145F6",
       "installationVerified": false
     },
     "mac-arm64": {
@@ -48,5 +48,5 @@
     "previousModelSelectionRegressions": "not revalidated by focused Claude tests",
     "docTests": "passed: 21 documentation gates"
   },
-  "published": false
+  "published": true
 }
