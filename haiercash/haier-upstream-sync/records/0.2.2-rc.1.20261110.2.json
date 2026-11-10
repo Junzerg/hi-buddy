@@ -1,0 +1,50 @@
+{
+  "version": "0.2.2-rc.1.20261110.2",
+  "sourceCommit": "2d93d2d927df3c2d86065bdced1a35001b740562",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Bundles Claude kit alpha.14 with the SDK-provided Claude Code runtime, native session transcripts, project tools and slash commands including /model. Windows and Mac artifacts and installation checks are pending.",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.0",
+      "enabled": true
+    },
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.14",
+      "enabled": true,
+      "sha256": "8d8a775c5f9377e8dd3825eadc33c257eb51d389e563e3c299d96d310afc4e44"
+    }
+  },
+  "checks": {
+    "sourceBuild": "passed: 10 build gates",
+    "packageSet": "passed: 24 tests",
+    "claudeLoader": "passed: local Anthropic Messages fixture verified native command execution, the next request using the selected model ID and history retained in the same session",
+    "webE2E": "passed: bundled Claude history, file and Git panels, slash menu and /model selection",
+    "docs": "passed: 43 doc-sync gates",
+    "typecheck": "passed: pre-push typecheck",
+    "targetNetwork": "pending: company sign-in, model discovery, model switch, streaming and tool calls on the target platforms"
+  },
+  "published": false
+}
