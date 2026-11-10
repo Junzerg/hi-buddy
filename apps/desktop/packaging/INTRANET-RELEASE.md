@@ -74,7 +74,7 @@ docker inspect --format '{{.Config.Image}}' lingxi-office-versions-1
 printf '%s  %s\n' "$expected_sha256" "$archive" | sha256sum -c -
 ```
 
-Proceed only after checksum verification succeeds and both image references correspond to `previous`. The new directory must not exist. The merge tool verifies every historical installer exists with its recorded size, and additionally checks SHA-256 for new installers. Restore missing files from historical archives instead of removing records to bypass validation.
+Proceed only after checksum verification succeeds and both image references correspond to `previous`. The new directory must not exist. The merge tool verifies every historical installer exists with its recorded size, and additionally checks SHA-256 for new installers. Restore missing files from historical archives instead of removing records to bypass validation. Before building the image, generate the layered Dockerfile for the release directory: every historical version occupies its own COPY instruction, so unchanged bytes hit the BuildKit layer cache and each subsequent build copies only the newly added version instead of slowing down as versions accumulate. Remove the inherited hard link before writing the replacement; redirecting in place overwrites the shared inode and corrupts the same-named Dockerfile in every historical directory.
 
 ```sh
 test ! -e "releases/$release"
@@ -85,6 +85,19 @@ docker run --rm --network none --pull never \
   -v "$PWD/releases/$release:/release" \
   node:22-slim node /release/merge-intranet-releases.mjs \
   /previous/versions/releases.json /release/release-records.json /release/versions/releases.json
+{
+  printf '# Override with an existing server-local Nginx image tag for offline builds.\n'
+  printf 'ARG NGINX_IMAGE=nginx:stable-alpine\nFROM ${NGINX_IMAGE}\n\n'
+  printf 'COPY intranet-nginx.conf /etc/nginx/conf.d/default.conf\n'
+  printf 'COPY site/ /srv/lingxi-office/site/\n'
+  for v in $(ls "releases/$release/versions" | sort); do
+    printf 'COPY versions/%s /srv/lingxi-office/versions/%s\n' "$v" "$v"
+  done
+  printf 'COPY updates/ /srv/lingxi-office/updates/\n\n'
+  printf 'RUN chmod -R a+rX /srv/lingxi-office\n\nEXPOSE 18765\n'
+} > "releases/$release/Dockerfile.new"
+rm -f "releases/$release/Dockerfile"
+mv "releases/$release/Dockerfile.new" "releases/$release/Dockerfile"
 docker build --build-arg NGINX_IMAGE=nginx:alpine \
   -t "lingxi-office-distribution:$release" "$PWD/releases/$release"
 docker run -d --name lingxi-office-distribution-test \

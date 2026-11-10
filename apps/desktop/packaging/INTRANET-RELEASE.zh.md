@@ -74,7 +74,7 @@ docker inspect --format '{{.Config.Image}}' lingxi-office-versions-1
 printf '%s  %s\n' "$expected_sha256" "$archive" | sha256sum -c -
 ```
 
-确认校验成功且两个镜像信息对应 `previous` 后执行下一组。新目录必须不存在。合并工具会验证所有历史安装包存在且大小正确，新安装包额外验证 SHA-256；缺文件时停止并从历史 tarball 恢复，不删记录绕过检查。
+确认校验成功且两个镜像信息对应 `previous` 后执行下一组。新目录必须不存在。合并工具会验证所有历史安装包存在且大小正确，新安装包额外验证 SHA-256；缺文件时停止并从历史 tarball 恢复，不删记录绕过检查。构建镜像前，先为发布目录生成分层 Dockerfile：历史版本各占一条 COPY 指令，字节不变即可命中 BuildKit 层缓存，此后每次构建只复制新增版本，不随版本累积变慢。先删除继承的硬链接再落位新文件；用重定向原地覆写会通过共享 inode 污染所有历史目录的同名 Dockerfile。
 
 ```sh
 test ! -e "releases/$release"
@@ -85,6 +85,19 @@ docker run --rm --network none --pull never \
   -v "$PWD/releases/$release:/release" \
   node:22-slim node /release/merge-intranet-releases.mjs \
   /previous/versions/releases.json /release/release-records.json /release/versions/releases.json
+{
+  printf '# Override with an existing server-local Nginx image tag for offline builds.\n'
+  printf 'ARG NGINX_IMAGE=nginx:stable-alpine\nFROM ${NGINX_IMAGE}\n\n'
+  printf 'COPY intranet-nginx.conf /etc/nginx/conf.d/default.conf\n'
+  printf 'COPY site/ /srv/lingxi-office/site/\n'
+  for v in $(ls "releases/$release/versions" | sort); do
+    printf 'COPY versions/%s /srv/lingxi-office/versions/%s\n' "$v" "$v"
+  done
+  printf 'COPY updates/ /srv/lingxi-office/updates/\n\n'
+  printf 'RUN chmod -R a+rX /srv/lingxi-office\n\nEXPOSE 18765\n'
+} > "releases/$release/Dockerfile.new"
+rm -f "releases/$release/Dockerfile"
+mv "releases/$release/Dockerfile.new" "releases/$release/Dockerfile"
 docker build --build-arg NGINX_IMAGE=nginx:alpine \
   -t "lingxi-office-distribution:$release" "$PWD/releases/$release"
 docker run -d --name lingxi-office-distribution-test \
