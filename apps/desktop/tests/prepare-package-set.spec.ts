@@ -164,7 +164,7 @@ it('copies no macOS tarball into the Windows package set', () => {
 })
 
 it.each([
-  ['hi-buddy-claude-kit', '0.1.0-alpha.8'],
+  ['hi-buddy-claude-kit', '0.1.0-alpha.9'],
   ['hi-buddy-session-pool-kit', '0.2.1'],
   ['hi-buddy-glossary-kit', '0.3.0-rc.1'],
   ['local-dsh-plugin-doclib', '0.1.0'],

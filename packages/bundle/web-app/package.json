@@ -206,7 +206,7 @@
     "@deepseek-ai/dsh-system-prompt": "workspace:*",
     "@deepseek-ai/dsh-tools": "workspace:*",
     "@deepseek-ai/dsh-typert-protocol": "workspace:*",
-    "hi-buddy-claude-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.8.tgz",
+    "hi-buddy-claude-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.9.tgz",
     "hi-buddy-glossary-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz",
     "hi-buddy-session-pool-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz",
     "@local/dsh-plugin-doclib": "workspace:*"

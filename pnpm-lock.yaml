@@ -3386,8 +3386,8 @@ importers:
         specifier: ^15.0.0
         version: 15.0.0
       hi-buddy-claude-kit:
-        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.8.tgz
-        version: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.8.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-home-paths@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))
+        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.9.tgz
+        version: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.9.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))
       hi-buddy-glossary-kit:
         specifier: file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz
         version: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)
@@ -19165,11 +19165,6 @@ packages:
     peerDependencies:
       '@deepseek-ai/cordis': ~4.1.0
 
-  '@deepseek-ai/dsh-home-paths@0.2.2-rc.1':
-    resolution: {integrity: sha512-aSmGSng1Esg6RWkJtskFAU600qDmazzuto/QT0f2Tf3+qDS4yDTM68/YeWn/Jc5JxwvTJTc17njKCyRSXJhTrw==}
-    peerDependencies:
-      '@deepseek-ai/cordis': ~4.1.0
-
   '@deepseek-ai/libreoffice-kit-darwin-arm64@0.1.5':
     resolution: {integrity: sha512-SjeXmyaTevEq2TxK7reb1rhCrQZ4QOXmXt/qEwfQD5Fx3odU0ILx2uiXN+nphSCQ95LFCzrElHGgv2c7a824yg==}
     engines: {node: '>=22.19.0'}
@@ -23666,14 +23661,13 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
-  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.8.tgz:
-    resolution: {integrity: sha512-yOcLkuUxdC0nJcn845NzFsXgfwZhEmVIokQAA2siTtWCsrl+3by33MWbLZGYTn95taV29jdjbTGBOr0eJTWUkQ==, tarball: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.8.tgz}
-    version: 0.1.0-alpha.8
+  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.9.tgz:
+    resolution: {integrity: sha512-xi5jtzuY1WFxhRHLuA2/NeLBYYYgBC2Jb4VGU5cDOiT03VSNwZZgYEjXx3mAhBMXGQqDEoJjV5URjJ427HlJZA==, tarball: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.9.tgz}
+    version: 0.1.0-alpha.9
     engines: {dsh: '>=0.2.2-rc.1 <0.2.2-rc.2', node: '>=24.9'}
     peerDependencies:
       '@deepseek-ai/cordis': 4.1.0
       '@deepseek-ai/dsh-credentials': '>=0.2.2-rc.1 <0.2.2-rc.2'
-      '@deepseek-ai/dsh-home-paths': '>=0.2.2-rc.1 <0.2.2-rc.2'
       '@deepseek-ai/dsh-storage-domain': '>=0.2.2-rc.1 <0.2.2-rc.2'
       '@deepseek-ai/dsh-typert-protocol': '>=0.2.2-rc.1 <0.2.2-rc.2'
 
@@ -27175,10 +27169,6 @@ snapshots:
     dependencies:
       '@deepseek-ai/cordis': link:vendor/cordis
       '@deepseek-ai/dsh-brand': 0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)
-
-  '@deepseek-ai/dsh-home-paths@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)':
-    dependencies:
-      '@deepseek-ai/cordis': link:vendor/cordis
 
   '@deepseek-ai/libreoffice-kit-darwin-arm64@0.1.5':
     optional: true
@@ -31633,12 +31623,11 @@ snapshots:
 
   he@1.2.0: {}
 
-  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.8.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-home-paths@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3)):
+  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.9.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3)):
     dependencies:
       '@anthropic-ai/claude-agent-sdk': 0.3.218(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))(zod@4.4.3)
       '@deepseek-ai/cordis': link:vendor/cordis
       '@deepseek-ai/dsh-credentials': 0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)
-      '@deepseek-ai/dsh-home-paths': 0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis)
       '@deepseek-ai/dsh-storage-domain': link:packages/storage/storage-domain
       '@deepseek-ai/dsh-typert-protocol': link:packages/typert/protocol
       zod: 4.4.3

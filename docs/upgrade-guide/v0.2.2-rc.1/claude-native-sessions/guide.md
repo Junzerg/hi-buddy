@@ -15,5 +15,5 @@ English | [中文](guide.zh.md)
 
 1. Stop active plugin tasks before upgrading, then restart the Host and reload the browser so Host and Client use the matching Remote protocol.
 2. To use the normal terminal history, leave `CLAUDE_CONFIG_DIR` unset or use the same directory as your terminal. To access the earlier plugin history, set it to the absolute path of the previous `$DSH_HOME/hi-buddy-claude/native` directory before starting the Host. Keep the original files; do not merge directories blindly.
-3. Retain platform optional dependencies when installing the plugin. Under Environment, confirm the bundled runtime version; if it is missing, reinstall the plugin with its platform dependencies. A separate CLI is not required. Model credentials still come from Host model settings.
+3. Retain platform optional dependencies when installing the plugin. From alpha.9, the runtime starts when sending a message; there is no Environment panel. If the session reports a missing runtime, reinstall the plugin with its platform dependencies. A separate CLI is not required. Model credentials still come from Host model settings.
 4. Open a project and an existing session, confirm its recent messages, and use Refresh after adding messages from the terminal. Finish the terminal's current task before continuing that session in the app.
