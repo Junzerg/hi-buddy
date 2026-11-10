@@ -67,9 +67,9 @@ it('browses native Claude history and uses company models for a new session', as
   // The missing path belongs to this test's temporary workspace, regardless of installed CLIs.
   const environment = page.locator('details').filter({ has: page.locator('summary').filter({ hasText: '运行环境' }) })
   if (await environment.getAttribute('open') === null) await environment.locator('summary').click()
-  await page.getByLabel('Claude CLI 绝对路径（留空使用 PATH）').fill(join(scaffold.workspaceCwd, 'missing-claude'))
+  await page.getByLabel('Claude CLI 绝对路径（留空自动查找）').fill(join(scaffold.workspaceCwd, 'missing-claude'))
   await page.getByRole('button', { name: '保存并检测', exact: true }).click()
-  await page.getByText('CLI was not found, is not executable, or failed to start. Install Claude Code yourself or select its absolute executable path.', { exact: true }).waitFor()
+  await environment.getByText('未找到 Claude CLI。请在宿主机器安装，或填写它的绝对路径。', { exact: true }).waitFor()
   await page.getByRole('textbox', { name: '消息', exact: true }).fill('Do not send this fixture')
   expect(await page.getByRole('button', { name: '发送', exact: true }).isDisabled()).toBe(true)
   expect(await page.getByRole('alert').count()).toBe(0)
