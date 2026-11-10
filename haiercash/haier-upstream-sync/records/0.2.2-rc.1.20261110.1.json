@@ -1,0 +1,52 @@
+{
+  "version": "0.2.2-rc.1.20261110.1",
+  "sourceCommit": "bde50fb12d609a0eec63ddb9cb495f7d265c40f7",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Includes Claude kit alpha.7 with automatic CLI discovery and non-blocking notices for unverified CLI versions. CLI is installed separately. Includes dev/jsd document library updates. Platform builds and target-network inference acceptance are pending.",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.0",
+      "enabled": true
+    },
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.7",
+      "enabled": true,
+      "sha256": "38f3980452b1fa1d34518e2e133b2c0eb0b1d5cffa36a950501c55cc0ebfd295"
+    }
+  },
+  "checks": {
+    "sourceBuild": "passed: 10 build gates; no installers generated",
+    "packageSet": "passed: 24 tests",
+    "claudeLoader": "passed: installed alpha.7; real CLI discovery with reduced PATH, unverified fixture launched by SDK, protocol failure and startup failure, disable cleanup",
+    "webE2E": "passed: 2 document-library tests and 1 focused Claude test; Claude entry timed out once in the combined run, focused recheck passed; parallel-load timing remains unconfirmed",
+    "docs": "passed: 43 doc-sync gates",
+    "lint": "passed with an existing unused-disable warning in client-ui-cot-translation",
+    "targetNetwork": "pending: real company gateway inference and tool calls on target machines",
+    "previousModelSelectionRegressions": "not revalidated by focused Claude tests",
+    "docTests": "passed: 21 documentation gates"
+  },
+  "published": false
+}
