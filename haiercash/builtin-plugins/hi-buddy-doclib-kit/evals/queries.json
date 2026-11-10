@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "corpus": "docs",
+  "note": "15 条固定查询，覆盖中文短语、英文标识符、文件名式查询与多词组合。expect 是相对仓库 docs/ 的路径；hit@1 = 首条结果命中，dup@1 = 前三条里同一位置重复的次数。",
+  "queries": [
+    { "query": "capability seam", "expect": "capability-seams.md" },
+    { "query": "测试策略", "expect": "testing.zh.md" },
+    { "query": "session format version", "expect": "session-format-status.md" },
+    { "query": "corner-radius standard", "expect": "ui-radius.md" },
+    { "query": "event producer consumer", "expect": "event-producer-consumer.md" },
+    { "query": "vendored package rescope", "expect": "rescope.md" },
+    { "query": "持久化类型", "expect": "persistence-catalog.zh.md" },
+    { "query": "turn and step lifecycle", "expect": "agent-lifecycle.md" },
+    { "query": "插件配置", "expect": "config-catalog.zh.md" },
+    { "query": "cordis primer", "expect": "cordis-primer.md" },
+    { "query": "tool execution pipeline", "expect": "tool-execution-pipeline.md" },
+    { "query": "文档图", "expect": "graph-atlas.zh.md" },
+    { "query": "设置卡片", "expect": "web-styling.zh.md" },
+    { "query": "with-key policy", "expect": "testing.md" },
+    { "query": "共享实例依赖关系图", "expect": "module-graph.zh.md" }
+  ]
+}

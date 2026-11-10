@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Document library">
+  <title>Document library</title>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#1f6feb"/>
+  <g fill="none" stroke="#ffffff" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M17 15h9v34h-9a2 2 0 0 1-2-2V17a2 2 0 0 1 2-2z"/>
+    <path d="M26 15h19a2 2 0 0 1 2 2v30a2 2 0 0 1-2 2H26z"/>
+    <path d="M32 24h10M32 31h10M32 38h6"/>
+  </g>
+</svg>

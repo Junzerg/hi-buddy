@@ -1,0 +1,532 @@
+{
+  "version": 1,
+  "shape": "v3",
+  "limit": 5,
+  "queries": [
+    {
+      "query": "capability seam",
+      "results": [
+        {
+          "rel": "capability-seams.md",
+          "name": "capability-seams.md",
+          "score": 18.26,
+          "line": 1
+        },
+        {
+          "rel": "capability-seams.zh.md",
+          "name": "capability-seams.zh.md",
+          "score": 16.66,
+          "line": 1
+        },
+        {
+          "rel": "subsystems/web.md",
+          "name": "web.md",
+          "score": 16.31,
+          "line": 1
+        },
+        {
+          "rel": "config-catalog.zh.md",
+          "name": "config-catalog.zh.md",
+          "score": 15.56,
+          "line": 4609
+        },
+        {
+          "rel": "config-catalog.md",
+          "name": "config-catalog.md",
+          "score": 15.48,
+          "line": 4585
+        }
+      ]
+    },
+    {
+      "query": "测试策略",
+      "results": [
+        {
+          "rel": "testing.zh.md",
+          "name": "testing.zh.md",
+          "score": 23.28,
+          "line": 1
+        },
+        {
+          "rel": "cookbook/adding-a-session-format-version.zh.md",
+          "name": "adding-a-session-format-version.zh.md",
+          "score": 21.68,
+          "line": 73
+        },
+        {
+          "rel": "upgrade-guide/v0.2.1-alpha.1/desktop-test-auth-popup/guide.zh.md",
+          "name": "guide.zh.md",
+          "score": 19.29,
+          "line": 1
+        },
+        {
+          "rel": "cookbook/adding-a-tool.zh.md",
+          "name": "adding-a-tool.zh.md",
+          "score": 16.6,
+          "line": 97
+        },
+        {
+          "rel": "persistence-changes/2026-09-16-session-format-v4.zh.md",
+          "name": "2026-09-16-session-format-v4.zh.md",
+          "score": 15.13,
+          "line": 97
+        }
+      ]
+    },
+    {
+      "query": "session format version",
+      "results": [
+        {
+          "rel": "dependency-catalog.json",
+          "name": "dependency-catalog.json",
+          "score": 24.82,
+          "line": 2161
+        },
+        {
+          "rel": "persistence-changes/historical-formats/v3.i18n.yaml",
+          "name": "v3.i18n.yaml",
+          "score": 22.7,
+          "line": 1
+        },
+        {
+          "rel": "persistence-changes/historical-formats/v2.i18n.yaml",
+          "name": "v2.i18n.yaml",
+          "score": 22.48,
+          "line": 1
+        },
+        {
+          "rel": "cookbook/adding-a-session-format-version.md",
+          "name": "adding-a-session-format-version.md",
+          "score": 22.37,
+          "line": 1
+        },
+        {
+          "rel": "persistence-changes/historical-formats/v0.i18n.yaml",
+          "name": "v0.i18n.yaml",
+          "score": 22.34,
+          "line": 1
+        }
+      ]
+    },
+    {
+      "query": "corner-radius standard",
+      "results": [
+        {
+          "rel": "ui-radius.md",
+          "name": "ui-radius.md",
+          "score": 44.69,
+          "line": 1
+        },
+        {
+          "rel": "ui-radius.i18n.yaml",
+          "name": "ui-radius.i18n.yaml",
+          "score": 39.97,
+          "line": 1
+        },
+        {
+          "rel": "ui-radius.zh.md",
+          "name": "ui-radius.zh.md",
+          "score": 32.33,
+          "line": 1
+        },
+        {
+          "rel": "web-styling.md",
+          "name": "web-styling.md",
+          "score": 28.21,
+          "line": 25
+        },
+        {
+          "rel": "web-styling.zh.md",
+          "name": "web-styling.zh.md",
+          "score": 19.37,
+          "line": 25
+        }
+      ]
+    },
+    {
+      "query": "event producer consumer",
+      "results": [
+        {
+          "rel": "subsystems/jobs.md",
+          "name": "jobs.md",
+          "score": 22.26,
+          "line": 25
+        },
+        {
+          "rel": "subsystems/llm-streaming.md",
+          "name": "llm-streaming.md",
+          "score": 21.77,
+          "line": 73
+        },
+        {
+          "rel": "event-producer-consumer.zh.md",
+          "name": "event-producer-consumer.zh.md",
+          "score": 20.34,
+          "line": 1
+        },
+        {
+          "rel": "subsystems/session.md",
+          "name": "session.md",
+          "score": 19.97,
+          "line": 721
+        },
+        {
+          "rel": "subsystems/jobs.zh.md",
+          "name": "jobs.zh.md",
+          "score": 19.81,
+          "line": 25
+        }
+      ]
+    },
+    {
+      "query": "vendored package rescope",
+      "results": [
+        {
+          "rel": "cookbook/adding-a-vendored-package.md",
+          "name": "adding-a-vendored-package.md",
+          "score": 31.94,
+          "line": 1
+        },
+        {
+          "rel": "rescope.md",
+          "name": "rescope.md",
+          "score": 31.89,
+          "line": 1
+        },
+        {
+          "rel": "rescope.i18n.yaml",
+          "name": "rescope.i18n.yaml",
+          "score": 30.79,
+          "line": 1
+        },
+        {
+          "rel": "rescope.zh.md",
+          "name": "rescope.zh.md",
+          "score": 29.12,
+          "line": 1
+        },
+        {
+          "rel": "cookbook/adding-a-vendored-package.zh.md",
+          "name": "adding-a-vendored-package.zh.md",
+          "score": 27.74,
+          "line": 1
+        }
+      ]
+    },
+    {
+      "query": "持久化类型",
+      "results": [
+        {
+          "rel": "persistence-changes/historical-formats/v3.zh.md",
+          "name": "v3.zh.md",
+          "score": 30.79,
+          "line": 1
+        },
+        {
+          "rel": "persistence-changes/historical-formats/v2.zh.md",
+          "name": "v2.zh.md",
+          "score": 30.73,
+          "line": 1
+        },
+        {
+          "rel": "persistence-changes/historical-formats/v0.zh.md",
+          "name": "v0.zh.md",
+          "score": 30.66,
+          "line": 1
+        },
+        {
+          "rel": "persistence-changes/historical-formats/v1.zh.md",
+          "name": "v1.zh.md",
+          "score": 30.63,
+          "line": 1
+        },
+        {
+          "rel": "persistence-changes/README.zh.md",
+          "name": "README.zh.md",
+          "score": 26.97,
+          "line": 1
+        }
+      ]
+    },
+    {
+      "query": "turn and step lifecycle",
+      "results": [
+        {
+          "rel": "subsystems/core.md",
+          "name": "core.md",
+          "score": 32.65,
+          "line": 49
+        },
+        {
+          "rel": "subsystems/core.zh.md",
+          "name": "core.zh.md",
+          "score": 31.14,
+          "line": 145
+        },
+        {
+          "rel": "subsystems/session.md",
+          "name": "session.md",
+          "score": 30.95,
+          "line": 169
+        },
+        {
+          "rel": "subsystems/session.zh.md",
+          "name": "session.zh.md",
+          "score": 29.52,
+          "line": 169
+        },
+        {
+          "rel": "subsystems/conversation.md",
+          "name": "conversation.md",
+          "score": 25.43,
+          "line": 49
+        }
+      ]
+    },
+    {
+      "query": "插件配置",
+      "results": [
+        {
+          "rel": "i18n/terminology.md",
+          "name": "terminology.md",
+          "score": 21.1,
+          "line": 97
+        },
+        {
+          "rel": "user/develop/basic/publish.zh.md",
+          "name": "publish.zh.md",
+          "score": 18.19,
+          "line": 1
+        },
+        {
+          "rel": "user/develop/basic/config.zh.md",
+          "name": "config.zh.md",
+          "score": 18.06,
+          "line": 1
+        },
+        {
+          "rel": "cordis-api/fiber.zh.md",
+          "name": "fiber.zh.md",
+          "score": 17.61,
+          "line": 409
+        },
+        {
+          "rel": "user/develop/basic/index.zh.md",
+          "name": "index.zh.md",
+          "score": 16.66,
+          "line": 121
+        }
+      ]
+    },
+    {
+      "query": "cordis primer",
+      "results": [
+        {
+          "rel": "cordis-primer.i18n.yaml",
+          "name": "cordis-primer.i18n.yaml",
+          "score": 10.75,
+          "line": 1
+        },
+        {
+          "rel": "subsystems/extensions.md",
+          "name": "extensions.md",
+          "score": 10.09,
+          "line": 1
+        },
+        {
+          "rel": "subsystems/extensions.zh.md",
+          "name": "extensions.zh.md",
+          "score": 10.09,
+          "line": 1
+        },
+        {
+          "rel": "subsystems/core.md",
+          "name": "core.md",
+          "score": 9.52,
+          "line": 505
+        },
+        {
+          "rel": "subsystems/core.zh.md",
+          "name": "core.zh.md",
+          "score": 9.52,
+          "line": 505
+        }
+      ]
+    },
+    {
+      "query": "tool execution pipeline",
+      "results": [
+        {
+          "rel": "subsystems/tools.md",
+          "name": "tools.md",
+          "score": 29.37,
+          "line": 1
+        },
+        {
+          "rel": "subsystems/tools.zh.md",
+          "name": "tools.zh.md",
+          "score": 26.85,
+          "line": 25
+        },
+        {
+          "rel": "tool-catalog.md",
+          "name": "tool-catalog.md",
+          "score": 24.28,
+          "line": 1
+        },
+        {
+          "rel": "config-catalog.md",
+          "name": "config-catalog.md",
+          "score": 20.9,
+          "line": 2785
+        },
+        {
+          "rel": "config-catalog.zh.md",
+          "name": "config-catalog.zh.md",
+          "score": 20.89,
+          "line": 2785
+        }
+      ]
+    },
+    {
+      "query": "文档图",
+      "results": [
+        {
+          "rel": "graph-atlas.zh.md",
+          "name": "graph-atlas.zh.md",
+          "score": 16.89,
+          "line": 1
+        },
+        {
+          "rel": "i18n/README.zh.md",
+          "name": "README.zh.md",
+          "score": 13.35,
+          "line": 1
+        },
+        {
+          "rel": "cookbook/adding-a-plugin-preview.zh.md",
+          "name": "adding-a-plugin-preview.zh.md",
+          "score": 11.08,
+          "line": 1
+        },
+        {
+          "rel": "i18n/terminology.md",
+          "name": "terminology.md",
+          "score": 9.57,
+          "line": 25
+        },
+        {
+          "rel": "i18n/translation-prompt.md",
+          "name": "translation-prompt.md",
+          "score": 9.57,
+          "line": 1
+        }
+      ]
+    },
+    {
+      "query": "设置卡片",
+      "results": [
+        {
+          "rel": "ui-radius.zh.md",
+          "name": "ui-radius.zh.md",
+          "score": 39.25,
+          "line": 1
+        },
+        {
+          "rel": "web-styling.zh.md",
+          "name": "web-styling.zh.md",
+          "score": 22.47,
+          "line": 25
+        },
+        {
+          "rel": "user/guide/providers.zh.md",
+          "name": "providers.zh.md",
+          "score": 19.96,
+          "line": 1
+        },
+        {
+          "rel": "cookbook/adding-a-tool.zh.md",
+          "name": "adding-a-tool.zh.md",
+          "score": 19.63,
+          "line": 49
+        },
+        {
+          "rel": "tool-catalog.zh.md",
+          "name": "tool-catalog.zh.md",
+          "score": 17.64,
+          "line": 25
+        }
+      ]
+    },
+    {
+      "query": "with-key policy",
+      "results": [
+        {
+          "rel": "config-catalog.md",
+          "name": "config-catalog.md",
+          "score": 21.37,
+          "line": 1
+        },
+        {
+          "rel": "config-catalog.zh.md",
+          "name": "config-catalog.zh.md",
+          "score": 21.23,
+          "line": 1993
+        },
+        {
+          "rel": "subsystems/typert.md",
+          "name": "typert.md",
+          "score": 17.39,
+          "line": 25
+        },
+        {
+          "rel": "subsystems/typert.zh.md",
+          "name": "typert.zh.md",
+          "score": 16.93,
+          "line": 505
+        },
+        {
+          "rel": "subsystems/filesystem.md",
+          "name": "filesystem.md",
+          "score": 16.43,
+          "line": 1
+        }
+      ]
+    },
+    {
+      "query": "共享实例依赖关系图",
+      "results": [
+        {
+          "rel": "module-graph.zh.md",
+          "name": "module-graph.zh.md",
+          "score": 53.43,
+          "line": 1
+        },
+        {
+          "rel": "tool-catalog.zh.md",
+          "name": "tool-catalog.zh.md",
+          "score": 28.05,
+          "line": 25
+        },
+        {
+          "rel": "cordis-tutorial/03-services.zh.md",
+          "name": "03-services.zh.md",
+          "score": 27.57,
+          "line": 73
+        },
+        {
+          "rel": "defensive-patterns/client-components.zh.md",
+          "name": "client-components.zh.md",
+          "score": 26.37,
+          "line": 265
+        },
+        {
+          "rel": "subsystems/llm-streaming.zh.md",
+          "name": "llm-streaming.zh.md",
+          "score": 25.45,
+          "line": 289
+        }
+      ]
+    }
+  ]
+}

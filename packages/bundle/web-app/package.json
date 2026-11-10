@@ -209,7 +209,7 @@
     "hi-buddy-claude-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.5.tgz",
     "hi-buddy-glossary-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz",
     "hi-buddy-session-pool-kit": "file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz",
-    "@local/dsh-plugin-doclib": "file:../../../haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz"
+    "@local/dsh-plugin-doclib": "workspace:*"
   },
   "peerDependencies": {
     "@deepseek-ai/cordis": "workspace:~",

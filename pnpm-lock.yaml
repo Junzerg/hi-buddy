@@ -1233,6 +1233,8 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
 
+  haiercash/builtin-plugins/hi-buddy-doclib-kit: {}
+
   native/system:
     devDependencies:
       '@deepseek-ai/node-addon-system':
@@ -3378,8 +3380,8 @@ importers:
         specifier: link:../../../vendor/schemastery
         version: link:../../../vendor/schemastery
       '@local/dsh-plugin-doclib':
-        specifier: file:../../../haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz
-        version: file:haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz
+        specifier: workspace:*
+        version: link:../../../haiercash/builtin-plugins/hi-buddy-doclib-kit
       commander:
         specifier: ^15.0.0
         version: 15.0.0
@@ -20394,10 +20396,6 @@ packages:
       typescript:
         optional: true
 
-  '@local/dsh-plugin-doclib@file:haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz':
-    resolution: {integrity: sha512-x/SUuzXZPyt9d6GRp92oLYzg8NEPmqnQP9ueM/V/ou8/YCHErdh40d3WtdTuNH9Mrz5QXiNpB6wbFtMhpFHIzw==, tarball: file:haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz}
-    version: 0.1.0
-
   '@malept/cross-spawn-promise@2.0.0':
     resolution: {integrity: sha512-1DpKU0Z5ThltBwjNySMC14g0CkbyhCaz9FkhxqNsZI6uAPJXFS8cMXlBKo26FJ8ZuW6S9GCMcR9IO5k2X5/9Fg==}
     engines: {node: '>= 12.13.0'}
@@ -28203,8 +28201,6 @@ snapshots:
       lexical: 0.49.0(patch_hash=54c4413db208cf234cb68c6a837f2523d3b319aa17911f1da385af08362e1356)(typescript@6.0.3)
     optionalDependencies:
       typescript: 6.0.3
-
-  '@local/dsh-plugin-doclib@file:haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.0.tgz': {}
 
   '@malept/cross-spawn-promise@2.0.0':
     dependencies:

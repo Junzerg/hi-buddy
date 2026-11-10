@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Document Library",
+    "description": "Indexes a local document folder and exposes keyword search to the agent plus a browsing panel in the Web UI."
+  }
+}

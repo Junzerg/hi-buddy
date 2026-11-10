@@ -13,6 +13,9 @@ packages:
   # Deploy root of the single-exe build: a pure dependency manifest whose
   # closure is what the exe bundles and what the Python runtime distributes.
   - python/sdk-runtime
+  # Doclib is developed from the checkout so app launches read the latest
+  # source; release packaging still consumes its packed tarball below.
+  - haiercash/builtin-plugins/hi-buddy-doclib-kit
 
 overrides:
   'extract-zip>yauzl': '3.4.0'

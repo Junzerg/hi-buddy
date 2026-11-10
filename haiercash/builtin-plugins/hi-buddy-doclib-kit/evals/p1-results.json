@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "date": "2026-11-09",
+  "corpus": "仓库 docs/（962 篇文本文件、7824 个检索块）",
+  "machine": "macOS arm64 / Node 22.22.2（本地实测，绝对耗时随机器变化）",
+  "index": {
+    "v2Bytes": 11409044,
+    "v3Bytes": 363546,
+    "reduction": 0.9681,
+    "perDocumentBytes": 378,
+    "note": "v2 数字取自本轮开始时的 docs/.doclib-index.json；v3 为同一语料重建后的实测"
+  },
+  "timings": {
+    "coldLoadMs": 5,
+    "fullBuildMs": 430,
+    "incrementalRebuildMs": 64,
+    "incrementalRebuildReread": 0,
+    "firstSearchMs": 264,
+    "subsequentQueryMs": 1,
+    "note": "coldLoad = 读索引 + 建运行时视图；firstSearch = 载入 962 个分片 + 建倒排；后续查询走内存"
+  },
+  "retrieval": {
+    "hit1": 0.3333,
+    "hit3": 0.4667,
+    "dup1": 0,
+    "note": "与 evals/baseline-docs.json 的 v2 结果完全一致；P1 不改变排序，hit@1 提升属于 P2"
+  },
+  "checks": "node scripts/check-incremental.mjs → 9/9"
+}
