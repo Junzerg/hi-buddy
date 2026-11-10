@@ -2,7 +2,8 @@
   "version": "0.2.2-rc.1.20261109.1",
   "sourceCommit": "fbcb6606d5c7be4c53cd9fc21515484e743978b2",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
+  "status": "not-built; superseded by 0.2.2-rc.1.20261110.1",
+  "notes-supersede": "Windows packaging was cancelled before completion so the in-progress Claude kit updates could ship together; no installer was generated or distributed, so this version identity was never exposed to any client.",
   "notes": "Company gateway defaults to Anthropic Messages at http://ai-gateway.haierxj.cn. Desktop migrates saved company connection overrides while preserving models and credentials. Claude kit is not included. Platform builds and intranet inference acceptance remain pending.",
   "targets": {
     "win-x64": {
