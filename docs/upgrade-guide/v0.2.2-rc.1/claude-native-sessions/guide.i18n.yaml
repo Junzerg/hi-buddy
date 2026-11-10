@@ -3,14 +3,14 @@
 # After editing either side, bring the other along and re-record with:
 #   pnpm run verify-translation-pairing --write docs/upgrade-guide/v0.2.2-rc.1/claude-native-sessions/guide.md
 /:
-  en: 805a25f862327afd
-  zh: 480aad71e11b060a
+  en: 5b06fd46d5370f8b
+  zh: 57e256d97382053b
 /claude-kit-uses-native-session-history:
   en: 211dc04745c1755c
   zh: c73900d656e6ac9e
 /claude-kit-uses-native-session-history/change:
-  en: 913c54b454c625e2
-  zh: 0397e2c414d697d1
+  en: 2bcfbb31a9880965
+  zh: d01a10cabbed1864
 /claude-kit-uses-native-session-history/migration:
-  en: 49cbdfdd332c8b98
-  zh: fa1e29393828c2e4
+  en: 230cc8a8462f2fe1
+  zh: 3881fdcaa40f2706
