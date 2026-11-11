@@ -1,0 +1,47 @@
+{
+  "version": "0.2.2-rc.1.20261111.2",
+  "sourceCommit": "7f128c78f522c3107c460ea8635a7fab25ed59cb",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Desktop defaults to the HaierCash intranet tools gateway for web search and fetch. The standalone Web profile retains its public search default.",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.0",
+      "enabled": true
+    },
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.15",
+      "enabled": true,
+      "sha256": "e4386d90d8802d333466eec98352286dd570fe8ee636404792c27bed9d90a304"
+    }
+  },
+  "checks": {
+    "source": "passed: pre-push typecheck, focused bundle and configuration source ownership tests, and 43 source doc-sync gates",
+    "webTools": "passed: built Desktop profile with a local gateway simulating authenticated search, fetch, and HTTP 404",
+    "webBrowserReplay": "known unrelated failures: existing session copy, accessibility snapshot, and source list marker spacing",
+    "targetNetwork": "pending: Windows and Mac installation and upgrade, company login, search and fetch through the intranet tools gateway, bundled Claude, Office preview, and restart persistence"
+  },
+  "published": false
+}
