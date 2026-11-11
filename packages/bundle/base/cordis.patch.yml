@@ -458,24 +458,13 @@
         thresholds: [3, 5, 8]
         argumentsPreviewChars: 500
 
-    # The shared base enables the stable model-facing web_search and web_fetch
-    # tools. The Web app disables this host row and composes both tools per agent
-    # preset; products with a stricter network policy override tool-web. DeepSeek
-    # search resolves the same DEEPSEEK_API_KEY
-    # credential the Models page manages for chat, at each search; its Messages
-    # endpoint is configured independently from the model route, so it takes its own
-    # base-URL override. Anonymous fetch accepts only public HTTP(S) destinations,
-    # resolves and validates every destination, and pins every actual connection.
-    # Search is a full auxiliary model request with server-side retrieval, so this
-    # shipped DeepSeek route gets 60s while the provider-neutral tool default
-    # remains 30s. The DeepSeek Search and Fetch APIs register as
-    # deepseek-search-api and deepseek-fetch-api with the same credential; the Web
-    # search settings switch selects both in place of these defaults.
+    # Desktop uses the intranet tools gateway with the same credential as company chat.
+    # The Web app composes tool-web per agent preset instead of using the host row below.
     - id: web
       name: '@deepseek-ai/dsh-web'
       config:
-        searchProvider: deepseek-official
-        fetchProvider: http
+        searchProvider: !!js "ctx.get('profileContext')?.name === 'desktop' ? 'deepseek-search-api' : 'deepseek-official'"
+        fetchProvider: !!js "ctx.get('profileContext')?.name === 'desktop' ? 'deepseek-fetch-api' : 'http'"
 
     - id: web-search-deepseek
       name: '@deepseek-ai/dsh-web-search-deepseek'
@@ -485,7 +474,9 @@
     - id: web-deepseek-api
       name: '@deepseek-ai/dsh-web-deepseek-api'
       config:
-        apiKeyEnv: DEEPSEEK_API_KEY
+        apiKeyEnv: !!js "ctx.get('profileContext')?.name === 'desktop' ? 'COMPANY_GATEWAY_API_KEY' : 'DEEPSEEK_API_KEY'"
+        baseURL: !!js "ctx.get('profileContext')?.name === 'desktop' ? 'http://172.28.236.3:18082/v1/tools' : 'https://api.deepseek.com/v1/tools'"
+        count: 10
 
     - id: web-fetch-http
       name: '@deepseek-ai/dsh-web-fetch-http'

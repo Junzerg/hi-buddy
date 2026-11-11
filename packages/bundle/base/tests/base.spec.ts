@@ -45,7 +45,15 @@ describe('dsh-base bundle', () => {
     })
     expect(rows.filter(row => row.id === 'subagent-codex')).toHaveLength(0)
     expect(rows.filter(row => row.id === 'subagent-claude-code')).toHaveLength(0)
-    expect(rows.find(row => row.id === 'web')?.config).toMatchObject({ fetchProvider: 'http' })
+    const web = rows.find(row => row.id === 'web')?.config
+    for (const [profile, search, fetch] of [
+      ['desktop', 'deepseek-search-api', 'deepseek-fetch-api'],
+      ['web', 'deepseek-official', 'http'],
+    ]) {
+      const ctx = { get: () => ({ name: profile }) }
+      expect(evaluate({ ctx }, (web?.searchProvider as { __jsExpr: string }).__jsExpr)).toBe(search)
+      expect(evaluate({ ctx }, (web?.fetchProvider as { __jsExpr: string }).__jsExpr)).toBe(fetch)
+    }
     expect(rows.find(row => row.id === 'web-fetch-http')).toBeDefined()
     expect(rows.find(row => row.id === 'tool-web')?.config).toMatchObject({ fetch: true })
     expect(manifest.dependencies).not.toHaveProperty('@deepseek-ai/dsh-subagent-codex')

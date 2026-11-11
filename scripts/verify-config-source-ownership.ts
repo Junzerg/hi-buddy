@@ -22,6 +22,10 @@ const SHIPPED_CONFIG_GLOBS = [
 /** Ordinary single-line configuration forms this source check rejects; not full YAML analysis. */
 const INLINE_DENY = /^\s*(apiKey|baseURL|apiKeyEnv|authToken|headers)\s*:\s*!!js\b/
 
+/** A profile can choose between two literal defaults without reading an environment value. */
+const PROFILE_DEFAULT =
+  /^\s*(?:apiKeyEnv|baseURL)\s*:\s*!!js\s+"ctx\.get\('profileContext'\)\?\.name === '[\w-]+' \? '[\w:/.-]+' : '[\w:/.-]+'"\s*$/u
+
 /** Return every forbidden inline environment form in shipped configuration. */
 export function collectConfigSourceOwnershipViolations(root: string): string[] {
   const failures: string[] = []
@@ -29,7 +33,7 @@ export function collectConfigSourceOwnershipViolations(root: string): string[] {
     for (const file of globSync(glob, { cwd: root })) {
       const rel = file.split(sep).join('/')
       readFileSync(resolve(root, rel), 'utf8').split('\n').forEach((line, index) => {
-        if (!INLINE_DENY.test(line)) return
+        if (!INLINE_DENY.test(line) || PROFILE_DEFAULT.test(line)) return
         failures.push(
           `${rel}:${String(index + 1)}: inlines a credential or endpoint from the environment.`
           + ' The adapter resolves apiKeyEnv through ctx.credentials and the endpoint through the'
