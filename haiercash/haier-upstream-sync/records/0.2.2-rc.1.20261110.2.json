@@ -2,13 +2,13 @@
   "version": "0.2.2-rc.1.20261110.2",
   "sourceCommit": "2d93d2d927df3c2d86065bdced1a35001b740562",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "Bundles Claude kit alpha.14 with the SDK-provided Claude Code runtime, native session transcripts, project tools and slash commands including /model. Windows and Mac artifacts and installation checks are pending.",
+  "status": "rolled-back",
+  "notes": "Bundles Claude kit alpha.14 with the SDK-provided Claude Code runtime, native session transcripts, project tools and slash commands including /model. Published briefly, then rolled back after a bug report; the version identity is void and must never be republished. The fix (launching the bundled Claude from the unpacked desktop runtime, with Claude kit alpha.15) ships as the next version, so clients that installed this build auto-update past it. Windows archive sha256 was 299529d1cde183cabce2bde431123d1a348f37e5a9d7935bce6072641c361280.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
-      "installer": null,
-      "sha256": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261110.2-win-x64-unsigned.exe",
+      "sha256": "D64F1B9F50B12AD3D03596216886F5E83D7CEC7325288435D460E5A1C17D106A",
       "installationVerified": false
     },
     "mac-arm64": {
