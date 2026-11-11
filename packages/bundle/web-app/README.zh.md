@@ -44,7 +44,7 @@ dsh --profile web --no-open --port 8080
 
 已保存的模型选择覆盖组合默认值。设置卡接受兼容 Messages 的 API 地址与凭据引用。
 
-内置 Claude 页面通过 `hi-buddy-claude-kit` 0.1.0-alpha.14 浏览本机 Claude Code 项目并续接原生会话。历史来自 `~/.claude` 或 `CLAUDE_CONFIG_DIR`；在终端续聊后，点击页面刷新即可读取更新。早期 alpha 版本使用插件独立目录，其中的会话不会自动导入默认原生目录。在「设置 → 模型」中明确配置 Anthropic Messages 路由、模型及凭据。插件使用 Agent SDK 0.3.218 配套的 Claude Code 2.1.218 运行时；安装时保留平台可选依赖，已保存的 CLI 路径会被忽略。插件读取这些 Host 设置，包括公司网关和非 Claude 模型 ID。用户无需另装 CLI，插件也不使用个人 Claude 登录凭据；Windows/macOS 执行和内网推理仍需在目标环境验收。
+内置 Claude 页面通过 `hi-buddy-claude-kit` 0.1.0-alpha.15 浏览本机 Claude Code 项目并续接原生会话。历史来自 `~/.claude` 或 `CLAUDE_CONFIG_DIR`；在终端续聊后，点击页面刷新即可读取更新。早期 alpha 版本使用插件独立目录，其中的会话不会自动导入默认原生目录。在「设置 → 模型」中明确配置 Anthropic Messages 路由、模型及凭据。插件使用 Agent SDK 0.3.218 配套的 Claude Code 2.1.218 运行时；安装时保留平台可选依赖，已保存的 CLI 路径会被忽略。插件读取这些 Host 设置，包括公司网关和非 Claude 模型 ID。用户无需另装 CLI，插件也不使用个人 Claude 登录凭据；Windows/macOS 执行和内网推理仍需在目标环境验收。
 
 ### 配置
 
