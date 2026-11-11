@@ -1,0 +1,50 @@
+{
+  "version": "0.2.2-rc.1.20261111.1",
+  "sourceCommit": "d95f4df71c6f4177bacd8d3e1cfd0d320b976038",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Claude kit alpha.15 launches the bundled native executable from app.asar.unpacked. The macOS package also unpacks the extensionless executable. Platform installer and upgrade checks are pending.",
+  "targets": {
+    "win-x64": {
+      "signing": "unsigned",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    },
+    "mac-arm64": {
+      "signing": "signed-notarized",
+      "installer": null,
+      "sha256": null,
+      "installationVerified": false
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.0",
+      "enabled": true
+    },
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.15",
+      "enabled": true,
+      "sha256": "e4386d90d8802d333466eec98352286dd570fe8ee636404792c27bed9d90a304"
+    }
+  },
+  "checks": {
+    "sourceBuild": "passed: 10 build gates and pre-push typecheck",
+    "packageSet": "passed: 24 package set tests and 41 Windows ASAR and macOS signature configuration tests",
+    "claudeKit": "passed: 26 plugin tests and kit typecheck",
+    "claudeAsarLoader": "passed: final alpha.15 tarball in Electron 44.7.0 ASAR fixture on Linux x64, without Claude in PATH, using local Anthropic Messages fixture",
+    "webE2E": "passed: bundled Claude history, files, Git and /model",
+    "docs": "passed: 43 source doc-sync gates",
+    "targetNetwork": "pending: platform install, upgrade without a separate CLI, and Claude conversation through the company gateway"
+  },
+  "published": false
+}
