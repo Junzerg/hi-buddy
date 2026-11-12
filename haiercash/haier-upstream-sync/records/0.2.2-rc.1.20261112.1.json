@@ -2,17 +2,17 @@
   "version": "0.2.2-rc.1.20261112.1",
   "sourceCommit": "02b9f663183f703d003637407027c980a1ca3015",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "Confirmed coordinated Windows x64 unsigned and Mac arm64 signed/notarized release. Both build from the pinned source, complete fresh installer acceptance, and publish together after the company-login exchange upgrade. No platform artifacts have been built for this version.",
+  "status": "published",
+  "notes": "Confirmed coordinated Windows x64 unsigned and Mac arm64 signed/notarized release. Both build from the pinned source, complete fresh installer acceptance, and publish together after the company-login exchange upgrade. No platform artifacts have been built for this version. Published on the intranet on 2026-11-12 after the gateway-side model authorization was configured; the login acceptance initially failed with an empty authorized-model list, which the new client rejects by design, and passed once the account had models authorized. Archive sha256 was 691f50c50af9852fff1dae4b64f1dd4d8e9a5b75ba132ba814fcdc025a3a9493. Release tag pushed on 02b9f66318.",
   "targets": {
     "win-x64": {
       "status": "pending",
       "signing": "unsigned",
       "buildCommit": null,
       "buildDirty": null,
-      "installer": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261112.1-win-x64-unsigned.exe",
       "bytes": null,
-      "sha256": null,
+      "sha256": "4C6BE81C7E9E5D11FD046A9A9D906714CDBCF2070EEB7FF1ACFA97D8408340AF",
       "archive": null,
       "archiveSha256": null,
       "signingVerified": false,
@@ -81,5 +81,5 @@
     "requireBothInstallationsVerified": true,
     "cutoverVerified": false
   },
-  "published": false
+  "published": true
 }
