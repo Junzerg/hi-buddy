@@ -1861,22 +1861,23 @@ describe('Mock detail metrics shared with the task list', () => {
     // jsdom computes no layout, so the values are read from the applied
     // stylesheet the way the detail-metric assertions above read it.
     expect(rule('pageScroll')).toMatch(/overflow:\s*auto;/)
-    expect(rule('pageContent')).toMatch(/max-width:\s*960px;/)
+    expect(rule('pageContent')).toMatch(/max-width:\s*var\(--dsh-page-content-max-width\);/)
     expect(rule('pageContent')).toMatch(/margin:\s*0 auto;/)
     // The Plugins page's own column inset, shared by both first-level pages:
     // inline and bottom only, because the heading row owns the top inset.
-    expect(rule('pageContent')).toMatch(/padding:\s*0 clamp\(24px, 4vw, 48px\) 48px;/)
+    expect(rule('pageContent')).toMatch(/padding:\s*0 var\(--dsh-page-padding-inline\) var\(--dsh-page-padding-bottom\);/)
     const heading = rule('pageHeading')
     expect(heading).toMatch(/align-items:\s*center;/)
     expect(heading).toMatch(/justify-content:\s*space-between;/)
-    expect(heading).toMatch(/gap:\s*16px;/)
+    expect(heading).toMatch(/gap:\s*var\(--dsh-page-heading-gap\);/)
     // The column's former top inset the row now carries, matching the Plugins head.
-    expect(heading).toMatch(/padding-top:\s*28px;/)
+    expect(heading).toMatch(/padding-top:\s*var\(--dsh-page-heading-padding-top\);/)
     expect(heading).toMatch(/margin-bottom:\s*24px;/)
     // The Plugins page's macOS head clearance above that same row inset, so the
     // heading clears the hiddenInset titlebar and keeps the 76px total offset.
     expect(stylesheet).toMatch(
-      /\[data-platform='darwin'\][^{]*\.pageHeading\s*\{[^}]*padding-top:\s*calc\(28px \+ var\(--dsh-frame-top-clearance, 0px\)\);/,
+      new RegExp(String.raw`\[data-platform='darwin'\][^{]*\.pageHeading\s*\{[^}]*padding-top:\s*`
+        + String.raw`calc\(var\(--dsh-page-heading-padding-top\) \+ var\(--dsh-frame-top-clearance, 0px\)\);`),
     )
     // The column keeps no top inset of its own, on either platform.
     expect(stylesheet).not.toMatch(
@@ -1893,8 +1894,8 @@ describe('Mock detail metrics shared with the task list', () => {
     const headingTitle = /\.pageHeading h1\s*\{([^}]*)\}/.exec(stylesheet)?.[1] ?? ''
     // The first-level title step is the Plugins page's `pageTitle`, not the
     // mock's larger page heading; the equality case below pins that pair.
-    expect(headingTitle).toMatch(/font-size:\s*20px;/)
-    expect(headingTitle).toMatch(/line-height:\s*28px;/)
+    expect(headingTitle).toMatch(/font-size:\s*var\(--dsh-page-title-font-size\);/)
+    expect(headingTitle).toMatch(/line-height:\s*var\(--dsh-page-title-line-height\);/)
     // The mock's `.list-tools` and `.tab`.
     expect(rule('filters')).toMatch(/gap:\s*8px 12px;/)
     expect(rule('filters')).toMatch(/margin-bottom:\s*14px;/)
@@ -1971,7 +1972,9 @@ describe('Mock detail metrics shared with the task list', () => {
       resolve(import.meta.dirname, '../../ui-plugin-manager/src/client/PluginManagerPage.module.css'), 'utf8',
     ).replaceAll('.pageTitle', `.${pluginsCss.pageTitle}`)
     const sheet = document.createElement('style')
-    sheet.textContent = `${ourSheet}\n${pluginsSheet}`
+    sheet.textContent = `${readFileSync(
+      resolve(import.meta.dirname, '../../ui-theme/src/styles/base.css'), 'utf8',
+    )}\n${ourSheet}\n${pluginsSheet}`
     document.head.append(sheet)
     const oursWrapper = document.createElement('div')
     oursWrapper.className = css.pageHeading as string
@@ -1986,9 +1989,10 @@ describe('Mock detail metrics shared with the task list', () => {
       expect(oursStyle.fontSize).toBe(theirsStyle.fontSize)
       expect(oursStyle.lineHeight).toBe(theirsStyle.lineHeight)
       expect(oursStyle.fontWeight).toBe(theirsStyle.fontWeight)
-      expect(oursStyle.fontSize).toBe('20px')
-      expect(oursStyle.lineHeight).toBe('28px')
-      expect(oursStyle.fontWeight).toBe('500')
+      expect(oursStyle.fontSize).toBe('var(--dsh-page-title-font-size)')
+      expect(getComputedStyle(document.documentElement).getPropertyValue('--dsh-page-title-font-size').trim()).toBe('20px')
+      expect(oursStyle.lineHeight).toBe('var(--dsh-page-title-line-height)')
+      expect(oursStyle.fontWeight).toBe('var(--dsh-page-title-font-weight)')
     } finally {
       sheet.remove()
       oursWrapper.remove()

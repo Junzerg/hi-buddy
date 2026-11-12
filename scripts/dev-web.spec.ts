@@ -75,6 +75,13 @@ describe('StageSupervisor', () => {
 })
 
 describe('parseDevWebArguments', () => {
+  it('keeps sibling sources opt-in and requires a served Host for their development profile', () => {
+    expect(parseDevWebArguments(['--kits', '--skip-build', '--no-open'])).toEqual({
+      haier: false, kits: true, skipBuild: true, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
+    })
+    expect(() => parseDevWebArguments(['--kits', '--no-serve'])).toThrow('--kits requires a served Web Host')
+  })
+
   it('builds, serves, and watches natively by default', () => {
     expect(parseDevWebArguments([])).toEqual({ haier: false, skipBuild: false, serve: true, pollInterval: undefined, appArgs: [] })
   })

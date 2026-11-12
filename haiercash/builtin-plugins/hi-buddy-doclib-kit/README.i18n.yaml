@@ -1,0 +1,28 @@
+# Bilingual-pair consistency record for README.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/builtin-plugins/hi-buddy-doclib-kit/README.md
+/:
+  en: 9a3a036fbbc1c593
+  zh: f47732811d5eec4b
+/local-document-library:
+  en: 4001d0fbd3d79715
+  zh: 69a2236ec5d118ad
+/local-document-library/summary:
+  en: 10846bf96de1da9f
+  zh: 71476e80facdd37f
+/local-document-library/table-of-contents:
+  en: 8c70d419b8e3f295
+  zh: c588d2225b086673
+/local-document-library/development:
+  en: e4a3943db87b4d26
+  zh: 6ba4a919de7b80fd
+/local-document-library/configuration-and-extension-points:
+  en: bcd6cdc496ac1189
+  zh: 68d6fa358ab67172
+/local-document-library/model-experience:
+  en: 986805fce719c85d
+  zh: fe9df32cba8156c9
+/local-document-library/known-limitations-and-deferred-work:
+  en: d143389d55d8ba0f
+  zh: 7ec7c1c0107e0736

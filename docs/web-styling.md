@@ -10,6 +10,8 @@ This reference defines styling ownership and component rules for browser client 
 
 Global style sheets belong in `ui-theme/src/styles/`. Component styles live beside their component as CSS Modules. A component may define a local custom property when its value is part of that component's layout or presentation contract; shared colors, typography, elevation, and motion belong to the theme package.
 
+First-level page geometry and title typography use the `--dsh-page-*` properties in `ui-theme/src/styles/base.css`. The Plugins page, Tasks page, and sibling kit `shared/ui/Page.module.css` consume those properties; page-specific scrolling, sticky headers, window dragging, and business layout remain with their owners. Plugins use host primitives directly; the kit shared layer composes them without copying theme values or wrapping every control. The legacy appearance kit is outside this shared design system and is not loaded by the local kit development profile.
+
 <a id="component-rules"></a>
 ## Component rules
 

@@ -129,6 +129,8 @@ pnpm run build
 `pnpm run hygiene` 包含 `publint`（用构建出的 `lib/*.js` 文件校验包入口点）和 `verify-node-next-types`（用一个临时的 NodeNext 消费方校验构建出的声明文件）。新 worktree 在 `pnpm run build` 运行之前没有打包的 JS 和声明文件；普通提交和推送无需构建，除非所选检查会使用这些产物。
 
 
+主体与 kit 联调使用 `pnpm run dev:web --kits`：它构建兄弟目录的 kit 源码，并链接到 `.artifacts/local-kits/home` 下的独立 Web profile；启动时以该目录作为 `DSH_HOME`，不使用日常 home。先安装各 kit 的开发依赖。修改 kit 或共享源码后，重新执行 `pnpm run prepare:local-kits`；宿主源码仍由正常的开发 watcher 跟踪。生成的 profile 在多次运行间保留配置与禁用状态，包括默认禁用的任务池。正式归档和 bundle 清单保持固定版本。[文档库](../haiercash/builtin-plugins/hi-buddy-doclib-kit/README.zh.md) 在本仓库维护，有独立的客户端构建命令。
+
 ### 环境变量
 
 真实的 DeepSeek 适配器和需要密钥的 agent 演示从环境变量或仓库根目录一个被 gitignore 的 `.env` 文件读取凭证：

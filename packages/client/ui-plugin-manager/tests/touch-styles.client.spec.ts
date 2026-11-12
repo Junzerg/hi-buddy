@@ -60,8 +60,10 @@ function ruleBody(selector: string): string {
 
 describe('plugin page touch rules', () => {
   it('uses the compact page inset below 768px', () => {
-    const narrow = /@media \(max-width: 767px\) \{([\s\S]*?)\n\}/.exec(rules)?.[1]
-    expect(narrow).toContain('--plugin-page-inset: 20px')
+    const theme = readFileSync(new URL('../../ui-theme/src/styles/base.css', import.meta.url), 'utf8')
+    const narrow = /@media \(max-width: 767px\) \{([\s\S]*?)\n\}/.exec(theme)?.[1]
+    expect(narrow).toContain('--dsh-page-padding-inline: 20px')
+    expect(ruleBody('.page')).toContain('--plugin-page-inset: var(--dsh-page-padding-inline)')
   })
 
   it('fences every hover affordance behind a hover-capable pointer', () => {

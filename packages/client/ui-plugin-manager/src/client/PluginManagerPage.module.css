@@ -7,9 +7,9 @@
    for a focused field under 16px and leaves the page pannable afterwards. */
 
 .page {
-  --plugin-page-inset: clamp(24px, 4vw, 48px);
+  --plugin-page-inset: var(--dsh-page-padding-inline);
   /* Every head row's top inset; the collapsed page bar narrows it. */
-  --plugin-page-top-inset: 28px;
+  --plugin-page-top-inset: var(--dsh-page-heading-padding-top);
   --bundle-progress-size: 14px;
   --bundle-toggle-gap: 8px;
 
@@ -25,16 +25,10 @@
   color: var(--dsw-alias-label-primary);
 }
 
-@media (max-width: 767px) {
-  .page {
-    --plugin-page-inset: 20px;
-  }
-}
-
 .page > * {
   flex: none;
   width: 100%;
-  max-width: 960px;
+  max-width: var(--dsh-page-content-max-width);
 }
 
 .pageBody > .pageBar {
@@ -53,7 +47,7 @@
 .pageBar > .pageHead {
   align-self: center;
   width: 100%;
-  max-width: 960px;
+  max-width: var(--dsh-page-content-max-width);
 }
 
 /* Spans the page's full width, so its scrollbar sits at the page edge, and re-centres the column inside. */
@@ -68,7 +62,7 @@
   align-items: center;
   gap: 32px;
   box-sizing: border-box;
-  padding: 0 var(--plugin-page-inset) 48px;
+  padding: 0 var(--plugin-page-inset) var(--dsh-page-padding-bottom);
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
@@ -83,7 +77,7 @@
 .pageBody > * {
   flex: none;
   width: 100%;
-  max-width: 960px;
+  max-width: var(--dsh-page-content-max-width);
 }
 
 /* Endpoint copies never enter the scroll layout or the accessibility tree. */
@@ -179,9 +173,9 @@
 
 .pageTitle {
   margin: 0;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 28px;
+  font-size: var(--dsh-page-title-font-size);
+  font-weight: var(--dsh-page-title-font-weight);
+  line-height: var(--dsh-page-title-line-height);
 }
 
 .pageIntro {

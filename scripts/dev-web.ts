@@ -19,7 +19,11 @@
  * MUST NOT run beside `pnpm run build` or `build:artifacts`: they write the same `lib/` and
  * `apps/web/dist/` trees. The build stage here finishes before any watcher starts.
  *
- * Usage: `pnpm run dev:web [--haier] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]`.
+ * Usage: `pnpm run dev:web [--haier] [--kits] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]`.
+ * `--kits` builds the sibling kit packages once and links them into an isolated Web
+ * profile; rerun `prepare:local-kits` after kit/shared edits. Host watchers keep their
+ * normal scope. The local kit profile uses its own DSH_HOME and keeps release pins untouched.
+ *
  * `--skip-build` requires the artifact tree from a prior `build` or `build:artifacts`: every
  * watcher is incremental over the previous stage's output and none of them
  * bootstraps a missing tree. `--no-serve` keeps only the watchers, for a
@@ -50,6 +54,7 @@ import {
   repositoryClientBuildEnvironment,
 } from './client-build-environment.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
+import { prepareLocalKits } from './prepare-local-kits.ts'
 import { configureHaierDevelopment } from '../haiercash/haier-simulator/profile.ts'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
@@ -83,6 +88,8 @@ export function devWebBuildEnvironment(
 export interface DevWebArguments {
   /** Use the isolated development profile connected to the local Haier simulator. */
   readonly haier: boolean
+  /** Build sibling kit sources and link them into an isolated development profile. */
+  readonly kits?: true
   /** Skip the `pnpm run build:artifacts` that otherwise precedes the watchers. */
   readonly skipBuild: boolean
   /** Start `dsh web`; false keeps only the rebuild watchers beside an already running server. */
@@ -97,7 +104,7 @@ export interface DevWebArguments {
 const DEFAULT_POLL_INTERVAL = 500
 
 /**
- * Parse the script's command line. `--haier`, `--skip-build`, `--no-serve`, and `--poll[=ms]`
+ * Parse the script's command line. `--haier`, `--kits`, `--skip-build`, `--no-serve`, and `--poll[=ms]`
  * belong to this script; a bare `--` is dropped; every other token is forwarded
  * to `dsh web`.
  * @param argv - arguments after the script path.
@@ -107,6 +114,7 @@ const DEFAULT_POLL_INTERVAL = 500
  */
 export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
   let haier = false
+  let kits = false
   let skipBuild = false
   let serve = true
   let pollInterval: number | undefined
@@ -114,7 +122,8 @@ export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
   for (const arg of argv) {
     // `pnpm run` forwards a `--` separator verbatim; it carries no meaning here.
     if (arg === '--') continue
-    if (arg === '--haier') haier = true
+    if (arg === '--kits') kits = true
+    else if (arg === '--haier') haier = true
     else if (arg === '--skip-build') skipBuild = true
     else if (arg === '--no-serve') serve = false
     else if (arg === '--poll' || arg.startsWith('--poll=')) {
@@ -122,11 +131,12 @@ export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
       if (!Number.isInteger(pollInterval) || pollInterval <= 0) throw new Error(`dev-web: invalid --poll interval "${arg}"`)
     } else appArgs.push(arg)
   }
+  if (kits && !serve) throw new Error('--kits requires a served Web Host; omit --no-serve')
   if (haier && !serve) throw new Error('--haier requires a served Web Host; omit --no-serve')
   if (!serve && appArgs.length > 0) {
     throw new Error(`dev-web: --no-serve leaves no dsh web process for ${appArgs[0] ?? ''}`)
   }
-  return { haier, skipBuild, serve, pollInterval, appArgs }
+  return { haier, ...(kits ? { kits: true } : {}), skipBuild, serve, pollInterval, appArgs }
 }
 
 /**
@@ -348,18 +358,20 @@ if (isMain) {
     }
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
-    console.error('dev-web: usage: pnpm run dev:web [--haier] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]')
+    console.error('dev-web: usage: pnpm run dev:web [--haier] [--kits] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]')
     process.exit(1)
   }
 
   // Shutdown is requested once, by a terminal signal or by a stage exiting on
   // its own; `signal` stays unset for SIGINT because the terminal's process
   // group already delivered it to every stage.
+  const startup = new AbortController()
   const shutdown = Promise.withResolvers<number>()
   const requested: { code?: number; signal?: NodeJS.Signals } = {}
   const shutdownRequested = (): boolean => requested.code !== undefined
   const requestShutdown = (code: number, signal: NodeJS.Signals | undefined): void => {
     if (shutdownRequested()) return
+    startup.abort()
     requested.code = code
     if (signal !== undefined) requested.signal = signal
     shutdown.resolve(code)
@@ -380,6 +392,18 @@ if (isMain) {
     console.error(`dev-web: pnpm run build:artifacts exited (code ${String(buildExit)})`)
     process.exit(1)
   }
+
+  if (options.kits) {
+    try {
+      process.env.DSH_HOME = await prepareLocalKits({ repositoryRoot: repoRoot, signal: startup.signal })
+      console.log(`dev-web: local kits use isolated DSH_HOME=${process.env.DSH_HOME}`)
+    } catch (error) {
+      if (shutdownRequested()) process.exit(await shutdown.promise)
+      console.error(error instanceof Error ? error.message : error)
+      process.exit(1)
+    }
+  }
+  if (shutdownRequested()) process.exit(await shutdown.promise)
 
   const buildEnvironment = devWebBuildEnvironment(repoRoot, process.env)
   for (const name of Object.keys(process.env)) {

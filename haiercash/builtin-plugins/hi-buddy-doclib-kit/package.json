@@ -25,6 +25,7 @@
     "http/*.js"
   ],
   "scripts": {
+    "build:client": "pnpm --dir ../../.. run build:doclib-client",
     "eval": "node scripts/eval.mjs",
     "check": "node scripts/check-incremental.mjs",
     "golden:record": "node scripts/golden.mjs --record",

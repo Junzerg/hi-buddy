@@ -36,17 +36,11 @@
 
 /* Matches the Plugins page's 960px column and responsive inline insets. */
 .pageContent {
-  max-width: 960px;
+  max-width: var(--dsh-page-content-max-width);
   margin: 0 auto;
   /* Inline and bottom insets only: the 28px top inset belongs to the heading
      row, which starts at the window's top edge. */
-  padding: 0 clamp(24px, 4vw, 48px) 48px;
-}
-
-@media (max-width: 767px) {
-  .pageContent {
-    padding-inline: 20px;
-  }
+  padding: 0 var(--dsh-page-padding-inline) var(--dsh-page-padding-bottom);
 }
 
 /* Page title and creation actions. */
@@ -55,31 +49,27 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--dsh-page-heading-gap);
   /* The column's former top inset: the row starts at the window's top edge, so
      the whole strip above the heading belongs to the row's own box. */
-  padding-top: 28px;
+  padding-top: var(--dsh-page-heading-padding-top);
   margin-bottom: 24px;
 }
 
 /* macOS hiddenInset titlebar: the Plugins page's head carries the frame's top
    clearance above its own 28px inset, so both pages keep the same 76px total. */
 :global([data-platform='darwin']) .pageHeading {
-  padding-top: calc(28px + var(--dsh-frame-top-clearance, 0px));
+  padding-top: calc(var(--dsh-page-heading-padding-top) + var(--dsh-frame-top-clearance, 0px));
 }
 
-/* The first-level page title, on the Plugins page's own `pageTitle` step
-   (20px/28px/500): this page and that page are sibling first-level entries, so
-   their titles share one size. The theme carries no size token for this step,
-   which is why every first-level page states the same literal. */
 .pageHeading h1 {
   flex: 0 1 auto;
   min-width: 0;
   max-width: 100%;
   margin: 0;
-  font-size: 20px;
-  line-height: 28px;
-  font-weight: 500;
+  font-size: var(--dsh-page-title-font-size);
+  line-height: var(--dsh-page-title-line-height);
+  font-weight: var(--dsh-page-title-font-weight);
 }
 
 /* The Plugins toolbar: the heading's trailing group on its 16px gap. */
