@@ -2,13 +2,13 @@
   "version": "0.2.2-rc.1.20261111.1",
   "sourceCommit": "d95f4df71c6f4177bacd8d3e1cfd0d320b976038",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "Claude kit alpha.15 launches the bundled native executable from app.asar.unpacked. The macOS package also unpacks the extensionless executable. Platform installer and upgrade checks are pending.",
+  "status": "published",
+  "notes": "Claude kit alpha.15 launches the bundled native executable from app.asar.unpacked. The macOS package also unpacks the extensionless executable. Platform installer and upgrade checks are pending. Published on the intranet on 2026-11-11; the shipped Windows artifact hash is recorded in targets. Archive sha256 was c78dc4633380d879678f5f54305b2869ebe1a9f647653af60862af1fd1895ead.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
-      "installer": null,
-      "sha256": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261111.1-win-x64-unsigned.exe",
+      "sha256": "0B4F55FBD3120F62D03E12AB7301CB6CE2E68BE016C294B005D4BBD86E1E5AC0",
       "installationVerified": false
     },
     "mac-arm64": {
@@ -46,5 +46,5 @@
     "docs": "passed: 43 source doc-sync gates",
     "targetNetwork": "pending: platform install, upgrade without a separate CLI, and Claude conversation through the company gateway"
   },
-  "published": false
+  "published": true
 }
