@@ -2,13 +2,13 @@
   "version": "0.2.2-rc.1.20261111.2",
   "sourceCommit": "7f128c78f522c3107c460ea8635a7fab25ed59cb",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "Desktop defaults to the HaierCash intranet tools gateway for web search and fetch. The standalone Web profile retains its public search default.",
+  "status": "published",
+  "notes": "Desktop defaults to the HaierCash intranet tools gateway for web search and fetch. The standalone Web profile retains its public search default. Published on the intranet on 2026-11-11; the shipped Windows artifact and archive hashes are recorded in targets and notes. Archive sha256 was 009589e497af6843923eeb5f8b09f2667c85cdc04593fb312513bb4ab8f593a9. Release tag pushed on 7f128c78f5.",
   "targets": {
     "win-x64": {
       "signing": "unsigned",
-      "installer": null,
-      "sha256": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261111.2-win-x64-unsigned.exe",
+      "sha256": "A83A4B3E9A0022FB96C13380E2734E28B7B029F546997F9BA5D698338542AC1D",
       "installationVerified": false
     },
     "mac-arm64": {
@@ -43,5 +43,5 @@
     "webBrowserReplay": "known unrelated failures: existing session copy, accessibility snapshot, and source list marker spacing",
     "targetNetwork": "pending: Windows and Mac installation and upgrade, company login, search and fetch through the intranet tools gateway, bundled Claude, Office preview, and restart persistence"
   },
-  "published": false
+  "published": true
 }
