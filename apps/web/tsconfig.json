@@ -156,6 +156,7 @@
     "tests/bonus-notice.e2e.ts",
     "tests/account-login.e2e.ts",
     "tests/company-profile.e2e.ts",
+    "tests/company-models.e2e.ts",
     "tests/onboarding-usable-provider.e2e.ts",
     "tests/remote-settings.e2e.ts",
     "tests/public-mount.e2e.ts",

@@ -11,6 +11,9 @@ import { credentialKey, credentialRef } from '@deepseek-ai/dsh-credentials'
 import { PlatformAccount } from '../src/index.ts'
 import { companyAccountProfile, companyAuthorizeUrl, exchangeCompanyIdentity, exchangeCompanyLogin, COMPANY_KEY_REF, COMPANY_KEY_URL } from '../src/company.ts'
 
+const models = [{ modelName: 'first', contextLength: 128000, isMultimodal: true },
+  { modelName: 'second', isMultimodal: false }]
+
 const cleanups: Array<() => Promise<unknown>> = []
 afterEach(async () => {
   vi.unstubAllGlobals()
@@ -18,11 +21,10 @@ afterEach(async () => {
   while (cleanups.length) await cleanups.pop()?.()
 })
 
-it.each(['model-discovery', 'model-settings', 'default-model', 'credential-save', 'rollback'] as const)
+it.each(['model-settings', 'default-model', 'credential-save', 'rollback'] as const)
 ('reports the failed IAM activation stage without exposing exception secrets: %s', async (stage) => {
   const f = await keyFixture()
   const failure = new Error('private-key fixture-code private-response')
-  if (stage === 'model-discovery') f.discover.mockRejectedValueOnce(failure)
   if (stage === 'model-settings') f.update.mockRejectedValueOnce(failure)
   if (stage === 'default-model') f.save.mockRejectedValueOnce(failure)
   if (stage === 'credential-save') vi.spyOn(f.ctx.credentials, 'set').mockRejectedValueOnce(failure)
@@ -31,7 +33,7 @@ it.each(['model-discovery', 'model-settings', 'default-model', 'credential-save'
   const send = globalThis.fetch
   vi.stubGlobal('fetch', (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
     if (input === f.accountConfig.companyLoginEndpoint) {
-      return Promise.resolve(Response.json({ apiKey: 'private-key', account: 'employee', email: 'employee@example.test' }))
+      return Promise.resolve(Response.json({ apiKey: 'private-key', account: 'employee', email: 'employee@example.test', models }))
     }
     return send(input, init)
   })
@@ -69,11 +71,11 @@ it('constructs authorization from the original callback origin without exposing 
 })
 
 it('submits only the authorization code and registered callback to the versions server', async () => {
-  const send = vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test' }))
+  const send = vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test', models }))
   vi.stubGlobal('fetch', send)
   await expect(exchangeCompanyLogin('http://172.28.236.3:18765/company-login/exchange',
     'http://127.0.0.1:18743/oauth/callback', 'fixture-code', new AbortController().signal))
-    .resolves.toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test' })
+    .resolves.toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test', models })
   expect(send.mock.calls[0]?.[1]?.body).toBe(JSON.stringify({ code: 'fixture-code', redirectUri: 'http://127.0.0.1:18743/oauth/callback' }))
 })
 
@@ -82,11 +84,11 @@ it('requests the verified email account in lingxi-office and accepts its system-
     .mockResolvedValueOnce(Response.json({ access_token: 'fixture-token' }))
     .mockResolvedValueOnce(Response.json({ email: 'Employee.Name@example.test', sub: '18000001' }))
     .mockResolvedValueOnce(Response.json({ success: true, status: { code: 20000, description: 'OK' }, msg: null, extraInfo: {},
-      data: { username: 'lingxi-office_Employee.Name', apiKey: 'fixture-key', newlyCreated: false, authorizedModels: ['fixture-model'] } }))
+      data: { username: 'lingxi-office_Employee.Name', apiKey: 'fixture-key', newlyCreated: false, authorizedModels: ['first', 'second'], models } }))
   vi.stubGlobal('fetch', send)
   expect(await exchangeCompanyIdentity('https://iam-stg.haierxj.com', 'http://127.0.0.1:18743/oauth/callback',
     'fixture-code', 'fixture-client-secret', 'fixture-auth-secret', new AbortController().signal))
-    .toEqual({ apiKey: 'fixture-key', account: 'Employee.Name', email: 'Employee.Name@example.test' })
+    .toEqual({ apiKey: 'fixture-key', account: 'Employee.Name', email: 'Employee.Name@example.test', models })
   expect(send.mock.calls[2]?.[0]).toBe(COMPANY_KEY_URL)
   expect(new Headers(send.mock.calls[2]?.[1]?.headers).get('X-Ploto-Direct-Target')).toBe('ploto-llm-admin-app')
   expect(new Headers(send.mock.calls[0]?.[1]?.headers).has('X-Ploto-Direct-Target')).toBe(false)
@@ -94,6 +96,25 @@ it('requests the verified email account in lingxi-office and accepts its system-
   const body = send.mock.calls[2]?.[1]?.body
   if (typeof body !== 'string') throw new Error('expected a JSON request body')
   expect(JSON.parse(body)).toEqual({ account: 'Employee.Name', authSecret: 'fixture-auth-secret', system: 'lingxi-office' })
+})
+
+it.each([
+  undefined,
+  [{ modelName: 'first', isMultimodal: 'true' }],
+  [{ modelName: '', isMultimodal: true }],
+  [{ modelName: 'first', isMultimodal: true, contextLength: -1 }],
+  [{ modelName: 'first', isMultimodal: true }, { modelName: 'first', isMultimodal: false }],
+  [{ modelName: 'unauthorized', isMultimodal: true }],
+])('rejects malformed or unauthorized gateway model permissions: %j', async (permissions) => {
+  vi.stubGlobal('fetch', vi.fn<typeof fetch>()
+    .mockResolvedValueOnce(Response.json({ access_token: 'token' }))
+    .mockResolvedValueOnce(Response.json({ email: 'employee@example.test' }))
+    .mockResolvedValueOnce(Response.json({ success: true, status: { code: 20000 }, data: {
+      username: 'lingxi-office_employee', apiKey: 'fixture-key', authorizedModels: ['first'], models: permissions,
+    } })))
+  vi.spyOn(console, 'error').mockImplementation(() => {})
+  await expect(exchangeCompanyIdentity('https://iam-stg.haierxj.com', 'http://127.0.0.1:18743/oauth/callback',
+    'code', 'client', 'auth', new AbortController().signal)).rejects.toMatchObject({ code: 'protocol' })
 })
 
 it.each([
@@ -115,12 +136,12 @@ it('retains the email-account fallback for a login server without display fields
 
 it('accepts only the three company display fields from the login server', async () => {
   vi.stubGlobal('fetch', vi.fn<typeof fetch>().mockResolvedValueOnce(Response.json({
-    apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', name: '张宁',
+    apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', models, name: '张宁',
     orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/', telephone: 'private-phone', card: 'private-card',
   })))
   expect(await exchangeCompanyLogin('http://127.0.0.1/company-login/exchange', 'http://127.0.0.1:18743/oauth/callback',
     'code', new AbortController().signal)).toEqual({
-    apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', name: '张宁',
+    apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', models, name: '张宁',
     orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/',
   })
 })
@@ -225,7 +246,7 @@ it('restores company display data after provider restart and clears it before th
   vi.stubGlobal('fetch', (input: Parameters<typeof fetch>[0], init?: RequestInit) => {
     const url = input instanceof Request ? input.url : typeof input === 'string' ? input : input.href
     if (url === 'http://172.28.236.3:18765/company-login/exchange') {
-      return Promise.resolve(Response.json({ apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test',
+      return Promise.resolve(Response.json({ apiKey: 'fixture-key', account: 'employee', email: 'employee@example.test', models,
         name: '张宁', orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/' }))
     }
     return send(input, init)
@@ -267,5 +288,10 @@ it('restores company display data after provider restart and clears it before th
     expect(await account.getProfile(client)).toBeNull()
     expect(await f.ctx.credentials.resolve(credentialRef(COMPANY_KEY_REF))).toBeUndefined()
   }
-  expect(f.discover).toHaveBeenCalledTimes(2)
+  expect(f.discover).not.toHaveBeenCalled()
+  expect(f.update).toHaveBeenCalledWith('llm-pi-ai', { providers: { 'company-gateway': { models: [
+    { id: 'first', name: 'first', contextWindow: 128000, input: ['text', 'image'] },
+    { id: 'second', name: 'second', input: ['text'] },
+  ] } } })
+  expect(f.save).toHaveBeenCalledWith({ provider: 'company-gateway', model: 'second' })
 })

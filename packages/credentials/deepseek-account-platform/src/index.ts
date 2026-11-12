@@ -9,10 +9,11 @@ import Schema from '@deepseek-ai/schemastery'
 import { z } from 'zod'
 import { DeepSeekAccount, installAccountTaskCancellation, mergePlatformCookies, platformClientHeaders, platformWireLocale, type AccountBonusBatch, type AccountBonusOrderId, type AccountClientMetadata, type AccountDetails, type AccountUserId, type AccountView, type PlatformSession, type SignInAttemptId, type SignInAttemptView } from '@deepseek-ai/dsh-deepseek-account'
 import { credentialKey, credentialRef } from '@deepseek-ai/dsh-credentials'
-import type {} from '@deepseek-ai/dsh-llm'
+import type { LlmDiscoveredModel } from '@deepseek-ai/dsh-llm'
 import type {} from '@deepseek-ai/dsh-settings'
 import type {} from '@deepseek-ai/dsh-agent-default-model'
 import { COMPANY_PROVIDER, COMPANY_KEY_REF, companyAccountProfile, companyAuthorizeUrl, exchangeCompanyLogin } from './company.ts'
+import type { CompanyModel } from './company.ts'
 import type { AuthorizationSession } from '@deepseek-ai/dsh-authorization'
 import { profile, readAccountDetail, readUnnotifiedBonuses, sendBonusNotified } from './details.ts'
 import { revokeAccount, type LogoutRetryPolicy } from './logout.ts'
@@ -518,7 +519,8 @@ export class PlatformAccount extends DeepSeekAccount {
     await this.ctx.credentials.modifyRecord(KEY, () => Promise.resolve({
       kind: 'grant', payload: { version: 1, token: apiKey, issuer: this.origin },
     }))
-  }, onStage?: (stage: NonNullable<SignInAttemptView['errorStage']>) => void): Promise<void> {
+  }, onStage?: (stage: NonNullable<SignInAttemptView['errorStage']>) => void,
+  companyModels?: readonly CompanyModel[]): Promise<void> {
     const completion = this.keyCompletion.then(async () => {
       onStage?.('configuration')
       if (this.closed) throw new PlatformAuthError('protocol')
@@ -532,7 +534,13 @@ export class PlatformAccount extends DeepSeekAccount {
       const provider = value?.providers?.[COMPANY_PROVIDER]
       if ((provider?.api !== 'anthropic-messages' && provider?.api !== 'openai-completions') || !provider.baseURL || provider.apiKeyEnv !== COMPANY_KEY_REF) throw new PlatformAuthError('protocol')
       onStage?.('model-discovery')
-      const models = await llm.discoverModels('llm-pi-ai', { api: provider.api, baseURL: provider.baseURL, apiKey }, AbortSignal.timeout(this.requestTimeout))
+      const models: readonly LlmDiscoveredModel[] = companyModels === undefined
+        ? await llm.discoverModels('llm-pi-ai', { api: provider.api, baseURL: provider.baseURL, apiKey }, AbortSignal.timeout(this.requestTimeout))
+        : companyModels.map(item => ({
+          id: item.modelName, name: item.modelName,
+          ...item.contextLength === undefined ? {} : { contextWindow: item.contextLength },
+          inputModalities: item.isMultimodal ? ['text', 'image'] as const : ['text'] as const,
+        }))
       const first = models[0]
       if (first === undefined) throw new PlatformAuthError('protocol')
       onStage?.('model-selection')
@@ -546,6 +554,7 @@ export class PlatformAccount extends DeepSeekAccount {
           id: item.id, name: item.name ?? item.id,
           ...item.contextWindow === undefined ? {} : { contextWindow: item.contextWindow },
           ...item.maxTokens === undefined ? {} : { maxTokens: item.maxTokens },
+          ...item.inputModalities === undefined ? {} : { input: [...item.inputModalities] },
         })) } } })
         onStage?.('default-model')
         await defaults.saveSelection({ provider: COMPANY_PROVIDER, model: model.id })
@@ -702,7 +711,7 @@ export class PlatformAccount extends DeepSeekAccount {
         const companyProfile = companyAccountProfile(identity)
         await this.queueCompanyKey(identity.apiKey, () => session.commit({
           kind: 'grant', payload: { version: 1, token: identity.apiKey, issuer: this.origin, companyProfile },
-        }), (stage) => { attempt.errorStage = stage })
+        }), (stage) => { attempt.errorStage = stage }, identity.models)
         attempt.errorStage = undefined
         attempt.initialProfile = { token: identity.apiKey, value: { status: 'ready', value: companyProfile } }
         this.cacheProfile(identity.apiKey, { status: 'ready', value: companyProfile })

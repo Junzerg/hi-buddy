@@ -33,12 +33,13 @@ it.each([undefined, 'http://127.0.0.1:3080/oauth/callback'])
     .mockResolvedValueOnce(Response.json({ ret: 0, email: 'employee@example.test', sub: '18000001', name: '张宁',
       orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/', telephone: 'private-phone', card: 'private-card' }))
     .mockResolvedValueOnce(Response.json({ success: true, status: { code: 20000 }, msg: null, extraInfo: {},
-      data: { username: 'lingxi-office_employee', apiKey: 'personal-key', newlyCreated: false, authorizedModels: ['fixture-model'] } }))
+      data: { username: 'lingxi-office_employee', apiKey: 'personal-key', newlyCreated: false, authorizedModels: ['fixture-model'],
+        models: [{ modelName: 'fixture-model', isMultimodal: true, contextLength: null, apiKey: 'never-forward' }] } }))
   vi.stubGlobal('fetch', upstream)
   const response = await send(await endpoint(callbackUri), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(request) })
   expect(response.status).toBe(200)
   expect(response.headers.get('cache-control')).toBe('no-store')
-  expect(await response.json()).toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test',
+  expect(await response.json()).toEqual({ apiKey: 'personal-key', account: 'employee', email: 'employee@example.test', models: [{ modelName: 'fixture-model', isMultimodal: true }],
     name: '张宁', orgName: 'AI工程', orgPathName: '/示例公司/金融科技中心/架构平台/' })
   const tokenBody = upstream.mock.calls[0]?.[1]?.body
   expect(upstream.mock.calls[0]?.[0]).toEqual(new URL('http://iam-stg.haiercash.work/sso/oauth2/token'))

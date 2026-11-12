@@ -152,6 +152,23 @@ describe('ModelSelect label slot', () => {
 })
 
 describe('ModelSelect catalog badges', () => {
+  it('labels image-capable models without labeling text-only models or replacing provider badges', () => {
+    const directory = createSnapshotStore(state({
+      groups: [{ id: 'company-gateway', name: 'HaierCash', models: [
+        { id: 'vision', name: 'Vision', inputModalities: ['text', 'image'], badge: { text: 'New', tone: 'info' } },
+        { id: 'text', name: 'Text', inputModalities: ['text'] },
+        { id: 'unknown', name: 'Unknown' },
+      ] }], current: { provider: 'company-gateway', model: 'vision' },
+    }))
+    render(<ModelSelect renderSlot={renderLabel} locked={false} available directory={directory}
+      load={vi.fn()} resolveText={resolveText} select={vi.fn()} t={t} />)
+    const trigger = screen.getByRole('button', { name: '选择模型，当前 Vision' })
+    expect(trigger.textContent).toBe('Vision New 多模态')
+    fireEvent.click(trigger)
+    expect(screen.getAllByRole('menuitemradio').map(row => row.textContent))
+      .toEqual(['Vision New 多模态', 'Text', 'Unknown'])
+  })
+
   const BADGE = { text: { en: 'New', zh: '新' }, tone: 'info' } as const
   const badged = () => state({
     current: { provider: 'deepseek-official', model: 'deepseek-flash' },

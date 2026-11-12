@@ -34,13 +34,13 @@ getPlatformSession 仅在已存授权的 issuer 与 platformOrigin 一致时导�
 
 设置 `companyLogin: true` 后，本 provider 复用现有授权尝试、回调注册、取消、订阅和凭证授权记录。内置配置连接 IAM STG（`https://iam-stg.haierxj.com`，客户端 `APP176`），Desktop 回调为 `http://127.0.0.1:18743/oauth/callback`。授权码换取 token 后验证 userInfo；网关 account 取已验证邮箱中 @ 前的部分，保留大小写。取 Key 请求包含 system `lingxi-office` 和直达路由请求头；响应 username 必须等于 `lingxi-office_` 加 account。邮箱缺失或格式异常时登录失败。IAM access token 不持久化。公司模式不提供 DeepSeek 余额、奖励或内嵌 Platform 会话。
 
-两个应用密钥只由管理员在 versions 服务器配置。客户端将原回调校验过的授权码提交到 `companyLoginEndpoint`，服务器完成 IAM token、userInfo 和本人网关 Key 获取，只返回个人 Key 与已验证的账号信息。客户端不读取或保存 `COMPANY_IAM_CLIENT_SECRET`、`COMPANY_GATEWAY_AUTH_SECRET`，普通 Windows 用户没有配置步骤。部署见 [versions 登录接口](../../../apps/desktop/packaging/README.zh.md#company-login)。
+两个应用密钥只由管理员在 versions 服务器配置。客户端将原回调校验过的授权码提交到 `companyLoginEndpoint`，服务器完成 IAM token、userInfo 和本人网关 Key 获取，返回个人 Key、已验证的账号信息和授权模型资料。客户端不读取或保存 `COMPANY_IAM_CLIENT_SECRET`、`COMPANY_GATEWAY_AUTH_SECRET`，普通 Windows 用户没有配置步骤。部署见 [versions 登录接口](../../../apps/desktop/packaging/README.zh.md#company-login)。
 
-公司登录只在现有 Key、account 与邮箱之外转发可选的 IAM 展示字段 `name`、`orgName`、`orgPathName`。资料优先使用真实姓名，缺失时回退到邮箱账号。IAM 组织路径是带首尾斜杠的上级组织列表：展示部门时去掉公司根节点，再接上当前 `orgName`，用 ` / ` 连接。安全资料作为可选的 `companyProfile` 随同一份本地授权记录提交，重启后恢复，退出时随授权一起删除。旧授权仍可读取，但需再次 IAM 登录才能取得新资料；旧登录服务仍可使用账号名兜底。手机号、身份证号等其他 IAM 属性不转发、不保存。
+公司登录只在现有 Key、account 与邮箱之外转发可选的 IAM 展示字段 `name`、`orgName`、`orgPathName`。资料优先使用真实姓名，缺失时回退到邮箱账号。IAM 组织路径是带首尾斜杠的上级组织列表：展示部门时去掉公司根节点，再接上当前 `orgName`，用 ` / ` 连接。安全资料作为可选的 `companyProfile` 随同一份本地授权记录提交，重启后恢复，退出时随授权一起删除。旧授权仍可读取，但需再次 IAM 登录才能取得新资料；展示字段缺失时仍可使用账号名兜底。手机号、身份证号等其他 IAM 属性不转发、不保存。
 
 公司账号快照在已保存授权含有经过验证的 IAM 资料时提供 `authenticationMethod: iam`，手工公司授权则为 `api-key`。重启后保留这一区别。Desktop 只接受 IAM 授权，手工填写 provider Key 不能解锁工作区。
 
-`completeApiKeySignIn` 与 IAM 完成流程在已注册的 `company-gateway` provider（`anthropic-messages`、`http://ai-gateway.haierxj.cn`）发现模型，保留仍可用的公司默认模型或选择首个模型，并在激活成功后保存 Key 和账号授权。空模型目录会失败，激活失败会清除已同步的访问配置。退出等待已开始的同步完成，无论 Key 是否改变都删除 `COMPANY_GATEWAY_API_KEY`，清空公司模型和公司默认模型，再删除授权并发布已退出状态。清理失败会向调用方报错，可再次重试。启动时删除没有账号授权的遗留公司 Key。内置连接列出模型和发起推理均须有效登录授权，已存储或环境中的 Key 无法授权未登录请求。provider 连接信息保留，供再次登录使用。
+IAM 完成流程直接用 `getOrCreate.data.models` 初始化已注册的 `company-gateway` provider（`anthropic-messages`、`http://ai-gateway.haierxj.cn`），不请求 `/models`。交换服务转发已授权的 `modelName`、存在时为正整数的 `contextLength` 和布尔值 `isMultimodal`；true 声明文本与图片输入，false 只声明文本。模型资料缺失或格式错误时登录失败；须先更新交换服务，再更新客户端。手动 `completeApiKeySignIn` 保留接口模型发现。两条路径均保留仍可用的公司默认模型或选择首个模型，并在激活成功后保存 Key 和账号授权。空模型目录会失败，激活失败会清除已同步的访问配置。退出等待已开始的同步完成，无论 Key 是否改变都删除 `COMPANY_GATEWAY_API_KEY`，清空公司模型和公司默认模型，再删除授权并发布已退出状态。清理失败会向调用方报错，可再次重试。启动时删除没有账号授权的遗留公司 Key。内置连接列出模型和发起推理均须有效登录授权，已存储或环境中的 Key 无法授权未登录请求。provider 连接信息保留，供再次登录使用。
 
 公司激活失败时，`attempt.errorStage` 提供不含凭据的阶段：`configuration`、`model-discovery`、`model-selection`、`credential-reset`、`model-settings`、`default-model`、`credential-save`、`grant-save` 或 `rollback`。账号订阅与登录失败日志提供相同阶段，不包含原始异常或响应正文。`rollback` 失败表示清理未完成。
 

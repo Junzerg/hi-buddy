@@ -421,10 +421,11 @@ export function ModelSelect(
       {renderSlot('conversation.input.model.label', {
         provider, model, placement, selected,
       }, {
-        fallback: model.badge === undefined ? model.name : (
+        fallback: model.badge === undefined && !model.inputModalities?.includes('image') ? model.name : (
           <span className={css.badgedName}>
             <span className={css.badgedNameText}>{model.name}</span>
-            {' '}<Tag className={css.badge} tone={model.badge.tone}>{resolveText(model.badge.text)}</Tag>
+            {model.badge !== undefined && <>{' '}<Tag className={css.badge} tone={model.badge.tone}>{resolveText(model.badge.text)}</Tag></>}
+            {model.inputModalities?.includes('image') && <>{' '}<Tag className={css.badge} tone="info">{t('model.multimodal')}</Tag></>}
           </span>
         ),
       })}

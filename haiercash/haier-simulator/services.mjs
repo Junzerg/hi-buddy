@@ -147,7 +147,7 @@ export function createHaierSimulator({
       const key = previous?.[0] ?? `sk-haier-simulator-${randomBytes(24).toString('hex')}`
       keys.set(key, { user, mode })
       send(res, 200, { success: true, status: { code: 20000 }, msg: null, extraInfo: {},
-        data: { username: `lingxi-office_${user.account}`, apiKey: key, newlyCreated: previous === undefined, authorizedModels: [MODEL] } })
+        data: { username: `lingxi-office_${user.account}`, apiKey: key, newlyCreated: previous === undefined, authorizedModels: [MODEL], models: [{ modelName: MODEL, isMultimodal: false }] } })
       return
     }
     if (url.pathname === '/v1/models' && req.method === 'GET') {

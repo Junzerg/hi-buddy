@@ -2,7 +2,7 @@
 import { PlatformAuthError } from './protocol.ts'
 import type { AccountProfile } from '@deepseek-ai/dsh-deepseek-account/types'
 
-/** Verified display fields returned beside the personal gateway key. */
+/** Verified identity and authorized models returned beside the personal gateway key. */
 interface CompanyIdentity {
   apiKey: string
   account: string
@@ -10,6 +10,31 @@ interface CompanyIdentity {
   name?: string
   orgName?: string
   orgPathName?: string
+  models: CompanyModel[]
+}
+
+/** Authorized model facts returned by the personal gateway-key service. */
+export interface CompanyModel {
+  modelName: string
+  contextLength?: number
+  isMultimodal: boolean
+}
+
+function companyModels(value: unknown): CompanyModel[] {
+  if (!Array.isArray(value)) throw new PlatformAuthError('protocol')
+  const seen = new Set<string>()
+  return value.map((entry: unknown) => {
+    if (!record(entry) || typeof entry.modelName !== 'string' || !entry.modelName.trim()
+      || typeof entry.isMultimodal !== 'boolean' || seen.has(entry.modelName)) throw new PlatformAuthError('protocol')
+    seen.add(entry.modelName)
+    const contextLength = entry.contextLength
+    if (contextLength !== undefined && contextLength !== null
+      && (typeof contextLength !== 'number' || !Number.isSafeInteger(contextLength) || contextLength <= 0)) {
+      throw new PlatformAuthError('protocol')
+    }
+    return { modelName: entry.modelName, isMultimodal: entry.isMultimodal,
+      ...(typeof contextLength === 'number' ? { contextLength } : {}) }
+  })
 }
 
 function displayFields(value: Record<string, unknown>): Pick<CompanyIdentity, 'name' | 'orgName' | 'orgPathName'> {
@@ -26,7 +51,7 @@ function displayFields(value: Record<string, unknown>): Pick<CompanyIdentity, 'n
  * @param identity - verified exchange result; old login servers may omit display fields.
  * @returns name, email and department hierarchy, without IAM identifiers or credentials.
  */
-export function companyAccountProfile(identity: CompanyIdentity): AccountProfile {
+export function companyAccountProfile(identity: Omit<CompanyIdentity, 'models'>): AccountProfile {
   const parents = (identity.orgPathName ?? '').split('/').map(part => part.trim()).filter(Boolean).slice(1)
   const current = identity.orgName?.trim()
   const department = [...parents, ...(current ? [current] : [])].join(' / ')
@@ -51,7 +76,8 @@ function record(value: unknown): value is Record<string, unknown> {
  * @param redirectUri - callback URI used for this authorization.
  * @param code - authorization code from the existing state-validated callback.
  * @param signal - original account attempt cancellation and deadline.
- * @returns the verified profile and personal gateway key, without IAM tokens or application secrets.
+ * @returns the verified profile, authorized model facts and personal gateway key, without IAM tokens or application secrets.
+ * @throws PlatformAuthError when identity or model facts are missing or malformed.
  */
 export async function exchangeCompanyLogin(endpoint: string, redirectUri: string, code: string,
   signal: AbortSignal): Promise<CompanyIdentity> {
@@ -63,7 +89,8 @@ export async function exchangeCompanyLogin(endpoint: string, redirectUri: string
     if (!record(value) || typeof value.email !== 'string' || !/^[^\s@]+@[^\s@]+$/.test(value.email)
       || value.account !== value.email.slice(0, value.email.indexOf('@'))
       || typeof value.apiKey !== 'string' || !/^[\x21-\x7e]+$/.test(value.apiKey)) throw new PlatformAuthError('protocol')
-    return { apiKey: value.apiKey, account: value.account, email: value.email, ...displayFields(value) }
+    return { apiKey: value.apiKey, account: value.account, email: value.email,
+      models: companyModels(value.models), ...displayFields(value) }
   } catch (error) {
     if (error instanceof PlatformAuthError) throw error
     throw new PlatformAuthError(signal.aborted ? 'expired' : 'no-response')
@@ -91,7 +118,7 @@ export function companyAuthorizeUrl(origin: string, redirectUri: string, state: 
  * @param clientSecret - private IAM application secret.
  * @param authSecret - private gateway key-service secret.
  * @param signal - existing attempt deadline and cancellation.
- * @returns personal API key and verified profile facts; never persists IAM tokens.
+ * @returns personal API key, verified profile and authorized model facts; never persists IAM tokens.
  * Failures log only the stage, HTTP status and declared error code on the server.
  */
 export async function exchangeCompanyIdentity(origin: string, redirectUri: string, code: string,
@@ -133,7 +160,14 @@ export async function exchangeCompanyIdentity(origin: string, redirectUri: strin
     if (!record(result) || result.success !== true || !record(result.status) || result.status.code !== 20000
       || !record(result.data) || result.data.username !== `${system}_${account}` || typeof result.data.apiKey !== 'string'
       || !/^[\x21-\x7e]+$/.test(result.data.apiKey)) throw new PlatformAuthError('protocol')
-    return { apiKey: result.data.apiKey, account, email: user.email, ...displayFields(user) }
+    const models = companyModels(result.data.models)
+    const authorizedModels = new Set(Array.isArray(result.data.authorizedModels) ? result.data.authorizedModels : [])
+    if (!Array.isArray(result.data.authorizedModels)
+      || result.data.authorizedModels.some((id: unknown) => typeof id !== 'string')
+      || models.some(model => !authorizedModels.has(model.modelName))) {
+      throw new PlatformAuthError('protocol')
+    }
+    return { apiKey: result.data.apiKey, account, email: user.email, models, ...displayFields(user) }
   } catch (error) {
     // Fetch and JSON errors may contain private parameters; preserve only declared safe failures.
     console.error('[company-login] exchange failed', {

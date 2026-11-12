@@ -1,0 +1,7 @@
+DeepSeek
+DeepSeek-V4-Flash
+DeepSeek-V4-Flash-Vision-Exp
+HaierCash
+volces-deepseek-v4-flash
+多模态
+text-model
