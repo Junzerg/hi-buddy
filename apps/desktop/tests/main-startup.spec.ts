@@ -481,15 +481,21 @@ afterEach(async () => {
 
 describe('desktop main startup', () => {
   it.each([
-    ['win32', true, true], ['win32', false, false], ['darwin', true, false],
-  ] as const)('updates the protocol display name on %s after registration=%s', async (platform, registered, expected) => {
-    vi.stubGlobal('process', { ...process, platform })
+    ['win32', true, true, 'en-US'], ['win32', true, true, 'zh-CN'],
+    ['win32', false, false, 'en-US'], ['darwin', true, false, 'en-US'],
+  ] as const)('updates the protocol display name on %s after registration=%s, repair=%s, locale=%s', async (platform, registered, expected, language) => {
+    vi.stubGlobal('process', { ...process, platform, execPath: 'C:\\Apps\\HiBuddy.exe' })
+    vi.spyOn(harness.app, 'getPreferredSystemLanguages').mockReturnValue([language])
     harness.app.setAsDefaultProtocolClient.mockReturnValue(registered)
     await readyForUpdate()
     expect(harness.app.setAsDefaultProtocolClient).toHaveBeenCalledWith('dsh')
     if (expected) {
+      const name = language === 'zh-CN' ? zh.aboutProduct : en.aboutProduct
       expect(protocolCommand).toHaveBeenCalledWith('reg.exe',
-        ['add', 'HKCU\\Software\\Classes\\dsh', '/ve', '/t', 'REG_SZ', '/d', 'HiBuddy', '/f'],
+        ['add', 'HKCU\\Software\\Classes\\dsh', '/ve', '/t', 'REG_SZ', '/d', name, '/f'],
+        { windowsHide: true }, expect.any(Function))
+      expect(protocolCommand).toHaveBeenCalledWith('reg.exe',
+        ['add', 'HKCU\\Software\\Classes\\Applications\\HiBuddy.exe', '/v', 'FriendlyAppName', '/t', 'REG_SZ', '/d', name, '/f'],
         { windowsHide: true }, expect.any(Function))
       const callback = protocolCommand.mock.calls[0]![3] as (error: Error | null) => void
       callback(null)

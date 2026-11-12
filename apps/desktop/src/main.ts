@@ -5,7 +5,7 @@ import { WINDOWS_TITLEBAR_HEIGHT } from './windows-layout.ts'
 
 import { access, readFile, writeFile } from 'node:fs/promises'
 import { execFile } from 'node:child_process'
-import { join } from 'node:path'
+import { join, win32 } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
   app,
@@ -1338,11 +1338,17 @@ async function main(): Promise<void> {
   if (app.isPackaged || process.env.DSH_DESKTOP_DEV_APP === '1') {
     const registered = app.setAsDefaultProtocolClient('dsh')
     if (registered && process.platform === 'win32') {
-      // Electron writes URL:dsh as the friendly name each time it registers the protocol.
-      execFile('reg.exe', ['add', 'HKCU\\Software\\Classes\\dsh', '/ve', '/t', 'REG_SZ', '/d', 'HiBuddy', '/f'],
-        { windowsHide: true }, (error) => {
-          if (error) console.warn('Unable to update the HiBuddy protocol display name:', error)
-        })
+      // Browsers query the application's FriendlyAppName; the scheme description is their fallback.
+      // Electron replaces the scheme description with URL:dsh during registration.
+      for (const entry of [
+        { key: 'HKCU\\Software\\Classes\\dsh', value: ['/ve'] },
+        { key: `HKCU\\Software\\Classes\\Applications\\${win32.basename(process.execPath)}`, value: ['/v', 'FriendlyAppName'] },
+      ]) {
+        execFile('reg.exe', ['add', entry.key, ...entry.value, '/t', 'REG_SZ', '/d', locale.messages.aboutProduct, '/f'],
+          { windowsHide: true }, (error) => {
+            if (error) console.warn('Unable to update the HiBuddy protocol display name:', error)
+          })
+      }
     }
   }
   app.on('open-url', (event, url) => {
