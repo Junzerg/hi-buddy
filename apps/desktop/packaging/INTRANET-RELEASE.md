@@ -60,6 +60,8 @@ Both platform helpers print the tar.gz path and SHA-256. Give the archive and ch
 <a id="server"></a>
 ## Merge and publish on the server
 
+For a current record with `publication.mode: together`, follow [joint-release coordination](../../../haiercash/haier-upstream-sync/desktop-packaging.md#joint-release): wait for both target acceptances and server prerequisites, verify both archives, retain each incoming catalog before extraction, and merge their combined records into one inherited directory. Test both platforms before one image cutover. The single-archive example below does not authorize a platform-only publication.
+
 Keep the established sequence: inherit directory → extract → build → test → switch. Inspect `server/.env` and the running container image to confirm that `PREVIOUS` is the complete live directory. A Mac directory and image may use `VERSION-mac-arm64` to distinguish a Windows deployment of the same version; this deployment identifier does not change the application version. The server must already have `nginx:alpine` and `node:22-slim`; these commands do not access the public internet.
 
 ```sh

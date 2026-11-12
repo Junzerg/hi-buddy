@@ -1,0 +1,85 @@
+{
+  "version": "0.2.2-rc.1.20261112.1",
+  "sourceCommit": "02b9f663183f703d003637407027c980a1ca3015",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Confirmed coordinated Windows x64 unsigned and Mac arm64 signed/notarized release. Both build from the pinned source, complete fresh installer acceptance, and publish together after the company-login exchange upgrade. No platform artifacts have been built for this version.",
+  "targets": {
+    "win-x64": {
+      "status": "pending",
+      "signing": "unsigned",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: startup, upgrade, IAM login, authorized model list, image capability and prompt, image preview, text conversation, intranet search/fetch, bundled Claude, Office preview, restart persistence",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261112.1-win-x64-unsigned.exe",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261112.1.tar.gz"
+    },
+    "mac-arm64": {
+      "status": "pending",
+      "signing": "signed-notarized",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: startup, upgrade, IAM login, authorized model list, image capability and prompt, image preview, text conversation, intranet search/fetch, bundled Claude, Office preview, restart persistence",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261112.1-mac-arm64.dmg",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261112.1-mac-arm64.tar.gz"
+    }
+  },
+  "plugins": {
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.1",
+      "enabled": true
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.1",
+      "enabled": false
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.0",
+      "enabled": true
+    },
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.15",
+      "enabled": true,
+      "sha256": "e4386d90d8802d333466eec98352286dd570fe8ee636404792c27bed9d90a304"
+    }
+  },
+  "checks": {
+    "source": "passed locally: 138 focused unit tests, 18 simulator tests, company model browser scenario, Host/Client typechecks, Client bundle and Web build; not installer acceptance",
+    "sourceDocs": "passed: 39 doc-sync gates plus the 4 regenerated catalog/history checks",
+    "webBrowserReplay": "known unrelated failures: 3 existing model-badge assertions expect a prefix while source renders a suffix",
+    "jointArchiveMerge": "passed: 3 intranet release tests including real Windows/Mac overlay merge",
+    "targetNetwork": "pending: fresh installation and upgrade acceptance on both platforms"
+  },
+  "serverPrerequisites": {
+    "companyLogin": {
+      "status": "pending",
+      "sourceCommit": "02b9f663183f703d003637407027c980a1ca3015",
+      "requirement": "Deploy the exchange service returning getOrCreate modelName, isMultimodal and optional contextLength before client acceptance; verify both clients re-login and can send images."
+    }
+  },
+  "publication": {
+    "mode": "together",
+    "requiredTargets": [
+      "win-x64",
+      "mac-arm64"
+    ],
+    "status": "pending",
+    "requireBothInstallationsVerified": true,
+    "cutoverVerified": false
+  },
+  "published": false
+}

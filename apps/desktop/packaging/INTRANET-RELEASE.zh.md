@@ -60,6 +60,8 @@ Intel 将两条命令中的 `arm64` 全部替换为 `x64`。本地测试包使�
 <a id="server"></a>
 ## 在服务器合并与发布
 
+当前记录为 `publication.mode: together` 时，遵循[联合发布协作](../../../haiercash/haier-upstream-sync/desktop-packaging.zh.md#joint-release)：等待两端验收及服务端前置条件完成，校验两份归档，在解压前分别保留新目录清单，再将合并后的记录放入同一份从线上继承的目录。测试两端后只切换一次镜像。下面的单归档示例不代表可以仅发布一个平台。
+
 以下延续既有的“继承目录 → 解压 → 构建 → 测试 → 切换”流程。先查看 `server/.env` 和运行容器的镜像，确认 `PREVIOUS` 是当前线上完整目录。Mac 目录及镜像可用 `VERSION-mac-arm64` 区分同版本的 Windows 部署；它是部署目录标识，不改变应用版本。服务器需已有 `nginx:alpine` 与 `node:22-slim` 镜像，命令不访问外网。
 
 ```sh

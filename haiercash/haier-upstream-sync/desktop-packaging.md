@@ -16,6 +16,7 @@ Use this stable runbook after pulling the repository on each packaging machine. 
 - [Windows x64](#windows)
 - [Mac arm64](#mac)
 - [Acceptance and failures](#acceptance)
+- [Coordinate the joint release](#joint-release)
 - [Hand off the next version](#next)
 
 <a id="prepare"></a>
@@ -109,6 +110,19 @@ The DMG is the first-install file. `lingxi-office-release-<version>-mac-arm64.ta
 Read the selected record's `checks` before building; unresolved failures are not passing evidence. After success, report the actual commit, clean-worktree state, version, installer path, byte size, SHA-256, signing/notarization result where applicable, and the `lingxi-office-release-*.tar.gz` path with its SHA-256. Do not claim packaging is complete without that archive. Install on the target system and verify startup, company login, model discovery and conversation, Office document preview (for example a .pptx), configured plugin defaults, and persistence after restart. Existing profiles may retain user settings. A file's existence alone is not installation acceptance.
 
 On failure, stop and retain `apps/desktop/.desktop-build/packaging-runs/` and the failing command's log. Report the first failing stage without secrets; do not delete credentials, bypass validation, or publish partial artifacts. Server merge, image cutover, and rollback still require separate publication authorization before following the server steps in [the intranet release guide](../../apps/desktop/packaging/INTRANET-RELEASE.md).
+
+<a id="joint-release"></a>
+## Coordinate the joint release
+
+Windows and Mac build independently, using the same record's `version` and `sourceCommit`. The release coordinator confirms those values, target signing modes, acceptance requirements, required server changes, and any previous builds still in progress with the user before preparing the handoff. The coordinator commits and pushes the selected record before either machine starts. Both machines report that record's version and source pin before building; a branch HEAD or an installer from another version cannot replace them.
+
+Each builder records `status` under its own `targets` entry: `pending`, `building`, `built`, `verified`, `failed`, or `blocked`. Push `building` before starting; once either target starts, the source pin and signing modes are fixed. Record the installer name, byte size, SHA-256, release archive name and SHA-256, actual build commit and clean-worktree state, signing/notarization evidence where applicable, and installation acceptance under that same target. `built` requires both installer and archive; `verified` additionally requires installation acceptance. A failed or blocked target records its first failing stage and next required action without secrets. No target inherits another target's success.
+
+Before updating results, pull the latest handoff branch and preserve the other platform's fields. Commit only the owned target results; on a concurrent push, incorporate the remote update and reapply only those fields. Do not replace the whole record with a stale local copy, force-push another builder's results, or change the current pointer from a packaging machine. The coordinator owns the shared checks, server prerequisites, pointer, and publication state.
+
+The joint release is ready only when both targets have installer and archive hashes, the same clean source pin, their required signing evidence, and `installationVerified: true`; all required server prerequisites must also be verified. The selected version evidence page owns the exact feature acceptance and server upgrade requirements. Verify them on both installed clients; local source checks do not establish target-network acceptance.
+
+After separate publication authorization, the server operator verifies both archive checksums, inherits the previous live directory once, and merges both platform overlays into one staging release. Preserve each archive's `release-records.json` separately, combine the two arrays, and pass the combined array to `merge-intranet-releases.mjs` with the live catalog as the baseline; sequential extraction must not discard the first platform's record. Preserve historical installers, the Windows update feed and the Mac distribution metadata. Verify both new installers and applicable update feeds in the test container, then switch the versions service once. Keep `published: false` until that joint cutover and live verification succeed; a completed Windows or Mac build alone is not a published release. Follow the [server constraints](../../apps/desktop/packaging/INTRANET.md) and [existing server procedure](../../apps/desktop/packaging/INTRANET-RELEASE.md#server).
 
 <a id="next"></a>
 ## Hand off the next version

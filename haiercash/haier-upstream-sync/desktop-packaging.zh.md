@@ -16,6 +16,7 @@ description: "Windows x64 和 Apple Silicon macOS 从同一版本记录构建当
 - [Windows x64](#windows)
 - [Mac arm64](#mac)
 - [验收与失败处理](#acceptance)
+- [联合发布协作](#joint-release)
 - [交接下一版本](#next)
 
 <a id="prepare"></a>
@@ -109,6 +110,19 @@ DMG 是首次安装使用的文件。`lingxi-office-release-<version>-mac-arm64.
 打包前读取所选记录的 `checks`，不得把未解决的失败当作通过。成功后报告实际提交号、工作区干净状态、版本号、安装文件路径、字节数、SHA-256、适用的签名／公证结果，以及 `lingxi-office-release-*.tar.gz` 路径与 SHA-256。缺少发布归档时不得声称打包完成。在目标系统安装，验证启动、公司登录、模型发现与对话、Office 文档预览（例如 .pptx）、配置的插件默认状态及重启后的数据保留。已有 profile 可以保留用户设置。仅有安装文件不能代表安装验收通过。
 
 失败时停止，保留 `apps/desktop/.desktop-build/packaging-runs/` 和失败命令的日志。报告第一个失败阶段，不暴露秘密；不要删除凭据、绕过验证或发布不完整产物。服务器合并、镜像切换与回滚仍须单独发布授权后，才执行[内网发布指南](../../apps/desktop/packaging/INTRANET-RELEASE.md)中的服务器步骤。
+
+<a id="joint-release"></a>
+## 联合发布协作
+
+Windows 与 Mac 独立构建，使用同一记录中的 `version` 和 `sourceCommit`。交接负责人在准备交接前，一次性向用户确认版本、源码、两端签名模式、验收要求、必要的服务端变更，以及上一版是否仍有构建进行中。负责人在任一机器开始构建前提交并推送所选记录。两端开始前均报告记录中的版本和源码；不得改用分支 HEAD 或其他版本的安装包。
+
+每个平台只在自己的 `targets` 条目中记录 `status`：`pending`、`building`、`built`、`verified`、`failed` 或 `blocked`。开始前先推送 `building`；任一端开始后，源码与签名模式即固定。安装包名称、字节数、SHA-256、发布归档名称与 SHA-256、实际构建提交及工作区干净状态、适用的签名／公证证据和安装验收结果均回填到同一平台条目。`built` 要求安装包和归档齐全；`verified` 还要求安装验收通过。失败或阻塞时记录第一个失败阶段和下一步所需操作，不记录秘密。不得把另一端的成功作为本端成功。
+
+更新结果前拉取交接分支的最新内容，保留另一平台的字段，只提交本平台结果。并发推送时，先合入远端更新，再仅重放本平台字段；不得用旧副本覆盖整份记录、强推覆盖另一端结果，或由打包机器切换当前指针。共用检查、服务端前置条件、当前指针及发布状态由交接负责人维护。
+
+只有两端均有安装包和归档哈希、固定且相同的干净源码、所需签名证据，且 `installationVerified: true`，同时所有必要服务端前置条件均已验证，才可进入联合发布。具体功能验收与服务端升级要求以所选版本的证据页为准，须在两端安装后的客户端验证；本地源码检查不代表目标网络验收通过。
+
+取得单独发布授权后，服务器操作人员校验两份归档哈希，只继承一次线上旧目录，将两个平台的覆盖归档合入同一待发布目录。分别保留两份归档的 `release-records.json`，合并两个数组，再以线上目录清单为基线交给 `merge-intranet-releases.mjs`；不得连续解压后丢失第一个平台的记录。保留历史安装包、Windows 更新 feed 和 Mac 分发元数据，在测试容器中验证两端新安装包及适用的更新 feed，再只切换一次 versions 服务。联合切换和线上验证成功前保持 `published: false`；Windows 或 Mac 单独打包完成不代表已发布。遵循[服务器约束](../../apps/desktop/packaging/INTRANET.md)和[现有服务器流程](../../apps/desktop/packaging/INTRANET-RELEASE.md#server)。
 
 <a id="next"></a>
 ## 交接下一版本

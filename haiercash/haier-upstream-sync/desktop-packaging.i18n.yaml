@@ -12,8 +12,8 @@
   en: 0423b7ea4bf09534
   zh: a76177fea2cc14cb
 /desktop-packaging-handoff/contents:
-  en: ce5f7e6e7c262326
-  zh: f1f42c9f8a2e83ae
+  en: d3aaa5d7c7265486
+  zh: 7859cc069dc3419c
 /desktop-packaging-handoff/prepare-both-machines:
   en: 395501c0c258a0d1
   zh: 83648191adce5c45
@@ -24,8 +24,11 @@
   en: 6b2637302d5fb7b2
   zh: 72c3b8c3c08c8bd6
 /desktop-packaging-handoff/acceptance-and-failures:
-  en: 17ced082f9a0e5cf
-  zh: e6539c2a85388013
+  en: 2af0c3ed13de5a95
+  zh: e8f319c4532bafa1
+/desktop-packaging-handoff/coordinate-the-joint-release:
+  en: 0f688f43103e994d
+  zh: 5443e4148d531b23
 /desktop-packaging-handoff/hand-off-the-next-version:
   en: 07776b537a86c7a8
   zh: b24af465f6521137
