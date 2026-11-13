@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-plugin-doclib",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "type": "module",
   "description": "Two-level local document library for DeepSeek Harness: workspace -> session -> the documents that session uploaded or produced. Exposes doc_search / doc_list / doc_status tools and renders a browsing tree in the Web UI.",

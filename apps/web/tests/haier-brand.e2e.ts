@@ -9,10 +9,13 @@ import { openSettings } from './support.ts'
 
 it('loads local Haier artwork, responds to home interactions, and respects reduced motion and the dark palette', async () => {
   const kitRoot = process.env.DSH_LOCAL_KIT_ROOT
-  const scaffold = await launchWebScaffold(kitRoot === undefined ? {} : { profile: { packages: [
-    { dir: join(kitRoot, 'hi-buddy-glossary-kit') },
-    { dir: join(kitRoot, 'hi-buddy-claude-kit') },
-  ] } })
+  const scaffold = await launchWebScaffold({
+    developerTools: false,
+    ...(kitRoot === undefined ? {} : { profile: { packages: [
+      { dir: join(kitRoot, 'hi-buddy-glossary-kit') },
+      { dir: join(kitRoot, 'hi-buddy-claude-kit') },
+    ] } }),
+  })
   onTestFinished(() => scaffold.close())
   const workspace = await scaffold.ctx.workspaceRegistry.create(scaffold.workspaceCwd, 'Haier background preview')
   const started = await seedSession(scaffold, await readFile(new URL('../../../snapshots/web/seeded-history/session.v3.jsonl', import.meta.url), 'utf8'), 'haier-background-started')
@@ -130,6 +133,33 @@ it('loads local Haier artwork, responds to home interactions, and respects reduc
   await page.locator(`[data-row-key="session:${started}"]`).click()
   const active = page.locator('[data-conversation-content][data-content-phase="active"]')
   await active.waitFor()
+  for (const platform of ['web', 'win32']) {
+    await page.evaluate((value) => {
+      document.documentElement.toggleAttribute('data-windows-titlebar', value === 'win32')
+      document.documentElement.style.setProperty('--dsh-windows-titlebar-height', '40px')
+      if (value === 'win32') document.documentElement.setAttribute('data-platform', 'win32')
+      else document.documentElement.removeAttribute('data-platform')
+    }, platform)
+    for (const label of ['对话', '轨迹', '文档']) {
+      await page.getByRole('tab', { name: label, exact: true }).waitFor({ state: 'visible' })
+    }
+    await page.getByRole('button', { name: '更多操作', exact: true }).click()
+    const exportMenu = page.getByRole('menu').filter({ has: page.getByRole('menuitem', { name: '复制会话为 Markdown', exact: true }) })
+    await exportMenu.waitFor()
+    expect(await exportMenu.evaluate(node => node.parentElement === document.body)).toBe(true)
+    const material = exportMenu.locator(':scope > [aria-hidden="true"]')
+    expect(await material.evaluate(node => getComputedStyle(node).backgroundColor)).toBe('rgb(238, 244, 251)')
+    expect(await material.evaluate(node => getComputedStyle(node).backdropFilter)).toBe('none')
+    for (const row of await exportMenu.getByRole('menuitem').all()) {
+      expect(await row.evaluate((node) => {
+        const box = node.getBoundingClientRect()
+        return node.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2))
+      })).toBe(true)
+    }
+    await page.screenshot({ path: join(screenshots, `header-${platform}.png`) })
+    await page.keyboard.press('Escape')
+    await exportMenu.waitFor({ state: 'hidden' })
+  }
   expect(await page.locator('[data-workbench-topbar]').count()).toBe(0)
   expect(await page.locator('[data-conversation-header-navigation]').getByRole('button', { name: '任务概览', exact: true }).count()).toBe(1)
   expect(await navigation.locator('..').getByText('Use the read tool twice', { exact: true }).count()).toBe(1)

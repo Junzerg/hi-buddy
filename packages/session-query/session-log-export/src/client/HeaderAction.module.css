@@ -10,3 +10,8 @@
   width: 15px;
   height: 15px;
 }
+
+.moreMenu {
+  --dsw-menu-surface-fill: var(--dsw-alias-bg-base);
+  --dsw-menu-backdrop-filter: none;
+}

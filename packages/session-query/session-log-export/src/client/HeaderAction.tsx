@@ -52,6 +52,8 @@ export function SessionLogDownloadHeaderAction(props: SessionLogDownloadHeaderPr
       <Menu
         open={open}
         align="end"
+        portal
+        listClassName={css.moreMenu}
         dense
         onClose={() => { setOpen(false) }}
         items={[

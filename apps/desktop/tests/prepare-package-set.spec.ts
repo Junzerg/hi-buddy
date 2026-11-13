@@ -182,11 +182,21 @@ it('keeps built-in archive package names unique and matches the host dependency 
   for (const [name, specifier] of pinned) expect(archives.get(name)).toBe(basename(specifier))
 })
 
+it('ships the document-library workspace client in its built-in archive', () => {
+  const directory = join(import.meta.dirname, '../../../haiercash/builtin-plugins')
+  const source = join(directory, 'hi-buddy-doclib-kit')
+  const manifest = JSON.parse(readFileSync(join(source, 'package.json'), 'utf8')) as { version: string }
+  const archived = execFileSync('tar', [
+    '-xOzf', join(directory, `local-dsh-plugin-doclib-${manifest.version}.tgz`), 'package/client.js',
+  ])
+  expect(archived).toEqual(readFileSync(join(source, 'client.js')))
+})
+
 it.each([
   ['hi-buddy-claude-kit', '0.1.0-alpha.16'],
   ['hi-buddy-session-pool-kit', '0.2.2'],
   ['hi-buddy-glossary-kit', '0.3.0-rc.2'],
-  ['local-dsh-plugin-doclib', '0.1.0'],
+  ['local-dsh-plugin-doclib', '0.1.1'],
 ])('ships %s and resolves its peers from the local package set', (name, version) => {
   const root = mkdtempSync(join(tmpdir(), 'desktop-kit-packages-'))
   onTestFinished(() => { rmSync(root, { recursive: true, force: true }) })

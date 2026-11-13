@@ -70,6 +70,7 @@ describe('Session export Header action', () => {
   it('copies Markdown from the menu and closes it without starting a download', async () => {
     const b = bench()
     fireEvent.click(b.view.getByRole('button', { name: 'More actions' }))
+    expect(b.view.getByRole('menu').parentElement).toBe(document.body)
     expect(b.view.getAllByRole('menuitem').map(item => item.textContent)).toEqual([
       'Copy Session as Markdown',
       'Download session log',
