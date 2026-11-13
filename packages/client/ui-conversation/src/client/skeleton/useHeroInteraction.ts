@@ -1,7 +1,11 @@
 import { useEffect } from 'react'
 
-/** Follow mouse input only while the blank-home surface is visible and motion is allowed. */
-export function useHeroInteraction(body: HTMLDivElement | null, hero: boolean) {
+/**
+ * Follow mouse input while the blank-home surface is visible and motion is allowed.
+ * @param body - conversation surface containing the brand artwork.
+ * @param hero - whether the new-conversation hero is visible.
+ */
+export function useHeroInteraction(body: HTMLDivElement | null, hero: boolean): void {
   useEffect(() => {
     if (body === null || !hero || typeof window.matchMedia !== 'function') return
     const motion = window.matchMedia('(prefers-reduced-motion: no-preference) and (any-hover: hover)')

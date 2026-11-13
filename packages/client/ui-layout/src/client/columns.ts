@@ -3,16 +3,27 @@ export interface Columns { sidebar: number; center: number; rightbar: number }
 
 /** Expanded navigation width in CSS pixels. */
 export const SIDEBAR_DEFAULT = 236
-/** Sidebar drag range; the expanded default keeps the current navigation geometry. */
+/** Minimum expanded navigation width in CSS pixels. */
 export const SIDEBAR_MIN = 220
+/** Maximum expanded navigation width in CSS pixels. */
 export const SIDEBAR_MAX = 420
 
-/** Clamp a panel preference using the upstream frame's whole-pixel geometry. */
+/**
+ * Clamp a panel preference to whole-pixel geometry.
+ * @param width - preferred width in CSS pixels.
+ * @param min - lower width limit in CSS pixels.
+ * @param max - upper width limit in CSS pixels.
+ * @returns rounded width within the supplied limits.
+ */
 export function clampWidth(width: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, Math.round(width)))
 }
 
-/** Keep the upstream 400px main-column allowance where the frame has room. */
+/**
+ * Reserve 400px for the main column where the frame has room.
+ * @param viewport - available frame width in CSS pixels.
+ * @returns expanded navigation limits for the frame.
+ */
 export function sidebarBounds(viewport: number): RightbarBounds {
   return { min: SIDEBAR_MIN, max: Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_DEFAULT, viewport - 400)) }
 }
