@@ -1,0 +1,101 @@
+{
+  "version": "0.2.2-rc.1.20261113.2",
+  "sourceCommit": "aba2fc6630513f1d15d9d2b7beb33c1f2a910027",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "User confirmed version 0.2.2-rc.1.20261113.2, Windows x64 unsigned, Mac arm64 signed/notarized, joint acceptance, and completion of both previous-version builds. Restores Chat/Trajectory/Documents tabs with developer tools disabled, promotes document library 0.1.1, and makes the header More menu opaque and body-portaled. All platform artifacts and installation acceptance start pending.",
+  "targets": {
+    "win-x64": {
+      "status": "pending",
+      "signing": "unsigned",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: startup, fresh install and upgrade, IAM login, authorized models, text and image conversation, intranet search/fetch, bundled Claude, Office preview, restart persistence, Haier blue UI in light/dark themes, reduced motion, narrow layout and sidebar resizing; Chat/Trajectory/Documents tabs visible with developer tools off, Documents tab navigation, opaque header menu above image/text messages",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261113.2-win-x64-unsigned.exe",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261113.2.tar.gz"
+    },
+    "mac-arm64": {
+      "status": "pending",
+      "signing": "signed-notarized",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: startup, fresh install and upgrade, IAM login, authorized models, text and image conversation, intranet search/fetch, bundled Claude, Office preview, restart persistence, Haier blue UI in light/dark themes, reduced motion, narrow layout and sidebar resizing; Chat/Trajectory/Documents tabs visible with developer tools off, Documents tab navigation, opaque header menu above image/text messages",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261113.2-mac-arm64.dmg",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261113.2-mac-arm64.tar.gz"
+    }
+  },
+  "plugins": {
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.16",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.16.tgz",
+      "sha256": "dab10d123fc4594af862f9805bd12869d3e492b0e147a38961e08c7590ab7eac",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.2",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz",
+      "sha256": "416139ca33e84373325d55139fc1214ccf4999d99ee9364f0e4f6640ba72e3cb",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.2",
+      "enabled": false,
+      "archive": "haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz",
+      "sha256": "a9c6c149df06c33148a463cf16c973ecf7f1268c10c278c4347b56b24f7d0abd",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.1",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.1.tgz",
+      "sha256": "c3ccedc42d8479be5d4b43e60505d3f26eabbc491d22c18388c23dd28e0695f7",
+      "sourceCommit": "a23716228e456d34cdd59f768bf1428801c8d311"
+    }
+  },
+  "checks": {
+    "conversationAndExport": "passed: 70 related test files, 1020 tests; the concurrently run package-set file had one timeout and its separate regression run passed",
+    "packageSet": "passed: 29 prepare-package-set/core-package-set tests, including document-library archive/source parity and both platform closures",
+    "settingsCopy": "passed: 15 General settings component tests",
+    "headerBrowser": "passed: real Chromium, Web and Windows-titlebar layouts, developer tools disabled; all three tabs visible, Documents opens library, opaque portaled menu hit-testing and Escape dismissal; Windows native installation acceptance pending",
+    "typesAndLint": "passed: five typecheck gates and changed-file lint",
+    "fullBuild": "passed: all 11 build gates at clean source aba2fc6630513f1d15d9d2b7beb33c1f2a910027, including Host/Client compilation and aggregate checks, native addon, Desktop bundle and Web build; worktree clean",
+    "sourceDocs": "passed: all 43 doc-sync checks; final version record bilingual pairing consistent",
+    "targetNetwork": "pending: fresh installation and upgrade acceptance on both platforms",
+    "webBrowserReplay": "known prior failures: three model-badge order assertions; full replay pending; targeted header/brand scenario passed",
+    "menuPrimitives": "passed: 66 primitive tests covering menus, outside-pointer dismissal and viewport top clearance"
+  },
+  "serverPrerequisites": {
+    "companyLogin": {
+      "status": "pending",
+      "sourceCommit": "aba2fc6630513f1d15d9d2b7beb33c1f2a910027",
+      "requirement": "Intranet operator verifies the exchange service returns authorized modelName, isMultimodal and optional contextLength, and both installed clients can re-login and send images."
+    }
+  },
+  "publication": {
+    "mode": "together",
+    "requiredTargets": [
+      "win-x64",
+      "mac-arm64"
+    ],
+    "status": "pending",
+    "requireBothInstallationsVerified": true,
+    "cutoverVerified": false
+  },
+  "published": false
+}
