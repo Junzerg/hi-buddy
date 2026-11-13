@@ -34,7 +34,7 @@ pnpm --version
 
 读取 [current-desktop-build.json](current-desktop-build.json)，再读取其中指向的记录。版本号、源码提交、目标模式、插件默认状态和验收状态均以该记录为准。两台机器必须显示同一版本和提交；不同就停止，不得拼成同一版。不得替换成最新提交、`auto` 或根据本地产物猜出的版本，也不要沿用无关的旧对话指令。
 
-固定提交中的 `haiercash/builtin-plugins/` 包含 Claude、术语表和任务池插件归档，`packages/bundle/web-app/package.json` 选择归档，`pnpm-lock.yaml` 固定其完整性。构建前将版本与 SHA-256 同选定记录核对。确认源码提交前，kit 的 UI 修改须已进入这些归档；两台机器均通过 `pnpm install --frozen-lockfile` 安装已提交的归档。
+固定提交中的 `haiercash/builtin-plugins/` 包含 Claude、术语表和任务池插件归档，`packages/bundle/web-app/package.json` 选择归档，`pnpm-lock.yaml` 固定其完整性。构建前将版本与 SHA-256 同选定记录核对。确认源码提交前，kit 的 UI 修改须已进入这些归档；两台机器均通过 `pnpm install --frozen-lockfile` 安装已提交的归档。 `prepare-package-set` 扫描该目录全部 `.tgz`，要求包名唯一。每个包保留一份当前归档，历史归档可从 Git 取回。package-set 回归测试检查包名唯一性、宿主归档钉点，以及两种目标平台对当前 kit 的复制。
 
 <a id="windows"></a>
 ## Windows x64

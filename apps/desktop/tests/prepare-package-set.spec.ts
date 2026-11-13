@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest'
 import { execFileSync } from 'node:child_process'
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { basename, join } from 'node:path'
 import { DESKTOP_HOST_RUNTIME_FILES, DESKTOP_PACKAGES_DIR } from '../src/core-package-set.ts'
 import {
   assertDesktopHostPackageFiles,
@@ -163,10 +163,29 @@ it('copies no macOS tarball into the Windows package set', () => {
     .toEqual(readFileSync(join(inputs, 'dsh-experimental-cua-macos.tgz')))
 })
 
+it('keeps built-in archive package names unique and matches the host dependency pins', () => {
+  const directory = join(import.meta.dirname, '../../../haiercash/builtin-plugins')
+  const archives = new Map<string, string>()
+  for (const file of readdirSync(directory).filter(file => file.endsWith('.tgz'))) {
+    const manifest = JSON.parse(execFileSync('tar', ['-xOzf', join(directory, file), 'package/package.json'], {
+      encoding: 'utf8',
+    })) as { name: string }
+    expect(archives.has(manifest.name), `duplicate packed package ${manifest.name}`).toBe(false)
+    archives.set(manifest.name, file)
+  }
+  const host = JSON.parse(readFileSync(join(import.meta.dirname, '../../../packages/bundle/web-app/package.json'), 'utf8')) as {
+    dependencies: Record<string, string>
+  }
+  const pinned = Object.entries(host.dependencies).filter(([, specifier]) =>
+    specifier.startsWith('file:../../../haiercash/builtin-plugins/'))
+  expect(pinned).toHaveLength(3)
+  for (const [name, specifier] of pinned) expect(archives.get(name)).toBe(basename(specifier))
+})
+
 it.each([
-  ['hi-buddy-claude-kit', '0.1.0-alpha.15'],
-  ['hi-buddy-session-pool-kit', '0.2.1'],
-  ['hi-buddy-glossary-kit', '0.3.0-rc.1'],
+  ['hi-buddy-claude-kit', '0.1.0-alpha.16'],
+  ['hi-buddy-session-pool-kit', '0.2.2'],
+  ['hi-buddy-glossary-kit', '0.3.0-rc.2'],
   ['local-dsh-plugin-doclib', '0.1.0'],
 ])('ships %s and resolves its peers from the local package set', (name, version) => {
   const root = mkdtempSync(join(tmpdir(), 'desktop-kit-packages-'))

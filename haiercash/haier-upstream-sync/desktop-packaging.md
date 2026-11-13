@@ -34,7 +34,7 @@ pnpm --version
 
 Read [current-desktop-build.json](current-desktop-build.json), then the record it names. The version, source commit, target modes, plugin defaults, and acceptance status come from that record. Both machines must print the same version and commit; if they differ, stop rather than combining builds. Do not substitute the newest commit, `auto`, or a version guessed from local artifacts. Ignore unrelated stale chat instructions.
 
-The pinned host checkout carries the packaged Claude, glossary, and session-pool kits in `haiercash/builtin-plugins/`. `packages/bundle/web-app/package.json` selects their archives and `pnpm-lock.yaml` pins their integrity. Check those versions and SHA-256 values against the selected record before building. Kit UI changes must reach these archives before the source pin is confirmed; both builders install the committed archives with `pnpm install --frozen-lockfile`.
+The pinned host checkout carries the packaged Claude, glossary, and session-pool kits in `haiercash/builtin-plugins/`. `packages/bundle/web-app/package.json` selects their archives and `pnpm-lock.yaml` pins their integrity. Check those versions and SHA-256 values against the selected record before building. Kit UI changes must reach these archives before the source pin is confirmed; both builders install the committed archives with `pnpm install --frozen-lockfile`. `prepare-package-set` scans every `.tgz` in this directory and requires unique package names. Keep one current archive per package; historical archives remain available in Git. The package-set regression tests check uniqueness, host archive pins, and copying the current kits for both target platforms.
 
 <a id="windows"></a>
 ## Windows x64

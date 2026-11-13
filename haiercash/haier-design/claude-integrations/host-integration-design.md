@@ -37,7 +37,7 @@ date: 2026-11-09
 | 本机 CLI 与进程管理 | [subprocess](../../../docs/subsystems/subprocess.md) 的 executable lookup、管道和进程管理 | kit 适配 Claude 协议与生命周期；具体跨平台行为待实测 |
 | 插件自己的数据 | [storage-domain](../../../docs/subsystems/storage.md) | kit 声明版本化领域数据，不修改 DSH Session 格式 |
 | 启用／禁用与安装 | [plugin-manager](../../../packages/boot/plugin-manager/README.md) 的 bundle 管理 | kit 提供 bundle；宿主核对安装与兼容性 |
-| 已有外部插件格式 | [glossary kit](../../builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz) | kit 参考；宿主接收 `.tgz` 与校验和 |
+| 已有外部插件格式 | [glossary kit](../../builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz) | kit 参考；宿主接收 `.tgz` 与校验和 |
 
 现有 Claude 子代理包锁定 Agent SDK `0.3.263`。本地安装的 SDK 类型声明含 `pathToClaudeCodeExecutable`，省略时使用内置 executable。因此新插件必须显式绑定已检测的本机路径；该类型存在不证明任意 CLI／SDK 组合兼容，kit 需要先提供真实验证证据。
 
