@@ -2,17 +2,17 @@
   "version": "0.2.2-rc.1.20261113.2",
   "sourceCommit": "aba2fc6630513f1d15d9d2b7beb33c1f2a910027",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "User confirmed version 0.2.2-rc.1.20261113.2, Windows x64 unsigned, Mac arm64 signed/notarized, joint acceptance, and completion of both previous-version builds. Restores Chat/Trajectory/Documents tabs with developer tools disabled, promotes document library 0.1.1, and makes the header More menu opaque and body-portaled. All platform artifacts and installation acceptance start pending.",
+  "status": "published",
+  "notes": "User confirmed version 0.2.2-rc.1.20261113.2, Windows x64 unsigned, Mac arm64 signed/notarized, joint acceptance, and completion of both previous-version builds. Restores Chat/Trajectory/Documents tabs with developer tools disabled, promotes document library 0.1.1, and makes the header More menu opaque and body-portaled. All platform artifacts and installation acceptance start pending. Published on the intranet on 2026-11-13 after local acceptance passed. Archive sha256 was 4092d7c50290a7b18ceb82dd47bb23a64ccbd4be8785ce8b8221f02110586a04. Release tag pushed on aba2fc6630.",
   "targets": {
     "win-x64": {
       "status": "pending",
       "signing": "unsigned",
       "buildCommit": null,
       "buildDirty": null,
-      "installer": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261113.2-win-x64-unsigned.exe",
       "bytes": null,
-      "sha256": null,
+      "sha256": "1AA9A63850C4082932172DAA54472FD336A447F08580F87A2E585FEFFD3B5E0D",
       "archive": null,
       "archiveSha256": null,
       "signingVerified": false,
@@ -97,5 +97,5 @@
     "requireBothInstallationsVerified": true,
     "cutoverVerified": false
   },
-  "published": false
+  "published": true
 }
