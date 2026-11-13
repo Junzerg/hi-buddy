@@ -1,9 +1,9 @@
 {
   "version": "0.2.2-rc.1.20261113.1",
-  "sourceCommit": "3528f1f707b6d38d14c014c6c1bba2244db27852",
+  "sourceCommit": "31ea83293405f7c4e095f670e2b720ede4e0b1a0",
   "sourceBranch": "dev/junzerg",
   "status": "prepared",
-  "notes": "User confirmed version, Windows x64 unsigned, Mac arm64 signed/notarized, shared acceptance, and completion of both previous-version builds on 2026-11-13. Source includes Haier blue UI, pinned kit archives, slot catalog and contract documentation. Both platform builds and fresh installation acceptance are pending.",
+  "notes": "User confirmed version, Windows x64 unsigned, Mac arm64 signed/notarized, shared acceptance, and completion of both previous-version builds on 2026-11-13. Source includes Haier blue UI, pinned kit archives, slot catalog and contract documentation. Both platform builds and fresh installation acceptance are pending. User requested repinning this version after prepare-package-set failed on duplicate packed package hi-buddy-claude-kit. Both platforms must rebuild from 31ea83293405f7c4e095f670e2b720ede4e0b1a0; prior source 3528f1f707b6d38d14c014c6c1bba2244db27852 is superseded for this build.",
   "targets": {
     "win-x64": {
       "status": "pending",
@@ -70,16 +70,18 @@
     "kitBuilds": "passed: all three kits built; Claude 26, glossary 10, session pool 6, shared CSS 2 tests passed",
     "archiveAssembly": "passed: 180 tests; 1 expected failure",
     "brandBrowser": "passed: real browser with the committed kit archives, 1 scenario",
-    "typesAndLint": "passed: Host and Client typechecks; changed-file lint",
-    "sourceDocs": "passed: 21 documentation checks; doc-sync 41 checks passed, remaining client-catalog and export-jsdoc checks passed after regeneration and JSDoc completion; catalog generator 22 tests passed",
-    "fullBuild": "passed: clean checkout at 3528f1f707b6d38d14c014c6c1bba2244db27852, all 11 build gates including Host/Client compilers and aggregate checks, native addon, Desktop bundle and Web build; worktree clean after build",
+    "typesAndLint": "passed after package-set repair: Host and Client aggregate checks via build:check; changed package-set test lint",
+    "sourceDocs": "passed after archive cleanup: all 43 doc-sync checks; package-set rebuild evidence and bilingual pairing updated",
+    "fullBuild": "previous source evidence retained: passed: clean checkout at 3528f1f707b6d38d14c014c6c1bba2244db27852, all 11 build gates including Host/Client compilers and aggregate checks, native addon, Desktop bundle and Web build; worktree clean after build",
     "targetNetwork": "pending: fresh install and upgrade acceptance on both platforms",
-    "webBrowserReplay": "known prior failures: three model-badge order assertions; full replay pending; the Haier brand scenario passed"
+    "webBrowserReplay": "known prior failures: three model-badge order assertions; full replay pending; the Haier brand scenario passed",
+    "packageSetPreviousAttempt": "resolved by archive cleanup: original prepare-package-set attempt failed on duplicate packed package hi-buddy-claude-kit; reproduced locally before removing superseded archives",
+    "packageSet": "passed: 28 prepare-package-set and core-package-set tests, including archive-name uniqueness, host dependency pins and copying the current kits for Windows x64 and Mac arm64; regression failed before the fix"
   },
   "serverPrerequisites": {
     "companyLogin": {
       "status": "pending",
-      "sourceCommit": "3528f1f707b6d38d14c014c6c1bba2244db27852",
+      "sourceCommit": "31ea83293405f7c4e095f670e2b720ede4e0b1a0",
       "requirement": "Intranet operator verifies the exchange service returns authorized modelName, isMultimodal and optional contextLength, and both installed clients can re-login and send images."
     }
   },
