@@ -14,6 +14,7 @@ const unused = (): never => { throw new Error('This isolated component does not 
 const standard: GlobalStandardProps = {
   useSessions: unused, useSessionStatus: unused, useSessionRetainInfo: unused,
   useSessionAccess: () => true, useRemoteAccess: () => true, useWorkspaceAccess: () => true,
+  useRightbarShown: selector => selector(false),
   usePanelInfo: unused, useContextMenu: contextMenuHook(), useResource: unused, useWorkspaces: unused,
 }
 

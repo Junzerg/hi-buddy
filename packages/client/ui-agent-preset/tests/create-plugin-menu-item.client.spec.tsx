@@ -28,6 +28,7 @@ function view(roster: Partial<AgentPresetSettingsState> = {}, inMenu = false) {
   const props: ComponentProps<typeof CreatePluginMenuItem> = {
     t: key => translations.get(key) ?? key,
     useAgentPresets: bindSnapshotSelector(agentPresets),
+    useRightbarShown: selector => selector(false),
     usePanelInfo: unusedHook, useSessions: unusedHook, useSessionStatus: unusedHook,
     useSessionRetainInfo: unusedHook, useWorkspaces: unusedHook, useResource: unusedHook,
     ...allowAllAccess,

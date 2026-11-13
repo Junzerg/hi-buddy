@@ -111,6 +111,11 @@ describe('ui-layout client apply', () => {
     const panelInfo = host.root.getSnapshot().hooks.panelInfo!
     expect(panelInfo).toBe(layout.panelInfo)
     expect(panelInfo.getSnapshot()).toBe(instance.getSnapshot().panelInfo)
+    const rightbarShown = host.root.getSnapshot().hooks.rightbarShown!
+    expect(rightbarShown.getSnapshot()).toBe(true)
+    layout.closeRightbar()
+    expect(rightbarShown.getSnapshot()).toBe(false)
+    layout.openRightbar(true, false)
     const panelId = 'panel-a' as MainPanelId
     const disposePanel = slots.register({ name: 'main', key: panelId }, () => null)
     layout.selectPanel(panelId)

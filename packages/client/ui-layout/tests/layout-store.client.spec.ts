@@ -11,7 +11,7 @@ describe('createLayoutStore', () => {
     const { store } = createLayoutStore().create()
     expect(store.getSnapshot()).toEqual({
       panelInfo: { activePanelId: null },
-      layoutInfo: { viewportWidth: 1440, rightbarWidth: 336, rightbarShown: false,
+      layoutInfo: { sidebarWidth: 236, viewportWidth: 1440, rightbarWidth: 336, rightbarShown: false,
         rightbarTrack: false, rightbarFullscreen: false, rightbarInstant: false },
     })
   })

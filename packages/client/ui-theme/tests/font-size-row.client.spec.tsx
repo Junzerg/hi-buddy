@@ -54,6 +54,7 @@ function mount(fontSize = 14, role: FontRole = 'text') {
   const props: FontSizeRowComponentProps = {
     useSessions: emptySessions(),
     useSessionStatus,
+    useRightbarShown: selector => selector(false),
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
     useWorkspaces: emptyWorkspaces(),
     ...allowAllAccess,

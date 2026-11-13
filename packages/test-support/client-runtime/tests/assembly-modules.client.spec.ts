@@ -4,6 +4,9 @@
  * static namespace, and the resulting module system serves the vendored Loader
  * without ever loading a bundle.
  */
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
 import { Context } from '@deepseek-ai/cordis'
 import Loader from '@deepseek-ai/cordis-plugin-loader'
 import * as modulesClient from '@deepseek-ai/dsh-client-modules/client'
@@ -22,6 +25,14 @@ const MISSING = '@deepseek-ai/dsh-client-does-not-exist'
 
 const row = (name: string, immediately = false) => ({ name, inject: [], immediately })
 
+function installedRoster(source: string) {
+  const root = mkdtempSync(join(tmpdir(), 'client-installed-bundle-'))
+  onTestFinished(() => { rmSync(root, { recursive: true, force: true }) })
+  const clientBundle = join(root, 'client.js')
+  writeFileSync(clientBundle, source)
+  return ClientRoster.of([{ ...row('test-installed-client'), clientBundle }])
+}
+
 function graph(names: readonly string[]): WebBootGraph {
   return {
     rev: 'local',
@@ -33,7 +44,7 @@ function graph(names: readonly string[]): WebBootGraph {
 describe('loadPluginModules', () => {
   it('imports real rows dynamically, takes provided rows from the plan, and pins the bootstrap row', async () => {
     const provided = { apply: () => {} }
-    const roster = ClientRoster.of([row(TYPERT), row(MODULES_PACKAGE), row(BRAND), row(RENDERER)])
+    const roster = ClientRoster.of([{ ...row(TYPERT), clientBundle: '/unused-built-client.js' }, row(MODULES_PACKAGE), row(BRAND), row(RENDERER)])
     const modules = await loadPluginModules({ roster, provide: { [BRAND]: provided } })
     expect([...modules.keys()]).toEqual([TYPERT, MODULES_PACKAGE, BRAND, RENDERER])
     expect(modules.get(TYPERT)).toBe(typertRegistry)
@@ -53,6 +64,27 @@ describe('loadPluginModules', () => {
     const roster = ClientRoster.of([row(MODULES_PACKAGE)])
     await expect(loadPluginModules({ roster, provide: { [MODULES_PACKAGE]: { apply: () => {} } } }))
       .rejects.toThrow(`${MODULES_PACKAGE} is the bootstrap module and cannot be provided`)
+  })
+
+  it('materializes an installed bundle with the shell platform singletons and a private registration facade', async () => {
+    const roster = installedRoster(`window.__ModuleLoader__.load({
+      id: 'test-installed-client', factory: require => ({ apply: require('@deepseek-ai/cordis').Context })
+    });`)
+    const previous: unknown = typeof window === 'undefined' ? undefined : Reflect.get(window, '__ModuleLoader__')
+    const first = await loadPluginModules({ roster })
+    const second = await loadPluginModules({ roster })
+    expect(first.get('test-installed-client')).toMatchObject({ apply: Context })
+    expect(second.get('test-installed-client')).not.toBe(first.get('test-installed-client'))
+    if (typeof window !== 'undefined') expect(Reflect.get(window, '__ModuleLoader__')).toBe(previous)
+  })
+
+  it.each([
+    ['', 'bundle did not register test-installed-client'],
+    ["window.__ModuleLoader__.load({ id: 'wrong', factory: () => ({}) });", 'expected one bundle registration'],
+    ["for (let i = 0; i < 2; i++) window.__ModuleLoader__.load({ id: 'test-installed-client', factory: () => ({}) });", 'expected one bundle registration'],
+    ["throw new Error('broken bundle')", 'broken bundle'],
+  ])('rejects an invalid installed bundle registration (%s)', async (source, message) => {
+    await expect(loadPluginModules({ roster: installedRoster(source) })).rejects.toThrow(message)
   })
 })
 

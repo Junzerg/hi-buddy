@@ -8,6 +8,7 @@ function fakePanels(): PanelActions {
     selectPanel: vi.fn(),
     retainMainPanels: vi.fn(),
     setViewportWidth: vi.fn(),
+    setSidebarWidth: vi.fn(),
     setRightbarWidth: vi.fn(),
     openRightbar: vi.fn(),
     closeRightbar: vi.fn(),

@@ -230,6 +230,7 @@ function standaloneProps(
     sessionId: SID,
     useChat: bindSnapshotSelector(createSnapshotStore(EMPTY_CHAT_SNAPSHOT)),
     useSessions: emptySessions(),
+    useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
     usePanelInfo, useResource,
     useSessionStatus: bindSnapshotSelector(
       createSnapshotStore<SessionStatusSnapshot>(new Map()),
@@ -372,6 +373,7 @@ function mount(fixture: Awaited<ReturnType<typeof bench>>) {
     useConversation,
     useConversationViews,
     useSessions,
+    useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
     usePanelInfo, useResource,
     useSessionStatus,
     useSessionRetainInfo: () => undefined,

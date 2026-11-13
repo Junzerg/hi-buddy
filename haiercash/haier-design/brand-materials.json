@@ -1,0 +1,28 @@
+{
+  "rights": "Official brand artwork. Copyright and trademarks remain with the original owners.",
+  "assets": [
+    {
+      "asset": "haier-brothers.jpg",
+      "source_page": "https://www.haier.com/press-events/news/20140710_130803.shtml",
+      "source_url": "https://imagegroup1.haier.com/press-events/news/W020200622556096905690.jpg",
+      "retrieved_on": "2026-11-12",
+      "sha256": "b731b0cd9f25f252cd65a85ea6c2160a38baaafd255bbab241b3cb9ae40fc57a",
+      "used_in": [
+        "packages/client/ui-theme/src/client/assets/haier-brothers.png"
+      ],
+      "modifications": "AI-edited transparent PNG removes the watermark and white background and replaces both buckle symbols with the original blue-green H. Shared by conversation, settings, and plugin backgrounds.",
+      "edited_sha256": "9bf85e4588327b12ee255506a6f50744b32c64606d09cc0114138cb3ecdc1a6c"
+    },
+    {
+      "asset": "haiercash-network.png",
+      "source_page": "https://www.haiercash.com/",
+      "source_url": "https://www.haiercash.com/assets/indexBanner-ByJzqaq_.png",
+      "retrieved_on": "2026-11-12",
+      "sha256": "72ecd4b40b10de18beaf1f05f3c34452266c13fb6106f8b116c04469bde77432",
+      "used_in": [
+        "apps/desktop/renderer/assets/haiercash-network.png"
+      ],
+      "modifications": "None; original image bytes retained. Presentation is controlled by CSS."
+    }
+  ]
+}

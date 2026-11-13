@@ -12,6 +12,53 @@
   background: var(--dsw-alias-bg-base);
 }
 
+.frame[data-dragging],
+.frame:has(.sidebarResize:focus-visible) {
+  transition: none;
+}
+
+.frame[data-dragging] {
+  user-select: none;
+}
+
+/* Upstream frame divider hit area, centered on the sidebar's live edge. */
+.sidebarResize {
+  position: absolute;
+  grid-area: 1 / 1 / 2 / -1;
+  top: 0;
+  bottom: 0;
+  left: var(--dsh-sidebar-resize-left);
+  width: 8px;
+  margin-left: -4px;
+  cursor: col-resize;
+  z-index: 11;
+  touch-action: none;
+  -webkit-app-region: no-drag;
+}
+
+.sidebarResize::after {
+  position: absolute;
+  inset: 0 3px;
+  content: '';
+  background: var(--dsw-alias-state-business-primary);
+  opacity: 0;
+}
+
+.sidebarResize[data-dragging]::after,
+.sidebarResize:focus-visible::after {
+  opacity: 1;
+}
+
+.sidebarResize:focus-visible {
+  outline: none;
+}
+
+@media (hover: hover) {
+  .sidebarResize:hover::after {
+    opacity: 1;
+  }
+}
+
 /* The Windows caption row remains outside every conversation and file panel. */
 :global([data-windows-titlebar]) .frame {
   --dsh-windows-content-radius: 16px;
@@ -45,8 +92,25 @@
   }
 }
 
+/* Sidebar contributions use light ink; body-mounted menus retain the main palette. */
 .sidebarCol {
   --dsw-specific-sidebar-fill: var(--dsw-specific-sidebar-shell-fill);
+  --dsw-alias-scrollbar-bg-l2: var(--dsh-sidebar-scrollbar);
+  --dsw-alias-scrollbar-hover-l2: var(--dsh-sidebar-scrollbar-hover);
+  --dsw-alias-label-primary: var(--dsh-sidebar-label-primary);
+  --dsw-alias-label-secondary: var(--dsh-sidebar-label-secondary);
+  --dsw-alias-label-tertiary: var(--dsh-sidebar-label-tertiary);
+  --dsw-alias-label-caption: var(--dsh-sidebar-label-caption);
+  --dsw-alias-label-dimmed: var(--dsh-sidebar-label-caption);
+  --dsw-alias-border-l1: var(--dsh-sidebar-border);
+  --dsw-alias-state-business-primary: var(--dsh-sidebar-focus);
+  --dsw-specific-task-row-ink: var(--dsh-sidebar-label-secondary);
+  --dsw-specific-task-row-selected-ink: var(--dsh-sidebar-label-primary);
+  --dsw-specific-task-row-time: var(--dsh-sidebar-label-caption);
+  --dsw-specific-task-row-hover: var(--dsh-sidebar-hover);
+  --dsw-specific-task-row-selected: var(--dsh-sidebar-selected);
+  --dsw-specific-sidebar-nav-item-active: var(--dsh-sidebar-selected);
+  --dsw-alias-interactive-bg-hover: var(--dsh-sidebar-hover);
   min-width: 0;
   overflow: hidden;
   background: var(--dsw-specific-sidebar-fill);
@@ -76,11 +140,14 @@
   border: none;
   border-radius: var(--dsw-radius-sm);
   background: transparent;
-  color: var(--dsw-alias-label-secondary);
+  color: var(--dsh-sidebar-label-secondary);
   cursor: pointer;
 }
 
-.frame[data-sidebar-collapsed] .sidebarToggle { left: 12px; }
+.frame[data-sidebar-collapsed] .sidebarToggle {
+  left: 12px;
+  color: var(--dsw-alias-label-secondary);
+}
 
 :global([data-platform='darwin']:not([data-fullscreen])) .frame[data-sidebar-collapsed] {
   --dsh-sidebar-reopen-clearance: 120px;
@@ -91,7 +158,8 @@
 }
 
 @media (hover: hover) {
-  .sidebarToggle:hover { background: var(--dsw-alias-interactive-bg-hover); }
+  .sidebarToggle:hover { background: var(--dsh-sidebar-hover); }
+  .frame[data-sidebar-collapsed] .sidebarToggle:hover { background: var(--dsw-alias-interactive-bg-hover); }
 }
 
 .sidebarToggle:focus-visible {
@@ -117,6 +185,20 @@
 }
 
 .centerBody > * {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+.mainPanel {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  background: var(--dsw-alias-bg-base);
+}
+
+.mainPanel > :not(:global([data-brand-background])) {
   flex: 1;
   min-width: 0;
   min-height: 0;

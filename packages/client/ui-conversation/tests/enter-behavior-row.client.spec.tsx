@@ -41,6 +41,7 @@ function mount() {
   const policy = new ComposerSubmissionPolicy()
   const setBusyEnter = vi.fn((behavior: 'queue' | 'steer') => { policy.setBusyEnter(behavior) })
   const props: EnterBehaviorRowProps = {
+    useRightbarShown: selector => selector(false),
     usePanelInfo: selector => selector({ activePanelId: null }),
     useSessions: emptySessions(),
     useSessionStatus: noPendingInteraction(),

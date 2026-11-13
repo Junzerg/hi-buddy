@@ -94,6 +94,7 @@ function mountFrame(windowWidth = frameWidth) {
       actions={instance.actions}
       renderSlot={renderSlot}
       useSessions={useSessions}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo}
       useSessionStatus={useSessionStatus}
       useSessionRetainInfo={() => undefined}
@@ -148,6 +149,55 @@ afterEach(() => {
 })
 
 describe('AppFrame', () => {
+  it('resizes the sidebar from a frozen pointer origin and restores its width after collapsing', () => {
+    const view = mountFrame()
+    const handle = view.getByRole('separator', { name: 'sidebar.resize' })
+    handle.setPointerCapture = vi.fn()
+    handle.hasPointerCapture = vi.fn(() => true)
+    handle.releasePointerCapture = vi.fn()
+    const main = view.getByTestId('main-content')
+    pointer(handle, 'pointerdown', 236)
+    pointer(handle, 'pointermove', 276)
+    pointer(handle, 'pointermove', 306)
+    expect(view.sidebarOwner().width).toBe(236)
+    act(flushFrames)
+    expect(view.sidebarOwner().width).toBe(306)
+    pointer(handle, 'pointermove', 326)
+    act(flushFrames)
+    expect(view.sidebarOwner().width).toBe(326)
+    pointer(handle, 'pointerup', 336)
+    expect(view.sidebarOwner().width).toBe(336)
+    expect(view.frame.dataset.dragging).toBeUndefined()
+    expect(animationFrames.size).toBe(0)
+    fireEvent.click(view.getByRole('button', { name: 'sidebar.collapse' }))
+    expect(view.queryByRole('separator', { name: 'sidebar.resize' })).toBeNull()
+    fireEvent.click(view.getByRole('button', { name: 'sidebar.expand' }))
+    expect(view.sidebarOwner().width).toBe(336)
+    const restored = view.getByRole('separator', { name: 'sidebar.resize' })
+    fireEvent.keyDown(restored, { key: 'Home' })
+    expect(view.sidebarOwner().width).toBe(220)
+    fireEvent.keyDown(restored, { key: 'End' })
+    expect(view.sidebarOwner().width).toBe(420)
+    expect(view.getByTestId('main-content')).toBe(main)
+  })
+
+  it('cancels a pending sidebar frame and releases capture when the sidebar closes during a drag', () => {
+    const view = mountFrame()
+    const handle = view.getByRole('separator', { name: 'sidebar.resize' })
+    handle.setPointerCapture = vi.fn()
+    handle.hasPointerCapture = vi.fn(() => true)
+    const releasePointer = vi.fn()
+    handle.releasePointerCapture = releasePointer
+    pointer(handle, 'pointerdown', 236)
+    pointer(handle, 'pointermove', 336)
+    expect(animationFrames.size).toBe(1)
+    fireEvent.click(view.getByRole('button', { name: 'sidebar.collapse' }))
+    expect(animationFrames.size).toBe(0)
+    expect(releasePointer).toHaveBeenCalledWith(1)
+    act(flushFrames)
+    expect(view.instance.getSnapshot().layoutInfo.sidebarWidth).toBe(236)
+    expect(view.frame.dataset.dragging).toBeUndefined()
+  })
   it('localizes the title without a configured build title', () => {
     mountFrame()
     expect(document.title).toBe('LXO（内测版）')
@@ -268,7 +318,7 @@ describe('AppFrame', () => {
 
   it('resizes both the panel and its reserved track with the keyboard, without remounting main content', () => {
     const { instance, frame, getByRole, getByTestId, rightOwner, queryByRole } = mountFrame()
-    expect(queryByRole('separator')).toBeNull()
+    expect(queryByRole('separator', { name: 'rightbar.resize' })).toBeNull()
     act(() => { instance.actions.openRightbar(true, false) })
     const handle = getByRole('separator', { name: 'rightbar.resize' })
     const main = getByTestId('main-content')
@@ -297,15 +347,15 @@ describe('AppFrame', () => {
     expect(rightOwner().width).toBe(704)
     resize(390)
     expect(rightOwner().width).toBe(366)
-    expect(getByRole('separator').getAttribute('aria-valuemax')).toBe('366')
+    expect(getByRole('separator', { name: 'rightbar.resize' }).getAttribute('aria-valuemax')).toBe('366')
     expect(instance.getSnapshot().layoutInfo.rightbarWidth).toBe(800)
     act(() => { instance.actions.closeRightbar() })
-    expect(queryByRole('separator')).toBeNull()
+    expect(queryByRole('separator', { name: 'rightbar.resize' })).toBeNull()
     resize(1440)
     act(() => { instance.actions.openRightbar(true, false) })
     expect(rightOwner().width).toBe(800)
     fireEvent.click(getByRole('button', { name: 'sidebar.collapse' }))
-    fireEvent.keyDown(getByRole('separator'), { key: 'End' })
+    fireEvent.keyDown(getByRole('separator', { name: 'rightbar.resize' }), { key: 'End' })
     expect(rightOwner().width).toBe(1080)
     fireEvent.click(getByRole('button', { name: 'sidebar.expand' }))
     expect(rightOwner().width).toBe(844)
@@ -315,7 +365,7 @@ describe('AppFrame', () => {
     'ends only the captured gesture on %s', (endEvent) => {
       const { instance, getByRole, rightOwner } = mountFrame()
       act(() => { instance.actions.openRightbar(true, false) })
-      const handle = getByRole('separator')
+      const handle = getByRole('separator', { name: 'rightbar.resize' })
       const capturePointer = vi.fn()
       handle.setPointerCapture = capturePointer
       pointer(handle, 'pointermove', 1000)
@@ -342,16 +392,16 @@ describe('AppFrame', () => {
   it('removes a captured handle in fullscreen and restores the chosen normal width', () => {
     const { instance, getByRole, queryByRole, rightOwner } = mountFrame()
     act(() => { instance.actions.openRightbar(true, false) })
-    const handle = getByRole('separator')
+    const handle = getByRole('separator', { name: 'rightbar.resize' })
     handle.setPointerCapture = vi.fn()
     pointer(handle, 'pointerdown', 1104)
     pointer(handle, 'pointermove', 900)
     expect(rightOwner().width).toBe(540)
     act(() => { instance.actions.openRightbar(true, true) })
-    expect(queryByRole('separator')).toBeNull()
+    expect(queryByRole('separator', { name: 'rightbar.resize' })).toBeNull()
     expect(handle.isConnected).toBe(false)
     act(() => { instance.actions.openRightbar(true, false) })
     expect(rightOwner().width).toBe(540)
-    expect(getByRole('separator').dataset.resizing).toBeUndefined()
+    expect(getByRole('separator', { name: 'rightbar.resize' }).dataset.resizing).toBeUndefined()
   })
 })

@@ -3,6 +3,19 @@ export interface Columns { sidebar: number; center: number; rightbar: number }
 
 /** Expanded navigation width in CSS pixels. */
 export const SIDEBAR_DEFAULT = 236
+/** Sidebar drag range; the expanded default keeps the current navigation geometry. */
+export const SIDEBAR_MIN = 220
+export const SIDEBAR_MAX = 420
+
+/** Clamp a panel preference using the upstream frame's whole-pixel geometry. */
+export function clampWidth(width: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, Math.round(width)))
+}
+
+/** Keep the upstream 400px main-column allowance where the frame has room. */
+export function sidebarBounds(viewport: number): RightbarBounds {
+  return { min: SIDEBAR_MIN, max: Math.min(SIDEBAR_MAX, Math.max(SIDEBAR_DEFAULT, viewport - 400)) }
+}
 /** Initial right panel width in CSS pixels, including overlay presentation. */
 export const RIGHTBAR_WIDTH = 336
 /** Largest viewport width that overlays the right panel instead of reserving a column. */
@@ -40,12 +53,12 @@ export function clampRightbarWidth(width: number, bounds: RightbarBounds): numbe
  * @param viewport - frame width in px.
  * @param rightbarTrack - whether the right panel requests space.
  * @param panelWidth - resolved normal width of the right panel.
+ * @param sidebar - resolved sidebar track width, including its collapsed state.
  * @returns reserved widths for the three columns.
  */
 export function computeColumns(
-  viewport: number, rightbarTrack: boolean, panelWidth = RIGHTBAR_WIDTH,
+  viewport: number, rightbarTrack: boolean, panelWidth = RIGHTBAR_WIDTH, sidebar = SIDEBAR_DEFAULT,
 ): Columns {
-  const sidebar = SIDEBAR_DEFAULT
   const rightbar = rightbarTrack && viewport > RIGHTBAR_OVERLAY_BREAKPOINT ? panelWidth : 0
   return { sidebar, center: Math.max(0, viewport - sidebar - rightbar), rightbar }
 }

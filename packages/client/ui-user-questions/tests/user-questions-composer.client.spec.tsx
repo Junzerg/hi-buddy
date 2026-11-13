@@ -126,6 +126,7 @@ const kitBase: Omit<QuestionComposerProps, 'matched' | 'useStore' | 'useQuestion
   pendingInteraction: undefined,
   useSession: selector => selector(sessionState),
   useSessions: selector => selector(sessionList),
+  useRightbarShown: selector => selector(false),
   usePanelInfo,
   useContextMenu: contextMenuHook(),
   useResource,

@@ -163,6 +163,7 @@ function mount(
     useCatalog: select => select(snapshot),
     useSessions: select => select(sessions),
     useWorkspaces: select => select(workspaces),
+    useRightbarShown: selector => selector(false),
     usePanelInfo: select => select({ activePanelId: null }),
     useSessionStatus: select => select(new Map()),
     useSessionRetainInfo: () => undefined,
@@ -1733,6 +1734,7 @@ describe('Task manager details', () => {
     return render(<TaskManagerIcon
       size={size}
       active={false}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={unread}
       useSessions={unread}
       useWorkspaces={unread}

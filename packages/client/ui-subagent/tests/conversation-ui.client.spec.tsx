@@ -91,6 +91,7 @@ function props(
   }
   const unused = (): never => { throw new Error('Subagent header fixture does not provide this slot source or action') }
   const standard = {
+    useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
     usePanelInfo: unused,
     useSessionRetainInfo: unused,
     useWorkspaces: unused,

@@ -53,6 +53,7 @@ function mountShell({ collapsed = false, width = 236, shortcuts = [] }: {
       drawer={false}
       collapsed={current.collapsed} width={current.width}
       useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
       useEntryActions={selector => selector(false)} setPinned={vi.fn()}
       useShortcuts={selector => selector(shortcuts)}
@@ -143,6 +144,7 @@ describe('SidebarRoot shell', () => {
       drawer={false}
       collapsed={false} width={236}
       useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
       useEntryActions={selector => selector(false)} setPinned={vi.fn()}
       useShortcuts={selector => selector([])}
@@ -173,6 +175,7 @@ describe('SidebarRoot shell', () => {
       drawer={false}
       collapsed={false} width={236}
       useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
       useEntryActions={selector => selector(false)} setPinned={vi.fn()}
       useShortcuts={selector => selector([])}
@@ -198,6 +201,7 @@ describe('SidebarRoot shell', () => {
       drawer={false}
       collapsed={false} width={236}
       useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
       useEntryActions={selector => selector(false)} setPinned={vi.fn()}
       useShortcuts={selector => selector([])}
@@ -227,6 +231,7 @@ describe('SidebarRoot shell', () => {
       drawer={false}
       collapsed={false} width={236}
       useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
       useEntryActions={selector => selector(false)} setPinned={vi.fn()}
       useShortcuts={selector => selector([])}
@@ -278,6 +283,7 @@ describe('SidebarRoot shell', () => {
       drawer={false}
       collapsed={false} width={236}
       useSessions={neverHook} useSessionStatus={useSessionStatus} useSessionRetainInfo={neverHook}
+      useRightbarShown={selector => selector(false)}
       usePanelInfo={usePanelInfo} selectPanel={() => {}} usePanels={selector => selector([])} useEntryPins={selector => selector([])}
       useEntryActions={selector => selector(false)} setPinned={vi.fn()}
       useShortcuts={selector => selector([])}

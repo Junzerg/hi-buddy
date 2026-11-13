@@ -46,6 +46,7 @@ async function bench(declare = true) {
         'sidebar': { kind: 'single', scope: 'root' },
         'main': { kind: 'keyed', scope: 'root' },
         'shell.topbar': { kind: 'single', scope: 'root' },
+        'conversation.header.navigation': { kind: 'single', scope: 'root' },
       } },
       SidebarFrame,
     )
@@ -67,6 +68,7 @@ describe('ui-sidebar apply', () => {
     await b.ctx.plugin({ inject: [...inject], apply }).await()
     expect(b.slots.entries('sidebar')).toHaveLength(1)
     expect(b.slots.entries('shell.topbar')).toHaveLength(1)
+    expect(b.slots.entries('conversation.header.navigation')).toHaveLength(1)
     expect(b.slots.entries('shell.topbar')[0]!.locale).toBe('sidebar')
     expect(b.slots.spec('sidebar.brand.mark')).toEqual({ kind: 'single', scope: 'root' })
     expect(b.slots.spec('sidebar.brand.name')).toEqual({ kind: 'single', scope: 'root' })

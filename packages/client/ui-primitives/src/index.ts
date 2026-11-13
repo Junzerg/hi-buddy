@@ -3,6 +3,8 @@
  */
 
 export type { CodeToolbarLabels } from './CodeToolbar.tsx'
+export { BrandBackground } from './BrandBackground.tsx'
+export type { BrandBackgroundProps } from './BrandBackground.tsx'
 export { UserMessageBubble } from './UserMessageBubble.tsx'
 export type { UserMessageBubbleProps } from './UserMessageBubble.tsx'
 export { StateDot } from './StateDot.tsx'

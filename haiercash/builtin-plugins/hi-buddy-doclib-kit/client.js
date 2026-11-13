@@ -3,7 +3,7 @@
 (() => {
   // haiercash/builtin-plugins/hi-buddy-doclib-kit/src/client/styles.css
   var styles_default = `.dsh-dl-root { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 0;
-  background: var(--dsw-alias-bg-base); color: var(--dsw-alias-label-primary); font-size: 13px; }
+  background: var(--dsh-page-background, var(--dsw-alias-bg-base)); color: var(--dsw-alias-label-primary); font-size: 13px; }
 .dsh-dl-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px 10px; }
 .dsh-dl-title { font-size: 15px; font-weight: 600; margin: 0; }
 .dsh-dl-meta { color: var(--dsw-alias-label-secondary); font-size: 12px; }

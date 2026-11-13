@@ -11,11 +11,12 @@ import type {} from '@deepseek-ai/dsh-client-locale/client'
 import type {} from '@deepseek-ai/dsh-client-ui-renderer/client'
 // Type-only: pulls the Session root standard-props merge.
 import type {} from '@deepseek-ai/dsh-client-ui-session/client'
+import type {} from '@deepseek-ai/dsh-client-ui-conversation/client'
 import type { SidebarPanelMetadata, SidebarRootInjected } from './contract/slots.ts'
 import { createPanelPins } from './panel-pins.ts'
 import { PlaceholderPage, NAV_PAGE_IDS, placeholderPanelId, type PlaceholderInjected } from './MorePage.tsx'
 import { SidebarRoot } from './SidebarRoot.tsx'
-import { WorkbenchTopbar, type MainPageTitle, type TopbarInjected } from './WorkbenchTopbar.tsx'
+import { ConversationNavigation, WorkbenchTopbar, type MainPageTitle, type TopbarInjected } from './WorkbenchTopbar.tsx'
 import { en, zh, type SidebarKey } from './locales.ts'
 
 export type {
@@ -154,6 +155,11 @@ export function apply(ctx: ClientContext): void {
     locale: NS,
     inject: topbarInject,
   }, WorkbenchTopbar))
+  ctx.slots.inject('conversation.header.navigation', () => ctx.slots.register({
+    name: 'conversation.header.navigation',
+    locale: NS,
+    inject: topbarInject,
+  }, ConversationNavigation))
   syncPanels()
   syncPageTitles()
 }

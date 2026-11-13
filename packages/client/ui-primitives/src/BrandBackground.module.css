@@ -1,0 +1,170 @@
+.root {
+  position: absolute;
+  right: 3%;
+  bottom: 24px;
+  width: min(88%, 605px, 75dvh);
+  height: auto;
+  aspect-ratio: 1281 / 1227;
+  z-index: -1;
+  opacity: var(--dsh-home-art-opacity);
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  transition: opacity 320ms ease-out;
+}
+
+.root::before,
+.root::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: var(--dsh-brand-artwork-image) center / contain no-repeat;
+}
+
+/* Blend two copies of the same transparent image to keep the faces crisp.
+   Blur only the artwork, so transforms cannot change the sampled backdrop. */
+.clear::before {
+  mask-image: linear-gradient(to bottom, black 68%, transparent 92%);
+}
+
+.clear::after {
+  filter: blur(14px);
+  mask-image: linear-gradient(to bottom, transparent 68%, black 92%);
+}
+
+.blurred {
+  opacity: var(--dsh-chat-art-opacity);
+}
+
+.blurred::before {
+  display: none;
+}
+
+.blurred::after {
+  filter: blur(12px);
+}
+
+.left {
+  right: auto;
+  left: 12px;
+  bottom: 12px;
+  width: min(440px, 75%);
+  height: auto;
+}
+
+/* Each window reuses the original eye texture inside the existing eye outline.
+   Coordinates are percentages of the theme artwork's 1281 × 1227 canvas. */
+.eyes {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+
+.buckles {
+  position: absolute;
+  inset: 0;
+  container-type: size;
+}
+
+.buckle {
+  position: absolute;
+  top: 62.9177cqh;
+  width: 4.3716cqw;
+  height: 4.6455cqh;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  corner-shape: round;
+  background: var(--dsw-static-neutral-00);
+}
+
+.buckle > svg {
+  width: 76%;
+  height: 76%;
+}
+
+.buckleLeft {
+  left: 46.2139cqw;
+}
+
+.buckleLeft > svg {
+  transform: rotate(-9deg);
+}
+
+.buckleRight {
+  left: 54.6448cqw;
+}
+
+.buckleRight > svg {
+  transform: rotate(9deg);
+}
+
+.eye {
+  position: absolute;
+  left: calc(var(--eye-source-x) * 1cqw);
+  top: calc(var(--eye-source-y) * 1cqh);
+  width: calc(var(--eye-width) * 1cqw);
+  height: calc(var(--eye-height) * 1cqh);
+  clip-path: ellipse(39% 42% at 50% 50%);
+}
+
+.eye::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background-image: var(--dsh-brand-artwork-image);
+  background-repeat: no-repeat;
+  background-size: 100cqw 100cqh;
+  background-position:
+    calc(var(--eye-source-x) * -1cqw + var(--dsh-eye-gaze-x, 0px))
+    calc(var(--eye-source-y) * -1cqh + var(--dsh-eye-gaze-y, 0px));
+  transition: background-position 160ms ease-out;
+}
+
+.darkLeft {
+  --eye-source-x: 29.3521;
+  --eye-source-y: 38.7123;
+  --eye-width: 7.4161;
+  --eye-height: 7.4165;
+}
+
+.darkRight {
+  --eye-source-x: 42.1546;
+  --eye-source-y: 33.9038;
+  --eye-width: 7.1819;
+  --eye-height: 7.4980;
+}
+
+.blondLeft {
+  --eye-source-x: 55.5035;
+  --eye-source-y: 35.8598;
+  --eye-width: 4.6838;
+  --eye-height: 6.6015;
+}
+
+.blondRight {
+  --eye-source-x: 67.8376;
+  --eye-source-y: 37.8158;
+  --eye-width: 5.4645;
+  --eye-height: 7.2535;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .clear {
+    transform:
+      translate(calc(var(--dsh-brand-pointer-x, 0) * 5px), calc(var(--dsh-brand-pointer-y, 0) * 3px))
+      rotate(calc(var(--dsh-brand-pointer-x, 0) * 0.5deg));
+    transform-origin: center 85%;
+    transition: transform 420ms ease-out, opacity 320ms ease-out;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    transition: none;
+  }
+
+  .eye::after {
+    background-position: calc(var(--eye-source-x) * -1cqw) calc(var(--eye-source-y) * -1cqh);
+    transition: none;
+  }
+}

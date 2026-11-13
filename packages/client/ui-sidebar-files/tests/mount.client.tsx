@@ -231,6 +231,7 @@ const unusedFactoryProps = {
   useWorkspaces: unusedFrameworkProp,
   useWorkspaceAccess: unusedFrameworkProp,
   useRemoteAccess: unusedFrameworkProp,
+  useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
   usePanelInfo: unusedFrameworkProp,
   useResource: unusedFrameworkProp,
   useConversation: unusedFrameworkProp,

@@ -3,7 +3,7 @@
 
 import type { ReactNode, RefObject } from 'react'
 import {
-  IconChevronDownOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
+  BrandLogo, IconChevronDownOutlineRegular, IconFolderCloseRegular, IconFolderOpenRegular,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import { workspaceTitleOf } from '@deepseek-ai/dsh-util-workspace-path'
 import type { ConversationContentProps } from '../contract/slots.ts'
@@ -78,6 +78,7 @@ export function HeroShell({ t, children }: HeroShellProps) {
     <div className={css.root}>
       <div className={css.stack}>
         <div className={css.headline}>
+          <span className={css.mark} aria-hidden="true" data-testid="hero-brand-mark"><BrandLogo size={96} /></span>
           <span className={css.title} data-testid="hero-headline">{t('hero.headline')}</span>
           <span className={css.subtitle}>{t('hero.subtitle')}</span>
         </div>

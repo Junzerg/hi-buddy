@@ -40,6 +40,18 @@ export const remoteDefaultResponses: RemoteTable = {
     // ui-settings-account bonus notice read and acknowledgement at signing in.
     'account/getUnnotifiedBonuses': ok(null),
     'account/ackBonusNotified': ok(true),
+    // hi-buddy-claude-kit refreshes its model and project catalogs at boot and reconnect.
+    'hiBuddyClaude/modelChoices': ok({ models: [], problems: [] }),
+    'hiBuddyClaude/projects': ok([]),
+    // hi-buddy-glossary-kit loads its document at apply.
+    'projectGlossary/read': ok({
+      revision: 0,
+      document: {
+        schemaVersion: 2,
+        glossary: { id: 'test-glossary', name: 'Test glossary', description: '', version: '', source: { kind: 'local', marketId: null } },
+        terms: [],
+      },
+    }),
   },
   // Stream endpoints the roster opens later than boot; declared so a spec that forgets the script gets a stream miss.
   streams: [

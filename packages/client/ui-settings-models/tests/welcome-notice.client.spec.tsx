@@ -94,6 +94,7 @@ function mount(
     openSection: vi.fn(),
     useSessions: unusedHook,
     useSessionStatus,
+    useRightbarShown: selector => selector(false),
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
     useWorkspaces: unusedHook,
     ...allowAllAccess,

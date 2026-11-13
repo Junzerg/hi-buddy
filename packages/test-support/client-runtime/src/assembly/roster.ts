@@ -17,6 +17,8 @@ export interface ClientRosterRow {
   readonly inject: readonly string[]
   /** Stage-one prefetch mark from `dsh.client.immediately` (false when absent). */
   readonly immediately: boolean
+  /** Installed client bundle used when the package has no source-plane import. */
+  readonly clientBundle?: string
 }
 
 /** Revision stamped on every synthesized row and batch; nothing is fetched by it. */

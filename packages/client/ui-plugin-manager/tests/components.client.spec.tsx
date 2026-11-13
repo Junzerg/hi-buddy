@@ -153,6 +153,7 @@ function renderTab(
   }
   const unusedStandardHook = (): never => { throw new Error('Plugin manager fixture does not provide global state') }
   const standard = {
+    useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
     usePanelInfo: unusedStandardHook,
     useWorkspaces: unusedStandardHook,
     useSessions: unusedStandardHook,

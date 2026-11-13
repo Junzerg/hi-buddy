@@ -25,7 +25,7 @@ This package provides the Web GUI's three-column AppFrame, edge-column widths, a
 <a id="use-this-package"></a>
 ## Use this package
 
-The root slot composes a 236px expanded sidebar, flexible main content, and a right panel that starts at 336px. Above 1180px an open right panel reserves its own column; at 1180px or below it overlays the main content without reducing its width. Column and panel transitions take 180ms; width adjustments apply immediately.
+The root slot composes a sidebar that starts at 236px and can be dragged between 220px and 420px when space permits, flexible main content, and a right panel that starts at 336px. Above 1180px an open right panel reserves its own column; at 1180px or below it overlays the main content without reducing its width. Column and panel transitions take 180ms; width adjustments apply immediately.
 
 Drag the right panel's left edge to resize it. The minimum width is 280px where space permits. Wide frames preserve at least 360px for main content; overlays leave a 24px edge beside the panel. With the handle focused, Left and Right adjust the width by 16px, and Home and End select the limits. Closing the panel or entering fullscreen retains the preferred width; fullscreen hides the handle. The width resets on page reload.
 

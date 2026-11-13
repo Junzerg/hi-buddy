@@ -57,7 +57,7 @@ describe('SidebarRoot.module.css', () => {
     const selected = declarations('.panelRow.panelActive')
     expect(selected?.get('background')).toBe('var(--dsw-specific-task-row-selected)')
     expect(selected?.get('color')).toBe('var(--dsw-specific-task-row-selected-ink)')
-    expect(selected?.get('font-weight')).toBe('600')
+    expect(selected?.get('font-weight')).toBe('500')
   })
 
   it('keeps the mark beside a two-line brand label', () => {

@@ -234,6 +234,7 @@ function mount(
           useChat={useChat}
           useTrajectory={useTrajectory}
           useSessions={props.useSessions}
+          useRightbarShown={selector => selector(false)}
           usePanelInfo={props.usePanelInfo}
           useContextMenu={contextMenuHook()} useResource={useResource}
           useSessionStatus={useSessionStatus}
@@ -264,6 +265,7 @@ function mount(
           useChat={useChat}
           useTrajectory={useTrajectory}
           useSessions={props.useSessions}
+          useRightbarShown={selector => selector(false)}
           usePanelInfo={props.usePanelInfo}
           useContextMenu={contextMenuHook()} useResource={useResource}
           useSessionStatus={useSessionStatus}
@@ -293,6 +295,7 @@ function mount(
           useSession={useSession}
           useConversation={useConversation}
           useSessions={props.useSessions}
+          useRightbarShown={selector => selector(false)}
           usePanelInfo={props.usePanelInfo}
           useSessionStatus={useSessionStatus}
           useSessionRetainInfo={() => undefined}
@@ -352,6 +355,7 @@ function mount(
       useChat,
       useTrajectory,
       useSessions: bindSnapshotSelector(sessions),
+      useRightbarShown: selector => selector(false),
       usePanelInfo: selector => selector({ activePanelId: null }),
       useContextMenu: contextMenuHook(),
       useResource,
@@ -379,6 +383,7 @@ function mount(
     )
   }) as ConversationSlotProps['renderFactorySlot']
   const runtimeProps: PropsRuntime<'main.conversation'> & Pick<ConversationSlotProps, 'SessionProvider'> = {
+    useRightbarShown: selector => selector(false),
     usePanelInfo: selector => selector({ activePanelId: null }),
     sessionId,
     SessionProvider,
@@ -410,11 +415,11 @@ function mount(
 }
 
 describe('Hero chrome', () => {
-  it('shows the Lingxi greeting without a brand mark', () => {
+  it('shows the greeting with the original H brand mark', () => {
     const view = render(<HeroShell t={makeTranslate(zh, commonZh)} />)
     expect(view.getByText('海智伙伴，我帮你')).toBeTruthy()
     expect(view.getByText('本地工作智能体平台 · 消费金融场景')).toBeTruthy()
-    expect(view.container.querySelector('svg')).toBeNull()
+    expect(view.getByTestId('hero-brand-mark').querySelector('svg')).toBeTruthy()
   })
 
   it('renders the English subtitle through the hero locale seat', () => {

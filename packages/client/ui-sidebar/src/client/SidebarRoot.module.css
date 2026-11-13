@@ -13,7 +13,7 @@
   min-height: 0;
   padding: 6px var(--dsh-sidebar-inline-padding);
   box-sizing: border-box;
-  background: var(--dsw-specific-sidebar-fill);
+  background: var(--dsh-sidebar-background);
   color: var(--dsw-alias-label-primary);
   font-size: 14px;
   /* The sidebar is elevated above the conversation surface, so a revealed
@@ -291,7 +291,8 @@
 }
 
 .panelRow.panelActive {
-  font-weight: 600;
+  font-weight: 500;
+  box-shadow: var(--dsh-sidebar-selected-shadow);
   background: var(--dsw-specific-task-row-selected);
   color: var(--dsw-specific-task-row-selected-ink);
 }

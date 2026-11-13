@@ -1,12 +1,13 @@
-/** Fixed navigation and a resizable right panel around the flexible main column. */
+/** Resizable sidebars around the flexible main column. */
 import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import type {
   PropsLocale, PropsRenderSlots, PropsRuntime, PropsStore,
 } from '@deepseek-ai/dsh-client-ui-slots'
-import { IconPanelLeftOutlineRegular, Tooltip } from '@deepseek-ai/dsh-client-ui-primitives'
-import { clampRightbarWidth, computeColumns, rightbarBounds, SIDEBAR_DEFAULT } from './columns.ts'
+import { BrandBackground, IconPanelLeftOutlineRegular, Tooltip } from '@deepseek-ai/dsh-client-ui-primitives'
+import { clampRightbarWidth, clampWidth, computeColumns, rightbarBounds, sidebarBounds } from './columns.ts'
 import { RightbarResizeHandle } from './RightbarResizeHandle.tsx'
+import { SidebarResizeHandle } from './SidebarResizeHandle.tsx'
 import { DocumentTitle } from './DocumentTitle.tsx'
 import type { createLayoutStore } from './stores.ts'
 import css from './AppFrame.module.css'
@@ -31,7 +32,12 @@ function CenterColumn(props: { topbar?: ReactNode; children?: ReactNode }) {
 /** Subscribe to the main key without subscribing the column frame to each panel id. */
 function MainPanel({ usePanelInfo, renderSlot }: Pick<PropsRuntime<'root'>, 'usePanelInfo'> & PropsRenderSlots<'main'>) {
   const panelId = usePanelInfo(info => info.activePanelId)
-  return renderSlot('main', {}, { entryKey: panelId ?? 'conversation' })
+  return (
+    <div className={css.mainPanel}>
+      {panelId !== null && panelId !== 'conversation' && <BrandBackground />}
+      {renderSlot('main', {}, { entryKey: panelId ?? 'conversation' })}
+    </div>
+  )
 }
 
 /**
@@ -49,6 +55,7 @@ export function AppFrame({
 }: AppFrameProps) {
   const layoutInfo = useStore(state => state.layoutInfo)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [dragging, setDragging] = useState(false)
   const frameRef = useRef<HTMLDivElement | null>(null)
   const viewport = layoutInfo.viewportWidth
 
@@ -80,14 +87,16 @@ export function AppFrame({
   }, [actions])
 
   const windowsTitlebar = document.documentElement.hasAttribute('data-windows-titlebar')
-  const sidebarWidth = sidebarCollapsed ? 0 : SIDEBAR_DEFAULT
+  const sidebarLimits = sidebarBounds(viewport)
+  const expandedWidth = clampWidth(layoutInfo.sidebarWidth, sidebarLimits.min, sidebarLimits.max)
+  const sidebarWidth = sidebarCollapsed ? 0 : expandedWidth
   const bounds = rightbarBounds(viewport, sidebarWidth)
   const rightbarWidth = clampRightbarWidth(layoutInfo.rightbarWidth, bounds)
-  const cols = computeColumns(viewport, layoutInfo.rightbarTrack, rightbarWidth)
+  const cols = computeColumns(viewport, layoutInfo.rightbarTrack, rightbarWidth, sidebarWidth)
   const toggleLabel = t(sidebarCollapsed ? 'sidebar.expand' : 'sidebar.collapse')
   const sidebar = useMemo(() => renderSlot('sidebar', {
-    collapsed: false, width: 236, drawer: false,
-  }), [renderSlot])
+    collapsed: false, width: expandedWidth, drawer: false,
+  }), [renderSlot, expandedWidth])
   const main = useMemo(() => (
     <MainPanel usePanelInfo={usePanelInfo} renderSlot={renderSlot} />
   ), [usePanelInfo, renderSlot])
@@ -111,6 +120,7 @@ export function AppFrame({
       data-rightbar-open={layoutInfo.rightbarShown || undefined}
       data-rightbar-fullscreen={layoutInfo.rightbarFullscreen || undefined}
       data-rightbar-instant={layoutInfo.rightbarInstant || undefined}
+      data-dragging={dragging || undefined}
     >
       <DocumentTitle
         productTitle={process.env.DSH_CLIENT_TITLE ?? t('brand.localBuild')}
@@ -128,6 +138,9 @@ export function AppFrame({
       </RightbarColumn>
       <div className={css.bottomRow} data-shell-bottom>{renderSlot('shell.bottom', {})}</div>
       <div className={css.overlayLayer} data-shell-overlay>{overlays}</div>
+      {!sidebarCollapsed && <SidebarResizeHandle width={expandedWidth} bounds={sidebarLimits}
+        label={t('sidebar.resize')} onResize={actions.setSidebarWidth}
+        onStart={() => { setDragging(true) }} onEnd={() => { setDragging(false) }} />}
       <Tooltip label={toggleLabel} side="bottom" delayMs={500}>
         <button type="button" className={css.sidebarToggle} aria-label={toggleLabel}
           aria-expanded={!sidebarCollapsed} onClick={() => { setSidebarCollapsed(value => !value) }}>

@@ -46,6 +46,8 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
   interface GlobalStandardProps {
     /** Subscribe to the selected main panel independently of parent renders. */
     usePanelInfo: UsePanelInfo
+    /** Subscribe to the right column's visibility from header navigation. */
+    useRightbarShown: SnapshotSelectorHook<boolean>
   }
 
   interface SlotMap {
@@ -60,7 +62,7 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
      * the seats it declares disappear with it. To add something to the
      * sidebar, register into one of those inner seats instead.
      *
-     * The occupant receives the fixed 236px column width and an expanded state.
+     * The occupant receives the expanded column width resolved by the frame.
      */
     'sidebar': { kind: 'single'; scope: 'root'; owner: SidebarOwnerProps }
     /**
@@ -113,13 +115,13 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
 // from the framework-derived shares. Conversation business state and actions arrive through
 // framework-standard hooks and each registrant's inject face, not owner props.
 
-/** Sidebar owner share: the fixed, expanded navigation column. */
+/** Sidebar owner share: the expanded navigation column and its resolved width. */
 export interface SidebarOwnerProps {
   /** Whether the sidebar uses overlay drawer presentation; false in the company layout. */
   drawer: boolean
   /** Always false: the navigation column stays expanded. */
   collapsed: boolean
-  /** Fixed navigation column width in px. */
+  /** Resolved expanded navigation column width in CSS pixels. */
   width: number
 }
 
@@ -167,7 +169,11 @@ export function apply(ctx: ClientContext): void {
     }
     const layout = new LayoutController(instance.actions, id =>
       ctx.slots.entries('main').some(entry => entry.options.key === id), panelInfo)
-    const disposePanelInfo = ctx.slots.provideRoot({ hooks: { panelInfo: layout.panelInfo } })
+    const rightbarShown: HostObservable<boolean> = {
+      getSnapshot: () => instance.getSnapshot().layoutInfo.rightbarShown,
+      subscribe: listener => instance.subscribe(listener),
+    }
+    const disposePanelInfo = ctx.slots.provideRoot({ hooks: { panelInfo: layout.panelInfo, rightbarShown } })
     const disposeService = ctx.reflect.provide('layout', layout)
     const disposeRegistration = ctx.slots.register({
       name: 'root',

@@ -12,7 +12,7 @@ import {
   type FontFamilies, type FontSizes, type ThemePreference,
 } from './theme-settings.ts'
 
-const LIGHT_BACKGROUND = '#fff'
+const LIGHT_BACKGROUND = '#eef4fb'
 const DARK_BACKGROUND = '#151517'
 
 /** CSS that colors the document canvas before any script executes. */

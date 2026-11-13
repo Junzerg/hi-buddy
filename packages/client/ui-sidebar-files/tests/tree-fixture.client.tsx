@@ -23,6 +23,7 @@ const seats = {
   useWorkspaces: unused,
   useWorkspaceAccess: unused,
   useRemoteAccess: unused,
+  useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
   usePanelInfo: unused,
   useResource: unused,
   useContextMenu: unused,

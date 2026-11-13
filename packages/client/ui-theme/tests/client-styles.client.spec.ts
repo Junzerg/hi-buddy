@@ -35,7 +35,9 @@ async function mountStyles() {
 
 describe('ui-theme client styles', () => {
   it('mounts every global sheet in dependency order and removes them on dispose', async () => {
+    const previousArtwork = document.documentElement.style.getPropertyValue('--dsh-brand-artwork-image')
     const fiber = await mountStyles()
+    expect(document.documentElement.style.getPropertyValue('--dsh-brand-artwork-image')).toMatch(/^url\("https?:\/\//)
 
     const styles = [...document.head.querySelectorAll<HTMLStyleElement>(`style[data-plugin="${PLUGIN_ID}"]`)]
     expect(styles.map(style => style.dataset.pluginCss)).toEqual([
@@ -51,6 +53,7 @@ describe('ui-theme client styles', () => {
     await fiber.dispose()
     expect(document.head.querySelectorAll(`style[data-plugin="${PLUGIN_ID}"]`)).toHaveLength(0)
     expect(document.documentElement.style.getPropertyValue(HAIRLINE_WIDTH)).toBe(previousWidth)
+    expect(document.documentElement.style.getPropertyValue('--dsh-brand-artwork-image')).toBe(previousArtwork)
   })
 
   it('calculates the stroke when resolution notifications are unavailable', async () => {

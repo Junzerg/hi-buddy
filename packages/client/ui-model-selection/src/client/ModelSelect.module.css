@@ -30,12 +30,6 @@
   cursor: pointer;
 }
 
-@media (hover: hover) {
-  .trigger:hover:not(:disabled) {
-    background: var(--dsw-alias-interactive-bg-hover);
-  }
-}
-
 .trigger:focus-visible:not([data-selection-focus]) {
   box-shadow: 0 0 0 2px var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
 }

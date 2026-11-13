@@ -62,6 +62,7 @@ const useSessionStatus: PermissionRowProps['useSessionStatus'] = selector => sel
 const runtime = {
   useSessions: (() => { throw new Error('unused') }) as never,
   useSessionStatus,
+  useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
   usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
   useWorkspaces: (() => { throw new Error('unused') }) as never,
   ...allowAllAccess,

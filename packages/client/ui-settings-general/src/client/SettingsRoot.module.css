@@ -95,6 +95,7 @@
    rearrange these areas into a horizontal layout. */
 .panel {
   position: relative;
+  isolation: isolate;
   z-index: 1;
   display: grid;
   grid-template-columns: 188px minmax(0, 1fr);

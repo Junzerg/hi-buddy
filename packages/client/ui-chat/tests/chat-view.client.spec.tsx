@@ -496,6 +496,7 @@ function makeHarness(
     fileDrag,
     resolveFilePath: vi.fn((path: string) => path),
     renderFactorySlot,
+    useRightbarShown: selector => selector(false),
     usePanelInfo: selector => selector({ activePanelId: null }),
     sessionId: SID,
     useSession: bindSnapshotSelector(session.source),

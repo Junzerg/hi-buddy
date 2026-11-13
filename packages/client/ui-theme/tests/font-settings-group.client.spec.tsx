@@ -54,6 +54,7 @@ function mount() {
   const props: FontSettingsGroupProps = {
     useSessions: emptySessions(),
     useSessionStatus,
+    useRightbarShown: selector => selector(false),
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
     useWorkspaces: emptyWorkspaces(),
     ...allowAllAccess,

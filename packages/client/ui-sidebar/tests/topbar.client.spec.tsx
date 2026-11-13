@@ -2,8 +2,8 @@
 /** Center-column top bar: page title, task list, and the right-sidebar toggle. */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { WorkbenchTopbar } from '../src/client/WorkbenchTopbar.tsx'
-import type { WorkbenchTopbarProps } from '../src/client/WorkbenchTopbar.tsx'
+import { ConversationNavigation, WorkbenchTopbar } from '../src/client/WorkbenchTopbar.tsx'
+import type { ConversationNavigationProps, WorkbenchTopbarProps } from '../src/client/WorkbenchTopbar.tsx'
 import { zh } from '../src/client/locales.ts'
 
 afterEach(() => { cleanup() })
@@ -41,6 +41,7 @@ function mount(overrides: {
   }
   const props = {
     rightbarShown: overrides.rightbarShown ?? false,
+    useRightbarShown: (select: (shown: boolean) => unknown) => select(overrides.rightbarShown ?? false),
     usePanelInfo: (select: (info: { activePanelId: string | null }) => unknown) => (
       select({ activePanelId: overrides.panelId ?? null })
     ),
@@ -61,14 +62,16 @@ function mount(overrides: {
     toggleRightbar,
     t: (key: keyof typeof zh) => zh[key],
   } as unknown as WorkbenchTopbarProps
-  render(<WorkbenchTopbar {...props} />)
+  if (overrides.panelId === undefined) render(<ConversationNavigation {...props as unknown as ConversationNavigationProps} />)
+  else render(<WorkbenchTopbar {...props} />)
   return { openSession, toggleRightbar }
 }
 
 describe('WorkbenchTopbar', () => {
-  it('names a page from its slot, and an open task by its title', () => {
-    mount({ pages: [{ key: 'conversation', label: '新建任务' }] })
-    expect(screen.getByText('新建任务')).toBeTruthy()
+  it('names independent pages and leaves the conversation title to its resident header', () => {
+    mount({ panelId: null, pages: [{ key: 'conversation', label: '新建任务' }] })
+    expect(screen.queryByText('新建任务')).toBeNull()
+    expect(document.querySelector('[data-workbench-topbar]')).toBeNull()
     cleanup()
 
     mount({ panelId: 'sidebar-assistant', pages: [{ key: 'sidebar-assistant', label: '远程助理' }] })
@@ -84,16 +87,16 @@ describe('WorkbenchTopbar', () => {
     cleanup()
 
     mount({
+      panelId: 'conversation',
       pages: [{ key: 'conversation', label: '新建任务' }],
       sessions: [{ id: 'task-1', title: '季度报告', main: true }],
     })
-    expect(screen.getByText('季度报告')).toBeTruthy()
+    expect(screen.queryByText('季度报告')).toBeNull()
   })
 
   it('hides unfinished search and toggles the right sidebar', () => {
     const { openSession, toggleRightbar } = mount()
     expect(screen.queryByRole('button', { name: '搜索' })).toBeNull()
-    expect(document.querySelector('[data-topbar-search]')?.hasAttribute('hidden')).toBe(true)
     expect(openSession).not.toHaveBeenCalled()
     expect(toggleRightbar).not.toHaveBeenCalled()
     const expand = screen.getByRole('button', { name: '展开侧栏' })

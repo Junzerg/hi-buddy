@@ -44,6 +44,7 @@ function mount(mode: TranscriptViewMode = 'standard', dictionary: typeof en | ty
   const setCollapseTiming = vi.fn((next: CollapseTiming) => { collapseTiming.set(next) })
   const setFoldedReplies = vi.fn((next: FoldedReplies) => { foldedReplies.set(next) })
   const props: TranscriptViewRowProps = {
+    useRightbarShown: selector => selector(false),
     usePanelInfo: selector => selector({ activePanelId: null }),
     useSessions: emptySessions(),
     useSessionStatus: noPendingInteraction(),

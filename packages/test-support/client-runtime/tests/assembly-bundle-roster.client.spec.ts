@@ -74,6 +74,14 @@ describe('bundleRoster on a scratch installation', () => {
   const scratch = new Scratch()
   afterAll(() => { rmSync(scratch.root, { recursive: true, force: true }) })
 
+  it.each(['./client.js', { default: './client.js' }])('retains the installed client export for bundle fallback (%j)', (clientExport) => {
+    scratch.pkg('@t/installed', { exports: { './client': clientExport }, dsh: { client: { platform: 'web' } } })
+    scratch.bundle('@t/installed-bundle', "- insert:\n    - name: '@t/installed'\n")
+    const roster = bundleRoster(['@t/installed-bundle'], scratch.anchor)
+    expect(roster.pick(['@t/installed']).rows[0]?.clientBundle)
+      .toBe(join(scratch.root, 'app', 'node_modules', '@t', 'installed', 'client.js'))
+  })
+
   it('resolves a bundle that registers its own browser entry', () => {
     const linked = new Scratch()
     onTestFinished(() => { rmSync(linked.root, { recursive: true, force: true }) })

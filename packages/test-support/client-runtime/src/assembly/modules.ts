@@ -5,10 +5,13 @@
  * nor a stage-one `prefetch` ever fetches a bundle.
  * @module @deepseek-ai/dsh-client-test-runtime/src/assembly/modules
  */
+import { readFileSync } from 'node:fs'
+import { compileFunction } from 'node:vm'
 import * as modulesClient from '@deepseek-ai/dsh-client-modules/client'
 import { createClientModuleSystem } from '@deepseek-ai/dsh-client-modules/client'
-import type { ClientModuleLoader, ClientModuleLoaderTarget, WebBootGraph } from '@deepseek-ai/dsh-client-modules/client'
-import type { AssemblyPlan, ClientPluginModule } from './roster.ts'
+import type { ClientBundleRegistration, ClientModuleLoader, ClientModuleLoaderTarget, WebBootGraph } from '@deepseek-ai/dsh-client-modules/client'
+import { getStaticModules } from '@deepseek-ai/dsh-client-web/src/seed.ts'
+import { graphFromRoster, type AssemblyPlan, type ClientPluginModule, type ClientRosterRow } from './roster.ts'
 
 /** The bootstrap row: always this process's static namespace, never a dynamic import or a `provide` replacement. */
 export const MODULES_PACKAGE = '@deepseek-ai/dsh-client-modules'
@@ -16,7 +19,9 @@ export const MODULES_PACKAGE = '@deepseek-ai/dsh-client-modules'
 /**
  * Resolve each roster row to its plugin module: `plan.provide[name]` when
  * present, otherwise a `/client` import resolved by the repository's tsconfig
- * path aliases under Vitest. The bootstrap row is the
+ * path aliases under Vitest. Installed packages without a source import use
+ * their bundle factory with the production module system and platform table.
+ * The bootstrap row is the
  * statically imported `@deepseek-ai/dsh-client-modules/client` namespace.
  * @param plan - validated plan.
  * @returns package name → module, in roster order.
@@ -24,7 +29,9 @@ export const MODULES_PACKAGE = '@deepseek-ai/dsh-client-modules'
  */
 export async function loadPluginModules(plan: AssemblyPlan): Promise<ReadonlyMap<string, ClientPluginModule>> {
   const modules = new Map<string, ClientPluginModule>()
-  for (const { name } of plan.roster.rows) {
+  const bundles: ClientBundleRegistration[] = []
+  for (const row of plan.roster.rows) {
+    const { name } = row
     const provided = plan.provide?.[name]
     if (name === MODULES_PACKAGE) {
       if (provided !== undefined) {
@@ -33,15 +40,45 @@ export async function loadPluginModules(plan: AssemblyPlan): Promise<ReadonlyMap
       modules.set(name, modulesClient)
       continue
     }
-    modules.set(name, provided ?? await importClient(name))
+    const loaded = provided ?? await importClient(row)
+    if ('factory' in loaded) bundles.push(loaded)
+    else modules.set(name, loaded)
   }
-  return modules
+  if (bundles.length > 0) {
+    const system = createInProcessModules(graphFromRoster(plan.roster.rows), modules, bundles)
+    for (const { id } of bundles) modules.set(id, await system.import(id, '', {}) as ClientPluginModule)
+  }
+  return new Map(plan.roster.rows.map(({ name }) => {
+    const module = modules.get(name)
+    if (module === undefined) throw new Error(`client-test-runtime: no loaded module for ${name}`)
+    return [name, module]
+  }))
 }
 
-async function importClient(name: string): Promise<ClientPluginModule> {
+async function importClient({ name, clientBundle }: ClientRosterRow): Promise<ClientPluginModule | ClientBundleRegistration> {
   let namespace: unknown
   try {
-    namespace = await import(/* @vite-ignore */ `${name}/client`)
+    try {
+      namespace = await import(/* @vite-ignore */ `${name}/client`)
+    } catch (error) {
+      if (clientBundle === undefined || !(error instanceof Error)
+        || !error.message.startsWith(`Cannot find package '${name}/client'`)) throw error
+      let registration: ClientBundleRegistration | undefined
+      const loader = { load: (value: ClientBundleRegistration) => {
+        if (registration !== undefined || value.id !== name) {
+          throw new Error(`client-test-runtime: expected one bundle registration for ${name}`)
+        }
+        registration = value
+      } }
+      // Keep registration local to this assembly while forwarding other window reads.
+      const browser = new Proxy(typeof window === 'undefined' ? {} : window, {
+        get: (target, key): unknown => key === '__ModuleLoader__' ? loader : Reflect.get(target, key, target),
+      })
+      const execute = compileFunction(readFileSync(clientBundle, 'utf8'), ['window'], { filename: clientBundle }) as (browser: object) => void
+      execute(browser)
+      if (registration === undefined) throw new Error(`client-test-runtime: bundle did not register ${name}`)
+      return registration
+    }
   } catch (error) {
     throw new Error(`client-test-runtime: cannot import ${name}/client: ${String(error)}`, { cause: error })
   }
@@ -50,16 +87,18 @@ async function importClient(name: string): Promise<ClientPluginModule> {
 
 /**
  * Build the production module system over queued factories returning the
- * loaded namespaces. The bootstrap row uses `bootstrapModule`; `staticModules`
- * is empty because namespaces already hold their own imports. Missing factories
- * reject through `loadBundle` without fetching.
+ * loaded namespaces and installed bundle registrations. The bootstrap row uses
+ * `bootstrapModule`; bundled externals use the shell's static module table.
+ * Missing factories reject through `loadBundle` without fetching.
  * @param graph - raw boot graph from `graphFromRoster`; `createClientModuleSystem` parses it.
  * @param modules - loaded plugin modules keyed by package name.
+ * @param bundles - installed package factories captured by this assembly.
  * @returns module system to install as `loader.internal`; its `manifest` is the parsed graph.
  */
 export function createInProcessModules(
   graph: WebBootGraph,
   modules: ReadonlyMap<string, ClientPluginModule>,
+  bundles: readonly ClientBundleRegistration[] = [],
 ): ClientModuleLoader {
   const target: ClientModuleLoaderTarget = {
     mode: 'queue',
@@ -72,9 +111,10 @@ export function createInProcessModules(
     if (id === MODULES_PACKAGE) continue
     target.pendingQueue.push({ id, factory: () => namespace as unknown as Record<string, unknown> })
   }
+  target.pendingQueue.push(...bundles)
   return target.create({
     boot: graph,
-    staticModules: {},
+    staticModules: getStaticModules(),
     loadBundle: url => Promise.reject(new Error(`client-test-runtime: in-process modules never load bundles (${url})`)),
   })
 }

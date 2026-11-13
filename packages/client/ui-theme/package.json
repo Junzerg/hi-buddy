@@ -25,7 +25,8 @@
     "./src/*": "./src/*",
     "./package.json": "./package.json",
     "./brand-font.css": "./lib/styles/brand-font.css",
-    "./locale/*.json": "./locale/*.json"
+    "./locale/*.json": "./locale/*.json",
+    "./assets/*": "./lib/assets/*"
   },
   "dsh": {
     "client": {
@@ -67,7 +68,8 @@
     "lib/index.js",
     "lib/client.js",
     "lib/styles",
-    "lib/types/**/*.d.ts"
+    "lib/types/**/*.d.ts",
+    "lib/assets"
   ],
   "scripts": {
     "bundle": "tsdown",

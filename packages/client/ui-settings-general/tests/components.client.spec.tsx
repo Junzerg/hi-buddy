@@ -40,6 +40,7 @@ const noAttention: AttentionSnapshot = new Map()
 const useSessionStatus: TriggerContentProps['useSessionStatus'] = selector => selector(noAttention)
 const kit = {
   useSessions: unusedHook, useSessionStatus,
+  useRightbarShown: <T,>(selector: (shown: boolean) => T) => selector(false),
   usePanelInfo, useSessionRetainInfo: () => undefined, useResource, useWorkspaces: unusedHook,
   ...allowAllAccess,
   useContextMenu: contextMenuHook(),

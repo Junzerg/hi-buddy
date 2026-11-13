@@ -22,6 +22,7 @@ function view(partial: Partial<AgentPresetSectionState> = {}, startCreatorDraft?
     close: vi.fn() }
   const props: AgentPresetSectionProps = { ...actions,
     ...(startCreatorDraft === undefined ? {} : { startCreatorDraft }),
+    useRightbarShown: selector => selector(false),
     usePanelInfo: unusedHook, useSessions: unusedHook, useSessionStatus: unusedHook, useSessionRetainInfo: unusedHook,
     useWorkspaces: unusedHook, useResource: unusedHook,
     ...allowAllAccess,

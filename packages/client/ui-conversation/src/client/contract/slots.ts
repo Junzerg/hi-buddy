@@ -261,6 +261,8 @@ declare module '@deepseek-ai/dsh-client-ui-slots' {
       scope: 'root'
       owner: ConversationHeaderLeadingOwnerProps
     }
+    /** Global task navigation at the right of the resident header, including blank home. */
+    'conversation.header.navigation': { kind: 'single'; scope: 'root' }
     /**
      * The header's far-right corner, past the utilities' edge and into the
      * header's own padding, for one control. The corner is laid out only while
@@ -667,7 +669,7 @@ export type ConversationSessionSlotProps =
 /** Full props of the resident navigation header. */
 export type ConversationHeaderProps =
   PropsRuntime<'conversation.header'>
-  & PropsRenderSlots<'conversation.header.leading' | 'conversation.session.header'>
+  & PropsRenderSlots<'conversation.header.leading' | 'conversation.header.navigation' | 'conversation.session.header'>
 
 /** Full props of the strict Session header. */
 export type ConversationSessionHeaderSlotProps =

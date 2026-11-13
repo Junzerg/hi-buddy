@@ -31,6 +31,7 @@ export const WEB_PROFILE_BUNDLES: readonly string[] = ['@deepseek-ai/dsh-base', 
 
 interface PackageManifest {
   name?: unknown
+  exports?: Record<string, string | { default?: string }>
   dsh?: { bundle?: { patch?: unknown }; client?: unknown }
 }
 
@@ -81,7 +82,12 @@ export function bundleRoster(
       && !(disabledContext !== undefined && isJsExpr(value)))) {
       throw new Error(`client-test-runtime: browser row ${name} has a \`disabled\` value this reader cannot evaluate (a !!js expression)`)
     }
-    rows.push({ name, inject: declaration.inject ?? [], immediately: declaration.immediately === true })
+    const clientExport = manifest.exports?.['./client']
+    const clientPath = typeof clientExport === 'string' ? clientExport : clientExport?.default
+    rows.push({
+      name, inject: declaration.inject ?? [], immediately: declaration.immediately === true,
+      ...(clientPath === undefined ? {} : { clientBundle: join(dirname(manifestPath), clientPath) }),
+    })
   }
   return ClientRoster.of(rows)
 }

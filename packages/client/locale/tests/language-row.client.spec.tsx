@@ -43,6 +43,7 @@ function mount(active = 'en') {
   const props: LanguageRowComponentProps = {
     useSessions: emptySessions(),
     useSessionStatus,
+    useRightbarShown: selector => selector(false),
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
     useWorkspaces: emptyWorkspaces(),
     ...allowAllAccess,

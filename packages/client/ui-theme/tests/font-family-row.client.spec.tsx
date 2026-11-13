@@ -51,6 +51,7 @@ function mount(kind: FontRole = 'code', code = '') {
   const props: FontFamilyRowComponentProps = {
     useSessions: emptySessions(),
     useSessionStatus,
+    useRightbarShown: selector => selector(false),
     usePanelInfo, useSessionRetainInfo: () => undefined, useResource,
     useWorkspaces: emptyWorkspaces(),
     ...allowAllAccess,

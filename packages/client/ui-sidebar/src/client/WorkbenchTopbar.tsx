@@ -1,7 +1,7 @@
-/** Center-column top bar: page title, task list, and the right-sidebar toggle. */
+/** Global page titles and shared task navigation for the workbench and conversation header. */
 import { useState } from 'react'
 import {
-  IconPanelLeftOutlineRegular, IconQueueOutlineRegular, IconSearchOutlineRegular, Menu, Tooltip,
+  IconPanelLeftOutlineRegular, IconQueueOutlineRegular, Menu, Tooltip,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ObservableSnapshot } from '@deepseek-ai/dsh-client-store'
 import type { ShortcutCatalogEntry } from '@deepseek-ai/dsh-client-shortcuts/client'
@@ -24,7 +24,7 @@ interface TaskRow {
   readonly title: string
 }
 
-/** Callbacks the shell closes over its services. Search stays unwired. */
+/** Callbacks and reactive sources shared by the navigation surfaces. */
 export interface TopbarInjected {
   /** Open one task in the center column. */
   openSession: (sessionId: string) => void
@@ -42,11 +42,21 @@ export interface TopbarInjected {
   }
 }
 
-/** Full props: frame owner state, injected actions, and the sidebar locale. */
+/** Frame owner state, injected actions, and the sidebar locale. */
 export type WorkbenchTopbarProps =
   & PropsRuntime<'shell.topbar'>
   & InjectFace<TopbarInjected>
   & PropsLocale<'sidebar'>
+
+/** Root-scoped navigation stays available before a Session exists. */
+export type ConversationNavigationProps =
+  & PropsRuntime<'conversation.header.navigation'>
+  & InjectFace<TopbarInjected>
+  & PropsLocale<'sidebar'>
+
+type WorkbenchActionsProps = Pick<WorkbenchTopbarProps,
+  'rightbarShown' | 'useSessions' | 'useArchivedSessionIds' | 'useShortcuts'
+  | 'openSession' | 'toggleRightbar' | 't'>
 
 /**
  * Title of a non-conversation page, using the same words as its sidebar row.
@@ -84,50 +94,22 @@ function equalPages(left: readonly MainPageTitle[], right: readonly MainPageTitl
   })
 }
 
-/**
- * The center column's top bar.
- * Search stays hidden until its action is available.
- * @param props - frame state, task and panel sources, and sidebar copy.
- * @returns the bar.
- */
-export function WorkbenchTopbar({
-  rightbarShown, usePanelInfo, useSessions, usePanels, useArchivedSessionIds, usePageTitles,
-  useShortcuts, openSession, toggleRightbar, t,
-}: WorkbenchTopbarProps) {
-  const panelId = usePanelInfo(info => info.activePanelId)
-  const panels = usePanels(list => list)
-  const mainTitle = useSessions((state) => {
-    const current = Object.values(state.byId).find(row => (row.retainedBy.mainView ?? 0) > 0)
-    return current === undefined || current.blank ? '' : current.displayTitle
-  })
+/** Render shared task navigation and the right-sidebar toggle. */
+function WorkbenchActions({
+  rightbarShown, useSessions, useArchivedSessionIds, useShortcuts, openSession, toggleRightbar, t,
+}: WorkbenchActionsProps) {
   const tasks = useSessions(state => state.ids.flatMap((id) => {
     const row = state.byId[id]
     if (row === undefined || row.blank || row.origin === 'subagent') return []
     return [{ id: row.id, title: row.displayTitle }]
   }), equalTasks)
   const archived = useArchivedSessionIds(ids => ids, equalIds)
-  const pages = usePageTitles(list => list, equalPages)
   const toggle = useShortcuts(entries => entries.find(entry => entry.id === 'sidebar.right.toggle'))
   const visibleTasks = tasks.filter(task => !archived.includes(task.id))
-  const slotKey = panelId === null ? 'conversation' : panelId
-  const slotTitle = pages.find(page => page.key === slotKey)?.label
-  const pageTitle = slotKey === 'conversation' && mainTitle !== ''
-    ? mainTitle
-    : slotTitle !== undefined
-      ? slotTitle
-      : slotKey === 'conversation'
-        ? ''
-        : panelTitle(slotKey, panels, t)
   const [tasksOpen, setTasksOpen] = useState(false)
   const rightbarLabel = t(rightbarShown ? 'topbar.collapse' : 'topbar.expand')
   return (
-    <header className={css.bar} data-window-drag data-workbench-topbar="">
-      <button type="button" className={css.button} data-topbar-search="" hidden>
-        <IconSearchOutlineRegular size={14} />
-        {t('topbar.search')}
-      </button>
-      <div className={css.pageTitle}>{pageTitle}</div>
-      <div className={css.spacer} />
+    <div className={css.actions}>
       <Menu
         open={tasksOpen}
         onClose={() => { setTasksOpen(false) }}
@@ -143,25 +125,50 @@ export function WorkbenchTopbar({
           openSession(id)
         }}
         anchor={(
-          <button type="button" className={css.button} aria-expanded={tasksOpen} aria-haspopup="menu"
-            onClick={() => { setTasksOpen(open => !open) }}>
-            <IconQueueOutlineRegular size={14} />
-            {t('topbar.tasks')}
-          </button>
+          <Tooltip label={t('topbar.tasks')} side="bottom" delayMs={500}>
+            <button type="button" className={css.button} aria-label={t('topbar.tasks')} aria-expanded={tasksOpen} aria-haspopup="menu"
+              onClick={() => { setTasksOpen(open => !open) }}>
+              <IconQueueOutlineRegular size={14} />
+              <span className={css.buttonLabel}>{t('topbar.tasks')}</span>
+            </button>
+          </Tooltip>
         )}
       />
       <Tooltip label={rightbarLabel} shortcutKeys={toggle?.keys} side="bottom" delayMs={500}>
         <button
           type="button"
           className={css.button}
+          aria-label={rightbarLabel}
           aria-keyshortcuts={toggle?.aria}
           data-sidebar-right-expand={rightbarShown ? undefined : ''}
           onClick={toggleRightbar}
         >
           <IconPanelLeftOutlineRegular className={css.expandIcon} size={14} />
-          {rightbarLabel}
+          <span className={css.buttonLabel}>{rightbarLabel}</span>
         </button>
       </Tooltip>
+    </div>
+  )
+}
+
+/** Render task navigation in the resident Conversation header. */
+export function ConversationNavigation(props: ConversationNavigationProps) {
+  const rightbarShown = props.useRightbarShown(shown => shown)
+  return <WorkbenchActions {...props} rightbarShown={rightbarShown} />
+}
+
+/** Render the workbench top bar for independent global pages. */
+export function WorkbenchTopbar(props: WorkbenchTopbarProps) {
+  const panelId = props.usePanelInfo(info => info.activePanelId)
+  const panels = props.usePanels(list => list)
+  const pages = props.usePageTitles(list => list, equalPages)
+  if (panelId === null || panelId === 'conversation') return null
+  const pageTitle = pages.find(page => page.key === panelId)?.label ?? panelTitle(panelId, panels, props.t)
+  return (
+    <header className={css.bar} data-window-drag data-workbench-topbar="">
+      <div className={css.pageTitle}>{pageTitle}</div>
+      <div className={css.spacer} />
+      <WorkbenchActions {...props} />
     </header>
   )
 }

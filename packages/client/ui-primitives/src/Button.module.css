@@ -34,7 +34,7 @@
 }
 
 .primary {
-  background: var(--dsw-alias-button-primary-fill);
+  background: var(--dsh-button-primary-background, var(--dsw-alias-button-primary-fill));
   color: var(--dsw-alias-label-primary-foreground);
 }
 

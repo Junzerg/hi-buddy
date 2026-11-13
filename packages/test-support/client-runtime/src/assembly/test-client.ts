@@ -30,6 +30,12 @@ const REMOTE_ACCESS_PACKAGE = '@deepseek-ai/dsh-api-remote-access'
  */
 const GENERATED_REMOTE_PACKAGES: readonly string[] = [REMOTES_PACKAGE, REMOTE_ACCESS_PACKAGE]
 
+/** Installed kits mount their bundled generated clients through `remote.$mount`. */
+const KIT_REMOTE_NAMESPACES: Readonly<Record<string, readonly string[]>> = {
+  'hi-buddy-claude-kit': ['hiBuddyClaude'],
+  'hi-buddy-glossary-kit': ['projectGlossary'],
+}
+
 /** Carrier options. */
 export interface TestClientOptions {
   /**
@@ -251,7 +257,9 @@ export class TestClient {
       mountPoint = resolveMountPoint(options.mount)
       release = sharedJsdomShims.acquire()
       const system = createInProcessModules(graphFromRoster(roster.rows), modules)
-      ctx.plugin(remoteProxiesPlugin(remoteNamespacesOf(modules.values(), mock), mock) as Plugin)
+      const kitNamespaces = roster.rows.flatMap(row => KIT_REMOTE_NAMESPACES[row.name] ?? [])
+      const proxyNamespaces = remoteNamespacesOf(modules.values(), mock).filter(name => !kitNamespaces.includes(name))
+      ctx.plugin(remoteProxiesPlugin(proxyNamespaces, mock) as Plugin)
       // The dropped remote-access row's Hooks: every action is allowed on every resource unless the spec fixes the answers.
       if (generated.includes(REMOTE_ACCESS_PACKAGE)) {
         ctx.plugin(options.access === undefined ? allowAllAccessPlugin : staticAccessPlugin(options.access))

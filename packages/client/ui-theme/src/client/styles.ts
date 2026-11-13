@@ -7,6 +7,7 @@ import onboarding from '../styles/onboarding.css?inline'
 import scrollbar from '../styles/scrollbar.css?inline'
 import gradientShadowText from '../styles/gradient-shadow-text.css?inline'
 import shiki from '../styles/shiki.css?inline'
+import brandArtwork from './assets/haier-brothers.png'
 
 const PLUGIN_ID = '@deepseek-ai/dsh-client-ui-theme'
 const HAIRLINE_WIDTH = '--dsh-hairline-width'
@@ -29,6 +30,19 @@ const STYLES = [
 export function installThemeStyles(ctx: Context): void {
   if (typeof document === 'undefined') return
   const view = document.defaultView
+  if (view !== null) ctx.effect(() => {
+    const root = document.documentElement
+    const property = '--dsh-brand-artwork-image'
+    const previous = root.style.getPropertyValue(property)
+    const priority = root.style.getPropertyPriority(property)
+    // Shared CSS may be served from /assets; resolve the package image against
+    // the document here so its URL works from every consuming stylesheet.
+    root.style.setProperty(property, `url("${new URL(brandArtwork, document.baseURI).href}")`)
+    return () => {
+      if (previous === '') root.style.removeProperty(property)
+      else root.style.setProperty(property, previous, priority)
+    }
+  }, 'ui-theme: shared brand artwork')
   if (view !== null) ctx.effect(() => {
     const root = document.documentElement
     const previousWidth = root.style.getPropertyValue(HAIRLINE_WIDTH)

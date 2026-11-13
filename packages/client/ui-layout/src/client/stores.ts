@@ -4,7 +4,7 @@
  */
 import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-store'
 import type { MainPanelId } from './service.ts'
-import { RIGHTBAR_WIDTH } from './columns.ts'
+import { clampWidth, RIGHTBAR_WIDTH, SIDEBAR_DEFAULT, SIDEBAR_MAX, SIDEBAR_MIN } from './columns.ts'
 
 /**
  * Transient frame layout. The right panel's expanded state belongs to its occupant.
@@ -18,6 +18,8 @@ type LayoutState = {
 }
 
 type LayoutInfo = {
+  /** Expanded navigation width, retained while the sidebar is hidden. */
+  sidebarWidth: number
   /** Last positive frame measurement; window width bootstraps the first render. */
   viewportWidth: number
   /** Preferred normal width, retained across Session switches and panel closes. */
@@ -51,6 +53,7 @@ type LayoutActions = {
   retainMainPanels: (draft: LayoutState, panelIds: readonly string[]) => void
   setViewportWidth: (draft: LayoutState, width: number) => void
   setRightbarWidth: (draft: LayoutState, width: number) => void
+  setSidebarWidth: (draft: LayoutState, width: number) => void
   openRightbar: (draft: LayoutState, track: boolean, fullscreen: boolean) => void
   closeRightbar: (draft: LayoutState) => void
 }
@@ -64,6 +67,7 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
     init: (): LayoutState => ({
       panelInfo: { activePanelId: null },
       layoutInfo: {
+        sidebarWidth: SIDEBAR_DEFAULT,
         viewportWidth: window.innerWidth,
         rightbarWidth: RIGHTBAR_WIDTH,
         rightbarShown: false,
@@ -73,6 +77,9 @@ export function createLayoutStore(): EngineStoreHandle<LayoutState, LayoutAction
       },
     }),
     actions: {
+      setSidebarWidth: (d, width: number) => {
+        d.layoutInfo.sidebarWidth = clampWidth(width, SIDEBAR_MIN, SIDEBAR_MAX)
+      },
       selectPanel: (d, panelId: MainPanelId | null) => {
         d.panelInfo.activePanelId = panelId
       },

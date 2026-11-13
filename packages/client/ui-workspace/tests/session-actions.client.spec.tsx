@@ -78,6 +78,7 @@ const standard: GlobalStandardProps = {
   useSessions: hook(sessions),
   useSessionStatus: hook(noStatus),
   useSessionRetainInfo: () => undefined,
+  useRightbarShown: selector => selector(false),
   usePanelInfo,
   useContextMenu: contextMenuHook(), useResource,
   useWorkspaces: hook(workspaces),
