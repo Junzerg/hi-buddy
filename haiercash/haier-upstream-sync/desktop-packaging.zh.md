@@ -34,6 +34,8 @@ pnpm --version
 
 读取 [current-desktop-build.json](current-desktop-build.json)，再读取其中指向的记录。版本号、源码提交、目标模式、插件默认状态和验收状态均以该记录为准。两台机器必须显示同一版本和提交；不同就停止，不得拼成同一版。不得替换成最新提交、`auto` 或根据本地产物猜出的版本，也不要沿用无关的旧对话指令。
 
+固定提交中的 `haiercash/builtin-plugins/` 包含 Claude、术语表和任务池插件归档，`packages/bundle/web-app/package.json` 选择归档，`pnpm-lock.yaml` 固定其完整性。构建前将版本与 SHA-256 同选定记录核对。确认源码提交前，kit 的 UI 修改须已进入这些归档；两台机器均通过 `pnpm install --frozen-lockfile` 安装已提交的归档。
+
 <a id="windows"></a>
 ## Windows x64
 
@@ -106,6 +108,8 @@ DMG 是首次安装使用的文件。`lingxi-office-release-<version>-mac-arm64.
 
 <a id="acceptance"></a>
 ## 验收与失败处理
+
+海尔蓝 UI 验收在安装后的客户端分别检查浅色和深色主题。核对原有渐变 H 标识、新会话中标识和海尔兄弟随鼠标晃动、眼睛跟随鼠标、随人物姿势旋转的 H 腰带标记，以及腿部渐进模糊。发送消息后，检查对话和轨迹页面右下角的朦胧海尔兄弟，设置页检查左下角背景。核对 Claude 和术语表中间栏、侧栏渐变及拖动调宽、单排会话标题，以及透明的 Default 触发按钮和正常弹层。覆盖窄窗口及系统减少动态效果设置。
 
 打包前读取所选记录的 `checks`，不得把未解决的失败当作通过。成功后报告实际提交号、工作区干净状态、版本号、安装文件路径、字节数、SHA-256、适用的签名／公证结果，以及 `lingxi-office-release-*.tar.gz` 路径与 SHA-256。缺少发布归档时不得声称打包完成。在目标系统安装，验证启动、公司登录、模型发现与对话、Office 文档预览（例如 .pptx）、配置的插件默认状态及重启后的数据保留。已有 profile 可以保留用户设置。仅有安装文件不能代表安装验收通过。
 

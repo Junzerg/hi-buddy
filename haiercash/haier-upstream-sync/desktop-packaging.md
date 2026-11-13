@@ -34,6 +34,8 @@ pnpm --version
 
 Read [current-desktop-build.json](current-desktop-build.json), then the record it names. The version, source commit, target modes, plugin defaults, and acceptance status come from that record. Both machines must print the same version and commit; if they differ, stop rather than combining builds. Do not substitute the newest commit, `auto`, or a version guessed from local artifacts. Ignore unrelated stale chat instructions.
 
+The pinned host checkout carries the packaged Claude, glossary, and session-pool kits in `haiercash/builtin-plugins/`. `packages/bundle/web-app/package.json` selects their archives and `pnpm-lock.yaml` pins their integrity. Check those versions and SHA-256 values against the selected record before building. Kit UI changes must reach these archives before the source pin is confirmed; both builders install the committed archives with `pnpm install --frozen-lockfile`.
+
 <a id="windows"></a>
 ## Windows x64
 
@@ -106,6 +108,8 @@ The DMG is the first-install file. `lingxi-office-release-<version>-mac-arm64.ta
 
 <a id="acceptance"></a>
 ## Acceptance and failures
+
+For Haier blue UI acceptance, check both light and dark themes on the installed client. Verify the original gradient H logo, pointer-following logo and brothers on a new conversation, eye tracking, rotated H belt marks, and progressive leg blur. After sending a message, check the blurred brothers at the lower right in Chat and Trajectory; Settings places them at the lower left. Check the middle columns of Claude and glossary, the sidebar gradient and drag-to-resize handle, one conversation title row, and the transparent Default trigger with its normal popup surface. Include a narrow window and the system reduced-motion preference.
 
 Read the selected record's `checks` before building; unresolved failures are not passing evidence. After success, report the actual commit, clean-worktree state, version, installer path, byte size, SHA-256, signing/notarization result where applicable, and the `lingxi-office-release-*.tar.gz` path with its SHA-256. Do not claim packaging is complete without that archive. Install on the target system and verify startup, company login, model discovery and conversation, Office document preview (for example a .pptx), configured plugin defaults, and persistence after restart. Existing profiles may retain user settings. A file's existence alone is not installation acceptance.
 

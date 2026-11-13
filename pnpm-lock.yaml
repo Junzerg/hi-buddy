@@ -3389,14 +3389,14 @@ importers:
         specifier: ^15.0.0
         version: 15.0.0
       hi-buddy-claude-kit:
-        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.15.tgz
-        version: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.15.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))
+        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.16.tgz
+        version: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.16.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))
       hi-buddy-glossary-kit:
-        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz
-        version: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)
+        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz
+        version: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)
       hi-buddy-session-pool-kit:
-        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz
-        version: file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-agent@packages+core+agent)(@deepseek-ai/dsh-api-remote-access@packages+api+remote-access)(@deepseek-ai/dsh-api-session-controller@packages+api+session-controller)(@deepseek-ai/dsh-llm@packages+llm+llm)(@deepseek-ai/dsh-session-projection@packages+session+session-projection)(@deepseek-ai/dsh-session-title@packages+session+session-title)(@deepseek-ai/dsh-session@packages+core+session)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-subagent@packages+subagent+subagent)(@deepseek-ai/dsh-system-prompt@packages+core+system-prompt)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@deepseek-ai/dsh-workspace@packages+workspace+workspace)
+        specifier: file:../../../haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz
+        version: file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-agent@packages+core+agent)(@deepseek-ai/dsh-api-remote-access@packages+api+remote-access)(@deepseek-ai/dsh-api-session-controller@packages+api+session-controller)(@deepseek-ai/dsh-llm@packages+llm+llm)(@deepseek-ai/dsh-session-projection@packages+session+session-projection)(@deepseek-ai/dsh-session-title@packages+session+session-title)(@deepseek-ai/dsh-session@packages+core+session)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-subagent@packages+subagent+subagent)(@deepseek-ai/dsh-system-prompt@packages+core+system-prompt)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@deepseek-ai/dsh-workspace@packages+workspace+workspace)
       open:
         specifier: ^11.0.2
         version: 11.0.4
@@ -23667,9 +23667,9 @@ packages:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
 
-  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.15.tgz:
-    resolution: {integrity: sha512-Kn37M7P9eL2uUCmYIPQe3GCG5B4sZivw2mk5586TpjEAp6lTGdp3/LKB7wT4MstVT8RLTBEvMjNK5bSypa8mpQ==, tarball: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.15.tgz}
-    version: 0.1.0-alpha.15
+  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.16.tgz:
+    resolution: {integrity: sha512-zKDF6qoamXLH0CfI0JJJ00RqRYL+4aPwqPTvdlW0oWOnF3LXv2g2qYJqpx6sEL5ue/r8k/xHpOkFVYWbAWQ3YA==, tarball: file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.16.tgz}
+    version: 0.1.0-alpha.16
     engines: {dsh: '>=0.2.2-rc.1 <0.2.2-rc.2', node: '>=24.9'}
     peerDependencies:
       '@deepseek-ai/cordis': 4.1.0
@@ -23677,9 +23677,9 @@ packages:
       '@deepseek-ai/dsh-storage-domain': '>=0.2.2-rc.1 <0.2.2-rc.2'
       '@deepseek-ai/dsh-typert-protocol': '>=0.2.2-rc.1 <0.2.2-rc.2'
 
-  hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz:
-    resolution: {integrity: sha512-UjBN6kAcLGm/fJSm6SM4Fjy05cTvLCJiBh3k2pqNc/Hc7c/WqSAb0i360acuwcAiUwRDQWYBTzngKvxBzG/reg==, tarball: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz}
-    version: 0.3.0-rc.1
+  hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz:
+    resolution: {integrity: sha512-I04vvPTACqJKVLXEMNIeWMDfrFFVp6rihrN3KsgI0LSo5MqWoZtsgmqJEG3AxL8Oi5v2GzMdIQjKgH8r7+9DZw==, tarball: file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz}
+    version: 0.3.0-rc.2
     engines: {dsh: '>=0.2.2-rc.1 <0.2.2-rc.2', node: '>=24.9'}
     peerDependencies:
       '@deepseek-ai/cordis': 4.1.0
@@ -23687,9 +23687,9 @@ packages:
       '@deepseek-ai/dsh-tools': '>=0.2.2-rc.1 <0.2.2-rc.2'
       '@deepseek-ai/dsh-typert-protocol': '>=0.2.2-rc.1 <0.2.2-rc.2'
 
-  hi-buddy-session-pool-kit@file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz:
-    resolution: {integrity: sha512-Bzg1g13YPzWc6e6wMUYB2a5IXOnpCYH3zZaU6JX+wD4G4cIk/j0r0nzctbySrvCieaVD2ky5NN83c0OvkXfQVw==, tarball: file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz}
-    version: 0.2.1
+  hi-buddy-session-pool-kit@file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz:
+    resolution: {integrity: sha512-SZahkoXaEBjlZUS/J4FCYdpQRdTeGXuFHtj/wVG5j3n4NSIhJj7lUQyS9/NYIMIjXh21+GdZdOY6ryC689PSiA==, tarball: file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz}
+    version: 0.2.2
     engines: {dsh: '>=0.2.2-rc.1 <0.2.2-rc.2', node: '>=24.9'}
     peerDependencies:
       '@deepseek-ai/cordis': 4.1.0
@@ -31629,7 +31629,7 @@ snapshots:
 
   he@1.2.0: {}
 
-  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.15.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3)):
+  hi-buddy-claude-kit@file:haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.16.tgz(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-credentials@0.2.2-rc.1(@deepseek-ai/cordis@vendor+cordis))(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3)):
     dependencies:
       '@anthropic-ai/claude-agent-sdk': 0.3.218(@anthropic-ai/sdk@0.129.0(zod@4.4.3))(@modelcontextprotocol/sdk@1.31.0(supports-color@9.4.0)(zod@4.4.3))(zod@4.4.3)
       '@deepseek-ai/cordis': link:vendor/cordis
@@ -31641,7 +31641,7 @@ snapshots:
       - '@anthropic-ai/sdk'
       - '@modelcontextprotocol/sdk'
 
-  hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol):
+  hi-buddy-glossary-kit@file:haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol):
     dependencies:
       '@deepseek-ai/cordis': link:vendor/cordis
       '@deepseek-ai/dsh-storage-domain': link:packages/storage/storage-domain
@@ -31649,7 +31649,7 @@ snapshots:
       '@deepseek-ai/dsh-typert-protocol': link:packages/typert/protocol
       zod: 4.4.3
 
-  hi-buddy-session-pool-kit@file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.1.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-agent@packages+core+agent)(@deepseek-ai/dsh-api-remote-access@packages+api+remote-access)(@deepseek-ai/dsh-api-session-controller@packages+api+session-controller)(@deepseek-ai/dsh-llm@packages+llm+llm)(@deepseek-ai/dsh-session-projection@packages+session+session-projection)(@deepseek-ai/dsh-session-title@packages+session+session-title)(@deepseek-ai/dsh-session@packages+core+session)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-subagent@packages+subagent+subagent)(@deepseek-ai/dsh-system-prompt@packages+core+system-prompt)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@deepseek-ai/dsh-workspace@packages+workspace+workspace):
+  hi-buddy-session-pool-kit@file:haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz(@deepseek-ai/cordis@vendor+cordis)(@deepseek-ai/dsh-agent@packages+core+agent)(@deepseek-ai/dsh-api-remote-access@packages+api+remote-access)(@deepseek-ai/dsh-api-session-controller@packages+api+session-controller)(@deepseek-ai/dsh-llm@packages+llm+llm)(@deepseek-ai/dsh-session-projection@packages+session+session-projection)(@deepseek-ai/dsh-session-title@packages+session+session-title)(@deepseek-ai/dsh-session@packages+core+session)(@deepseek-ai/dsh-storage-domain@packages+storage+storage-domain)(@deepseek-ai/dsh-subagent@packages+subagent+subagent)(@deepseek-ai/dsh-system-prompt@packages+core+system-prompt)(@deepseek-ai/dsh-tools@packages+core+tools)(@deepseek-ai/dsh-typert-protocol@packages+typert+protocol)(@deepseek-ai/dsh-workspace@packages+workspace+workspace):
     dependencies:
       '@deepseek-ai/cordis': link:vendor/cordis
       '@deepseek-ai/dsh-agent': link:packages/core/agent
