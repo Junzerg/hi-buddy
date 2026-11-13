@@ -179,7 +179,7 @@ it('loads local Haier artwork, responds to home interactions, and respects reduc
   expect(await page.locator('[data-conversation-composer-overlay]').evaluate(node => getComputedStyle(node).backgroundColor)).toBe('rgba(0, 0, 0, 0)')
   await page.screenshot({ path: join(screenshots, 'trajectory.png') })
   await page.getByRole('tab', { name: '对话', exact: true }).click()
-  await page.getByRole('button', { name: '文档库', exact: true }).click()
+  await page.getByRole('tab', { name: '文档', exact: true }).click()
   const pageBar = page.locator('[data-workbench-topbar]')
   await pageBar.waitFor()
   expect(await pageBar.getByText('文档库', { exact: true }).count()).toBe(1)
