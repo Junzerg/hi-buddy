@@ -1,0 +1,70 @@
+{
+  "version": "0.2.2-rc.1.20261117.4-TRIAL",
+  "sourceBranch": "trial/windows-lingxi-20261117.4",
+  "sourceCommit": "713e8d1f1fc75d61dcdc51eec3135b16135cd405",
+  "status": "pending-windows-build",
+  "previousDesktopBuild": {
+    "version": "0.2.2-rc.1.20261117.3",
+    "buildsFinishedOrStopped": true,
+    "confirmedOn": "2026-11-17"
+  },
+  "sourceRollback": "2026-11-17-dev-xieyang-integration.json",
+  "targets": {
+    "win-x64": {
+      "status": "pending",
+      "signing": "unsigned",
+      "appId": "com.deepseek.dsh.lingxi-trial",
+      "updateUrl": "http://127.0.0.1:48765/updates/win-x64/",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261117.4-TRIAL-win-x64-unsigned.exe",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261117.4-TRIAL.tar.gz",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "installationVerified": false,
+      "acceptance": "Pending Windows manual installation, displayed build identity, trusted HTTPS, real IAM sign-in, account state after restart, connector catalog, demo notes authorization and read/write through MCP, sign-out cleanup, reauthentication, Office preview, and isolated update address."
+    }
+  },
+  "plugins": {
+    "hi-buddy-account-platform": {
+      "version": "0.1.0",
+      "sourceCommit": "71024d4dd720b7ab4edf1c4c54adddfd686f7384",
+      "archive": "haiercash/builtin-plugins/hi-buddy-account-platform-0.1.0.tgz",
+      "sha256": "e4911fdd15a1e24e47234196c3aa7fcafcce01ec36793caeea3a0380fa293f3c"
+    },
+    "hi-buddy-connector-kit": {
+      "version": "0.2.5",
+      "sourceCommit": "71024d4dd720b7ab4edf1c4c54adddfd686f7384",
+      "archive": "haiercash/builtin-plugins/hi-buddy-connector-kit-0.2.5.tgz",
+      "sha256": "6d3b61c7718f7af0f25883a24de5beb3bf8a539045f98c2c2420aa54e78a8f14"
+    }
+  },
+  "serverPrerequisites": {
+    "host": "172.28.236.3",
+    "sourceCommit": "71024d4dd720b7ab4edf1c4c54adddfd686f7384",
+    "container": "lingxi-server-trial-20261117-4",
+    "image": "lingxi-server-trial:20261117.4",
+    "upstream": "http://127.0.0.1:18891",
+    "httpsOrigin": null,
+    "status": "pending-deployment-and-iam-verification",
+    "platform": "linux/amd64",
+    "imageArchive": "lingxi-server-trial-20261117.4-linux-amd64.tar.gz",
+    "imageArchiveSha256": "75f0a9f27de4f809d23722f757bbe477d12fcb8e850d0cc2a73dfdde3b8749c0"
+  },
+  "checks": {
+    "frozenInstall": "passed",
+    "localBuildArtifacts": "9 passed",
+    "desktopRegression": "63 passed across profile upgrade, package-set and build-version suites",
+    "windowsBuildAndInstallation": "pending",
+    "targetNetwork": "pending: trusted HTTPS and real IAM needed on the Windows test environment",
+    "serverImage": "passed: production-mode startup, authenticated connector accounts, dev-login disabled with synthetic IAM settings",
+    "releaseArchiveTool": "3 standard tests passed, plus a fixture verified the exact trial version and archive record",
+    "typechecks": "2 passed: host and client aggregate checks"
+  },
+  "distribution": "manual-trial",
+  "published": false,
+  "sourceConfirmedOn": "2026-11-17"
+}
