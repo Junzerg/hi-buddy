@@ -60,6 +60,8 @@ export async function upgradeCompanyProfile(runtime: string, profile: string): P
   const file = join(profile, 'cordis.patch.yml')
   const original = readFileSync(file, 'utf8')
   const current = parse(original)
+  const selectedAccount = current.findLast(row => row.id === 'deepseek-account' && row.config !== undefined)?.config
+  if (object(selectedAccount) && selectedAccount.hiBuddyLogin === true && selectedAccount.companyLogin !== true) return
   const patches: Record<string, unknown>[] = []
   for (const id of ['webserver', 'deepseek-account', 'llm-pi-ai', 'llm-deepseek', 'llm-deepseek-account']) {
     const builtin = defaults.findLast(row => row.id === id)

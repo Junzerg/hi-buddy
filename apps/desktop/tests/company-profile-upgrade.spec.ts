@@ -35,6 +35,14 @@ function fixture(original: string) {
 
 const legacy = '# preserve my settings\n- id: locale\n  config:\n    preference: zh\n- id: webserver\n  config:\n    host: 127.0.0.1\n    port: !!js ctx.webStartup.port ?? 3080\n    compression: gzip\n- id: llm-pi-ai\n  config:\n    providers:\n      custom:\n        models: [{id: custom-model}]\n      company-gateway:\n        models: [{id: saved-model}]\n- id: deepseek-account\n  config:\n    companyLogin: false\n    platformOrigin: https://platform.deepseek.com\n    requestTimeoutMs: 12345\n- id: llm-deepseek\n  disabled: false\n'
 
+it('preserves a Desktop profile explicitly configured for Lingxi login', async () => {
+  const patch = '- id: deepseek-account\n  config:\n    hiBuddyLogin: true\n'
+  const f = fixture(patch)
+  await new DesktopProjectManager(f.paths, { dsh: f.runtime }).applyRelease()
+  expect(readFileSync(f.file, 'utf8')).toBe(patch)
+  expect(readdirSync(f.paths.profile).filter(name => name.includes('.before-company-upgrade-'))).toEqual([])
+})
+
 it('upgrades .3 settings automatically during release preparation and preserves keys, custom providers and saved models', async () => {
   const f = fixture(legacy)
   const manager = new DesktopProjectManager(f.paths, { dsh: f.runtime })

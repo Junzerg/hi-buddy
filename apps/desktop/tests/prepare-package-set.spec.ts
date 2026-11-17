@@ -178,7 +178,7 @@ it('keeps built-in archive package names unique and matches the host dependency 
   }
   const pinned = Object.entries(host.dependencies).filter(([, specifier]) =>
     specifier.startsWith('file:../../../haiercash/builtin-plugins/'))
-  expect(pinned).toHaveLength(3)
+  expect(pinned).toHaveLength(5)
   for (const [name, specifier] of pinned) expect(archives.get(name)).toBe(basename(specifier))
 })
 
@@ -193,7 +193,9 @@ it('ships the document-library workspace client in its built-in archive', () => 
 })
 
 it.each([
+  ['hi-buddy-account-platform', '0.1.0'],
   ['hi-buddy-claude-kit', '0.1.0-alpha.20'],
+  ['hi-buddy-connector-kit', '0.2.5'],
   ['hi-buddy-session-pool-kit', '0.2.2'],
   ['hi-buddy-glossary-kit', '0.3.0-rc.2'],
   ['local-dsh-plugin-doclib', '0.1.1'],
