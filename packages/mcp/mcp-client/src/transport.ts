@@ -11,6 +11,7 @@ import { StdioClientTransport } from '@modelcontextprotocol/client/stdio'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/client'
 import { scrubbedParentEnv } from '@deepseek-ai/dsh-subprocess'
 import type { Config } from './index.ts'
+import { resolveAuthProvider } from './auth-provider-registry.ts'
 
 /**
  * The subprocess seam's scrubbed parent env (credential-shaped and stale
@@ -40,7 +41,12 @@ export function createTransport(config: Config): Transport {
     case 'streamable-http':
       return new StreamableHTTPClientTransport(
         new URL(config.url),
-        { requestInit: { headers: config.headers } },
+        // [lingxi] authProviderRef, when present, resolves to the registered
+        // in-memory SDK AuthProvider that owns this transport's Authorization header.
+        {
+          requestInit: { headers: config.headers },
+          ...(config.authProviderRef === undefined ? {} : { authProvider: resolveAuthProvider(config.authProviderRef) }),
+        },
       )
   }
 }
