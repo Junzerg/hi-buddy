@@ -2,17 +2,17 @@
   "version": "0.2.2-rc.1.20261117.2",
   "sourceCommit": "e095c9f9089f01289f10f7f4ddbcfcae271af18d",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "The user confirmed the new version and authorized push. The remote prior-version record showed both targets pending with no build commits. This build bundles Claude Kit 0.1.0-alpha.18. Both targets start with pending installer, archive, and installation evidence.",
+  "status": "published",
+  "notes": "The user confirmed the new version and authorized push. The remote prior-version record showed both targets pending with no build commits. This build bundles Claude Kit 0.1.0-alpha.18. Both targets start with pending installer, archive, and installation evidence. Published on the intranet on 2026-11-17 as a dual-platform release merged into one directory. Windows archive sha256 was 9c22260d47aeafe1edefafaab02681ddb4013d21a16c55e2d20eded3e417c5f8; the Mac archive sha256 starts with ba79fa. Release tag pushed on e095c9f908.",
   "targets": {
     "win-x64": {
       "status": "pending",
       "signing": "unsigned",
       "buildCommit": null,
       "buildDirty": null,
-      "installer": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261117.2-win-x64-unsigned.exe",
       "bytes": null,
-      "sha256": null,
+      "sha256": "4CB1DD508FD753C349BA63DA92A298A1A5CF63FA1FC1DEF9A85EA1CA239C64D4",
       "archive": null,
       "archiveSha256": null,
       "signingVerified": false,
@@ -93,5 +93,5 @@
     "requireBothInstallationsVerified": true,
     "cutoverVerified": false
   },
-  "published": false
+  "published": true
 }
