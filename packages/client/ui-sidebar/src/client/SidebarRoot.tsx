@@ -27,6 +27,7 @@ const SIDEBAR_PANEL_ALLOWLIST: readonly string[] = [
   'doclib',
   'session-pool',
   'hi-buddy-claude',
+  'hi-buddy-connector',
 ]
 
 /**

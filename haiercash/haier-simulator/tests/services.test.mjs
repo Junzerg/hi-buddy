@@ -120,7 +120,7 @@ test('writes only an isolated development patch with loopback endpoints', t => {
   t.after(() => rmSync(root, { recursive: true, force: true }))
   const result = prepareWeb({ stateDirectory: root, servicesPort: 18090, exchangePort: 18091 })
   const text = readFileSync(result.patch, 'utf8')
-  assert.equal(text, simulatorPatch({ servicesPort: 18090, exchangePort: 18091 }))
+  assert.equal(text, simulatorPatch('company', { servicesPort: 18090, exchangePort: 18091 }))
   assert.ok(result.env.DSH_HOME.startsWith(root))
   assert.match(text, /companyLogin: true/)
   assert.match(text, /http:\/\/127\.0\.0\.1:18090\/v1/)

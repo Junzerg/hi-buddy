@@ -18,6 +18,7 @@ import type { AuthorizationSession } from '@deepseek-ai/dsh-authorization'
 import { profile, readAccountDetail, readUnnotifiedBonuses, sendBonusNotified } from './details.ts'
 import { revokeAccount, type LogoutRetryPolicy } from './logout.ts'
 import { AccountUnauthorizedError, PlatformAuthError, platformHeaders, platformOrigin, browserUrl, requestPlatform, initialization, exchange, loginOrigin } from './protocol.ts'
+import type { HiBuddyAccountDelegate } from './types.ts'
 
 const KEY = credentialKey('deepseek-account-platform', 'default')
 const DEVICE = credentialKey('deepseek-account-platform', 'device')
@@ -29,6 +30,8 @@ const device = z.object({ id: z.uuid() })
 
 /** Deployment-specific platform and request deadlines. */
 export interface Config {
+  /** [hiBuddy] Delegate the whole account surface to the mounted hi-buddy-account-platform service. */
+  hiBuddyLogin?: boolean
   /** Use company IAM code authorization and the shared company gateway-key completion. */
   companyLogin?: boolean
   /** Versions server endpoint exchanging IAM codes for personal gateway keys; required in company mode. */
@@ -62,6 +65,7 @@ export interface Config {
 }
 /** Validated deployment choices. */
 export const Config = Schema.object({
+  hiBuddyLogin: Schema.boolean().default(false),
   companyLogin: Schema.boolean().default(false),
   companyLoginEndpoint: Schema.string().default(''),
   platformOrigin: Schema.string().default('https://platform.deepseek.com'),
@@ -100,6 +104,8 @@ export class PlatformAccount extends DeepSeekAccount {
   static inject = ['credentials', 'authorization']
   static Config = Config
   private readonly origin: string
+  /** [hiBuddy] Whole-surface delegation to the hiBuddyAccount service. */
+  private readonly hiBuddyLogin: boolean
   private readonly companyLogin: boolean
   private readonly companyLoginEndpoint: string
   private keyCompletion: Promise<void> = Promise.resolve()
@@ -131,8 +137,13 @@ export class PlatformAccount extends DeepSeekAccount {
     super(ctx)
     installAccountTaskCancellation(ctx)
     const resolved = Config(config)
+    this.hiBuddyLogin = resolved.hiBuddyLogin
     this.companyLogin = resolved.companyLogin
     this.companyLoginEndpoint = resolved.companyLoginEndpoint
+    // [hiBuddy] Two login worlds cannot both own the shared record key.
+    if (this.hiBuddyLogin && this.companyLogin) {
+      throw new Error('account: hiBuddyLogin and companyLogin are mutually exclusive')
+    }
     if (this.companyLogin) {
       const endpoint = new URL(this.companyLoginEndpoint)
       if (!['http:', 'https:'].includes(endpoint.protocol) || endpoint.username || endpoint.password || endpoint.search || endpoint.hash) {
@@ -164,6 +175,8 @@ export class PlatformAccount extends DeepSeekAccount {
     ctx.authorization.registerFlow({
       key: KEY, label: 'DeepSeek', methods: [{ id: 'browser', label: 'DeepSeek' }],
       run: (session) => {
+        // [hiBuddy] The delegate owns the whole login runtime; its attempt state is its own.
+        if (this.hiBuddyLogin) return this.hiBuddyDelegate().handleAuthorizationRun(session)
         const attempt = this.attempt
         if (attempt === undefined) return Promise.reject(new PlatformAuthError('protocol'))
         attempt.running = this.run(session, attempt)
@@ -172,6 +185,11 @@ export class PlatformAccount extends DeepSeekAccount {
     })
     ctx.on('credentials/record-updated', (key) => {
       if (key !== KEY) return
+      // [hiBuddy] The delegate keeps its own watchers; platform detail caches do not apply.
+      if (this.hiBuddyLogin) {
+        this.hiBuddyDelegate().notifyRecordUpdated()
+        return
+      }
       this.invalidateDetails()
       this.changed()
     })
@@ -192,7 +210,22 @@ export class PlatformAccount extends DeepSeekAccount {
     }, 'account: active attempt lifetime')
   }
 
+  /**
+   * [hiBuddy] The mounted hi-buddy-account-platform service, resolved per call (mount-order immune).
+   * @throws a wiring error naming the missing package and how to mount it when the slot is absent.
+   */
+  private hiBuddyDelegate(): HiBuddyAccountDelegate {
+    const delegate = this.ctx.get('hiBuddyAccount') as HiBuddyAccountDelegate | undefined
+    if (delegate === undefined || typeof delegate.getState !== 'function') {
+      throw new Error('account: hiBuddyLogin 需要 hi-buddy-account-platform 插件 — install the package, mount it before enabling hiBuddyLogin (dev 模式由 --hibuddy 接线), and restart the Host')
+    }
+    return delegate
+  }
+
   async [Service.init](): Promise<void> {
+    // [hiBuddy] The stored grant is a lingxi session ticket with a lingxi issuer; this
+    // provider's platform-origin cleanup must not delete it.
+    if (this.hiBuddyLogin) return
     const record = await this.ctx.credentials.readRecord(KEY)
     if (record === undefined) {
       if (this.companyLogin) await this.ctx.credentials.unset(credentialRef(COMPANY_KEY_REF))
@@ -207,6 +240,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async getState(): Promise<AccountView> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().getState() // [hiBuddy]
     const record = await this.ctx.credentials.readRecord(KEY)
     const parsed = record?.kind === 'grant' ? grant.safeParse(record.payload) : undefined
     if (record !== undefined && !parsed?.success) {
@@ -226,6 +260,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async getProfile(client: AccountClientMetadata): Promise<AccountDetails['profile'] | null> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().getProfile(client) // [hiBuddy]
     if (this.companyLogin) {
       const stored = await this.readCurrentGrant(this.detailsLifetime)
       if (stored === null) return null
@@ -246,11 +281,13 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override getBalance(client: AccountClientMetadata): Promise<AccountDetails['balance'] | null> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().getBalance(client) // [hiBuddy]
     if (this.companyLogin) return Promise.resolve(null)
     return this.getDetail('balance', this.detailHeaders(client))
   }
 
   override async getUnnotifiedBonuses(client: AccountClientMetadata): Promise<AccountBonusBatch | null> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().getUnnotifiedBonuses(client) // [hiBuddy]
     if (this.companyLogin) return null
     const lifetime = this.detailsLifetime
     const headers = this.detailHeaders(client)
@@ -272,6 +309,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async ackBonusNotified(accountId: AccountUserId, orderId: AccountBonusOrderId, client: AccountClientMetadata): Promise<boolean> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().ackBonusNotified(accountId, orderId, client) // [hiBuddy]
     if (this.companyLogin) return false
     const lifetime = this.detailsLifetime
     const headers = this.detailHeaders(client)
@@ -366,6 +404,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async rejectToken(token: string): Promise<void> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().rejectToken(token) // [hiBuddy]
     const lifetime = this.detailsLifetime
     const stored = await this.readCurrentGrant(lifetime)
     if (stored?.token !== token || this.detailsLifetime !== lifetime) return
@@ -390,6 +429,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async getDeviceIdentity(): Promise<{ deviceId?: string; userId?: AccountUserId; osVersion: string }> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().getDeviceIdentity() // [hiBuddy]
     const [record, session] = await Promise.all([
       this.ctx.credentials.readRecord(DEVICE),
       this.getPlatformSession(),
@@ -403,6 +443,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async getPlatformSession(): Promise<PlatformSession | null> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().getPlatformSession() // [hiBuddy]
     if (this.companyLogin) return null
     const lifetime = this.detailsLifetime
     const stored = await this.readCurrentGrant(lifetime)
@@ -430,6 +471,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async resolveToken(url: string): Promise<string | undefined> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().resolveToken(url) // [hiBuddy]
     if (this.closed || this.removing !== undefined) return undefined
     const destination = new URL(url)
     if (destination.origin !== this.inferenceOrigin || destination.username || destination.password) return undefined
@@ -448,6 +490,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async startSignIn(client: AccountClientMetadata, callbackOrigin: string, loginSource: 'web' | 'desktop'): Promise<AccountView> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().startSignIn(client, callbackOrigin, loginSource) // [hiBuddy]
     if (this.removing !== undefined) await this.removing
     const origin = loginOrigin(callbackOrigin)
     if (this.closed) throw new PlatformAuthError('protocol')
@@ -497,6 +540,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async cancelSignIn(id: SignInAttemptId): Promise<AccountView> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().cancelSignIn(id) // [hiBuddy]
     const attempt = this.attempt
     if (attempt?.view.id === id) {
       if (attempt.view.phase !== 'committing') {
@@ -509,6 +553,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async completeApiKeySignIn(apiKey: string): Promise<void> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().completeApiKeySignIn(apiKey) // [hiBuddy]
     if (this.removing !== undefined) await this.removing
     if (this.closed || !this.companyLogin) throw new PlatformAuthError('protocol')
     return this.queueCompanyKey(apiKey)
@@ -594,6 +639,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override signOut(client: AccountClientMetadata): Promise<AccountView> {
+    if (this.hiBuddyLogin) return this.hiBuddyDelegate().signOut(client) // [hiBuddy]
     this.removing ??= (async () => {
       if (this.closed) throw new PlatformAuthError('protocol')
       if (this.attempt !== undefined) await this.cancelSignIn(this.attempt.view.id)
@@ -622,6 +668,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   override async *watch(signal: AbortSignal, includeIdentityChanges = false): AsyncIterable<AccountView> {
+    if (this.hiBuddyLogin) { yield* this.hiBuddyDelegate().watch(signal); return } // [hiBuddy]
     let dirty = true
     let wake: (() => void) | undefined
     const wakeUp = (): void => { dirty = true; wake?.() }

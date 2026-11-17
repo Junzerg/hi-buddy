@@ -19,11 +19,13 @@
  * MUST NOT run beside `pnpm run build` or `build:artifacts`: they write the same `lib/` and
  * `apps/web/dist/` trees. The build stage here finishes before any watcher starts.
  *
- * Usage: `pnpm run dev:web [--haier] [--kits] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]`.
+ * Usage: `pnpm run dev:web [--haier|--hibuddy] [--kits] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]`.
  * `--kits` builds the sibling kit packages once and links them into an isolated Web
  * profile; rerun `prepare:local-kits` after kit/shared edits. Host watchers keep their
  * normal scope. The local kit profile uses its own DSH_HOME and keeps release pins untouched.
  *
+ * `--hibuddy` uses the Hi-Buddy development profile: lingxi-server login through
+ * hi-buddy-account-platform; it owns `--host`/`--port` for the 127.0.0.1:3080 callback.
  * `--skip-build` requires the artifact tree from a prior `build` or `build:artifacts`: every
  * watcher is incremental over the previous stage's output and none of them
  * bootstraps a missing tree. `--no-serve` keeps only the watchers, for a
@@ -54,7 +56,7 @@ import {
   repositoryClientBuildEnvironment,
 } from './client-build-environment.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
-import { prepareLocalKits } from './prepare-local-kits.ts'
+import { localKitsStateDirectory, prepareLocalKits } from './prepare-local-kits.ts'
 import { configureHaierDevelopment } from '../haiercash/haier-simulator/profile.ts'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
@@ -90,6 +92,8 @@ export interface DevWebArguments {
   readonly haier: boolean
   /** Build sibling kit sources and link them into an isolated development profile. */
   readonly kits?: true
+  /** Use the Hi-Buddy development profile: lingxi-server login through hi-buddy-account-platform. */
+  readonly hibuddy: boolean
   /** Skip the `pnpm run build:artifacts` that otherwise precedes the watchers. */
   readonly skipBuild: boolean
   /** Start `dsh web`; false keeps only the rebuild watchers beside an already running server. */
@@ -104,7 +108,18 @@ export interface DevWebArguments {
 const DEFAULT_POLL_INTERVAL = 500
 
 /**
- * Parse the script's command line. `--haier`, `--kits`, `--skip-build`, `--no-serve`, and `--poll[=ms]`
+ * Resolve the login-mode state directory: with `--kits` the served Host runs from the isolated
+ * kits home, so the login patch must land there instead of the simulator state directory.
+ * @param options - the parsed command line; only `kits` decides the target.
+ * @param repositoryRoot - the Host repository root that owns `.artifacts/local-kits`.
+ * @returns the state directory `--kits` serves, or undefined to keep the default.
+ */
+export function developmentStateDirectory(options: Pick<DevWebArguments, 'kits'>, repositoryRoot = repoRoot): string | undefined {
+  return options.kits === true ? localKitsStateDirectory(repositoryRoot) : undefined
+}
+
+/**
+ * Parse the script's command line. `--haier`, `--hibuddy`, `--kits`, `--skip-build`, `--no-serve`, and `--poll[=ms]`
  * belong to this script; a bare `--` is dropped; every other token is forwarded
  * to `dsh web`.
  * @param argv - arguments after the script path.
@@ -115,6 +130,7 @@ const DEFAULT_POLL_INTERVAL = 500
 export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
   let haier = false
   let kits = false
+  let hibuddy = false
   let skipBuild = false
   let serve = true
   let pollInterval: number | undefined
@@ -124,6 +140,7 @@ export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
     if (arg === '--') continue
     if (arg === '--kits') kits = true
     else if (arg === '--haier') haier = true
+    else if (arg === '--hibuddy') hibuddy = true
     else if (arg === '--skip-build') skipBuild = true
     else if (arg === '--no-serve') serve = false
     else if (arg === '--poll' || arg.startsWith('--poll=')) {
@@ -132,11 +149,13 @@ export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
     } else appArgs.push(arg)
   }
   if (kits && !serve) throw new Error('--kits requires a served Web Host; omit --no-serve')
+  if (haier && hibuddy) throw new Error('--haier and --hibuddy are mutually exclusive')
   if (haier && !serve) throw new Error('--haier requires a served Web Host; omit --no-serve')
+  if (hibuddy && !serve) throw new Error('--hibuddy requires a served Web Host; omit --no-serve')
   if (!serve && appArgs.length > 0) {
     throw new Error(`dev-web: --no-serve leaves no dsh web process for ${appArgs[0] ?? ''}`)
   }
-  return { haier, ...(kits ? { kits: true } : {}), skipBuild, serve, pollInterval, appArgs }
+  return { haier, hibuddy, ...(kits ? { kits: true } : {}), skipBuild, serve, pollInterval, appArgs }
 }
 
 /**
@@ -351,14 +370,19 @@ if (isMain) {
   let options: DevWebArguments
   try {
     options = parseDevWebArguments(process.argv.slice(2))
-    if (options.haier) {
-      const development = await configureHaierDevelopment({ appArgs: options.appArgs })
+    if (options.haier || options.hibuddy) {
+      const stateDirectory = developmentStateDirectory(options)
+      const development = await configureHaierDevelopment({
+        appArgs: options.appArgs,
+        mode: options.hibuddy ? 'hi-buddy' : 'company',
+        ...(stateDirectory !== undefined ? { stateDirectory } : {}),
+      })
       Object.assign(process.env, development.env)
       options = { ...options, appArgs: development.appArgs }
     }
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
-    console.error('dev-web: usage: pnpm run dev:web [--haier] [--kits] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]')
+    console.error('dev-web: usage: pnpm run dev:web [--haier|--hibuddy] [--kits] [--skip-build] [--no-serve] [--poll[=ms]] [dsh web arguments]')
     process.exit(1)
   }
 
