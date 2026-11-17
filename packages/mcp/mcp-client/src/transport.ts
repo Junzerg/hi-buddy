@@ -6,6 +6,7 @@
  * @module
  */
 
+import type { Context } from '@deepseek-ai/cordis'
 import type { Transport } from '@modelcontextprotocol/client'
 import { StdioClientTransport } from '@modelcontextprotocol/client/stdio'
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/client'
@@ -27,9 +28,10 @@ function buildChildEnv(extra: Record<string, string>): Record<string, string> {
  * Create an MCP transport from the resolved plugin config.
  *
  * @param config - Resolved plugin config discriminated on `transport`.
+ * @param ctx - Host context used to resolve an optional auth provider.
  * @returns A connected-ready MCP Transport (stdio or Streamable HTTP).
  */
-export function createTransport(config: Config): Transport {
+export function createTransport(config: Config, ctx: Context): Transport {
   switch (config.transport) {
     case 'stdio':
       return new StdioClientTransport({
@@ -38,15 +40,12 @@ export function createTransport(config: Config): Transport {
         env: buildChildEnv(config.env),
         cwd: config.cwd,
       })
-    case 'streamable-http':
-      return new StreamableHTTPClientTransport(
-        new URL(config.url),
-        // [lingxi] authProviderRef, when present, resolves to the registered
-        // in-memory SDK AuthProvider that owns this transport's Authorization header.
-        {
-          requestInit: { headers: config.headers },
-          ...(config.authProviderRef === undefined ? {} : { authProvider: resolveAuthProvider(config.authProviderRef) }),
-        },
-      )
+    case 'streamable-http': {
+      const url = new URL(config.url)
+      return new StreamableHTTPClientTransport(url, {
+        requestInit: { headers: config.headers },
+        ...(config.authProviderRef === undefined ? {} : { authProvider: resolveAuthProvider(ctx, config.authProviderRef, url) }),
+      })
+    }
   }
 }

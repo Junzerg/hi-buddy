@@ -1,15 +1,10 @@
-/** [lingxi] authProviderRef registry semantics and the transport seam it drives. */
-import { describe, expect, it, onTestFinished } from 'vitest'
+import { Context } from '@deepseek-ai/cordis'
 import { Client } from '@modelcontextprotocol/client'
 import type { AuthProvider } from '@modelcontextprotocol/client'
-import { registerAuthProvider, resolveAuthProvider } from '../src/auth-provider-registry.ts'
-import { createTransport } from '../src/transport.ts'
+import { describe, expect, it, onTestFinished } from 'vitest'
 import type { StreamableHttpConfig } from '../src/index.ts'
+import { createTransport } from '../src/transport.ts'
 import { startHttpMcpFixture } from './http-fixture.ts'
-
-function provider(token: string): AuthProvider {
-  return { token: async () => token }
-}
 
 function httpConfig(url: string, overrides: Partial<StreamableHttpConfig> = {}): StreamableHttpConfig {
   return {
@@ -23,78 +18,58 @@ function httpConfig(url: string, overrides: Partial<StreamableHttpConfig> = {}):
   }
 }
 
-describe('auth-provider registry', () => {
-  it('resolves a registered provider and forgets it after disposal', () => {
-    const ref = 'test:roundtrip'
-    const dispose = registerAuthProvider(ref, provider('t1'))
-    expect(resolveAuthProvider(ref).token).toBeTypeOf('function')
-    dispose()
-    expect(() => resolveAuthProvider(ref)).toThrow(/test:roundtrip/)
-  })
-
-  it('rejects a duplicate ref while the original is live', () => {
-    const ref = 'test:duplicate'
-    const dispose = registerAuthProvider(ref, provider('t1'))
-    try {
-      expect(() => registerAuthProvider(ref, provider('t2'))).toThrow(/test:duplicate/)
-      // The original instance stays resolvable after the rejected attempt.
-      expect(resolveAuthProvider(ref)).toBeDefined()
-    } finally {
-      dispose()
-    }
-  })
-
-  it('a stale disposer never removes a newer registration', () => {
-    const ref = 'test:stale'
-    const first = provider('t1')
-    const disposeFirst = registerAuthProvider(ref, first)
-    disposeFirst()
-    const second = provider('t2')
-    const disposeSecond = registerAuthProvider(ref, second)
-    try {
-      disposeFirst() // Late call from a disposed generation.
-      expect(resolveAuthProvider(ref).token).toBeTypeOf('function')
-      expect(() => resolveAuthProvider(ref)).not.toThrow()
-    } finally {
-      disposeSecond()
-    }
-    expect(() => resolveAuthProvider(ref)).toThrow(/test:stale/)
-  })
-
-  it('diagnoses an unregistered ref with actionable guidance', () => {
-    expect(() => resolveAuthProvider('never-registered')).toThrow(
-      /never-registered.*registerAuthProvider/s,
-    )
-  })
-})
-
-describe('createTransport authProviderRef seam', () => {
-  it('sends the provider token as the dynamic Authorization header', async () => {
+describe('createTransport authProviderRef', () => {
+  it('authenticates only within the owning Host and removes the provider on unload', async () => {
     const fixture = await startHttpMcpFixture()
     onTestFinished(() => fixture.close())
-    const ref = 'test:transport-dynamic'
-    const dispose = registerAuthProvider(ref, provider('dynamic-token-1'))
-    onTestFinished(dispose)
+    const ctx = new Context()
+    const ref = 'connector:fixture'
+    const config = httpConfig(fixture.url, { authProviderRef: ref })
+    const provider = { token: async () => 'dynamic-token' } satisfies AuthProvider
+    const owner = ctx.plugin((inner) => {
+      inner.on('mcp-client/resolve-auth-provider', key =>
+        key === ref ? { url: fixture.url, provider } : undefined)
+    })
+    onTestFinished(() => owner.dispose())
+    await owner
 
-    const transport = createTransport(httpConfig(fixture.url, { authProviderRef: ref }))
-    const client = new Client({ name: 'auth-registry-spec', version: '0' })
+    expect(() => createTransport(config, new Context())).toThrow(/no registered provider/)
+    expect(() => createTransport({ ...config, url: fixture.url + '/other' }, ctx)).toThrow(/different MCP endpoint/)
+    expect(fixture.authorization).toEqual([])
+
+    const client = new Client({ name: 'auth-provider-spec', version: '0' })
     onTestFinished(() => client.close())
-    await client.connect(transport)
-    expect(fixture.authorization).toContain('Bearer dynamic-token-1')
-  })
-
-  it('without a ref keeps static headers and sends no Authorization', async () => {
-    const fixture = await startHttpMcpFixture()
-    onTestFinished(() => fixture.close())
-
-    const transport = createTransport(httpConfig(fixture.url, {
-      headers: { 'x-static': 'yes' },
-    }))
-    const client = new Client({ name: 'auth-registry-spec', version: '0' })
-    onTestFinished(() => client.close())
-    await client.connect(transport)
-    expect(fixture.authorization.every(header => header === undefined)).toBe(true)
-    // The transport still negotiated and serves tools over the static headers.
+    await client.connect(createTransport(config, ctx))
     expect((await client.listTools()).tools.map(tool => tool.name)).toEqual(['ping'])
+    expect(fixture.authorization).toContain('Bearer dynamic-token')
+
+    await client.close()
+    await owner.dispose()
+    expect(() => createTransport(config, ctx)).toThrow(/no registered provider/)
+  })
+
+  it('a stale disposer leaves a new listener for the same provider intact', () => {
+    const ctx = new Context()
+    const ref = 'connector:fixture'
+    const config = httpConfig('http://127.0.0.1/mcp', { authProviderRef: ref })
+    const provider = { token: async () => 'token' } satisfies AuthProvider
+    const listener = () => ({ url: config.url, provider })
+    const first = ctx.on('mcp-client/resolve-auth-provider', listener)
+    first()
+    const current = ctx.on('mcp-client/resolve-auth-provider', listener)
+    onTestFinished(() => { current() })
+    first()
+    expect(() => createTransport(config, ctx)).not.toThrow()
+  })
+
+  it('preserves static authorization when no provider ref is set', async () => {
+    const fixture = await startHttpMcpFixture()
+    onTestFinished(() => fixture.close())
+    const client = new Client({ name: 'auth-provider-spec', version: '0' })
+    onTestFinished(() => client.close())
+    await client.connect(createTransport(httpConfig(fixture.url, {
+      headers: { Authorization: 'Bearer static-token' },
+    }), new Context()))
+    expect(fixture.authorization).toContain('Bearer static-token')
   })
 })

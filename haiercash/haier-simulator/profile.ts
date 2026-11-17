@@ -97,18 +97,12 @@ export function prepareWeb({
   if (!existsSync(patch)) writeFileSync(patch, template)
   else {
     const existing = profileRows(load(readFileSync(patch, 'utf8')))
+    const currentAccount = existing.find(row => row.id === 'deepseek-account')?.config
+    const switchingModes = (currentAccount?.hiBuddyLogin === true) !== (mode === 'hi-buddy')
     for (const row of profileRows(load(template))) {
       const previous = existing.find(value => value.id === row.id)
       if (!previous) { existing.push(row); continue }
-      // The active login mode owns the account row outright; the other mode's
-      // keys must not survive (hiBuddyLogin + companyLogin together throw).
-      if (row.id === 'deepseek-account') {
-        previous.config = { ...row.config }
-        continue
-      }
-      // Hi-buddy mode owns the default model too: company-gateway points at the
-      // simulator, which is not running there. Company mode keeps the saved selection.
-      if (row.id === 'agent-default-model' && mode === 'hi-buddy') {
+      if (switchingModes && (row.id === 'deepseek-account' || row.id === 'agent-default-model')) {
         previous.config = { ...row.config }
         continue
       }
@@ -141,7 +135,7 @@ export async function configureHaierDevelopment({
     throw new Error('--haier/--hibuddy owns --host and --port for the 127.0.0.1:3080 callback; omit address overrides')
   }
   if (mode === 'hi-buddy') {
-    const unavailable = (): Error => new Error(`lingxi-server is not reachable at ${lingxiEndpoint}; start it with: cd hi-buddy-kit-packages/lingxi-server && node src/main.mjs`)
+    const unavailable = (): Error => new Error(`lingxi-server is not reachable at ${lingxiEndpoint}; start it with: cd ../hi-buddy-kit-packages/lingxi-server && pnpm run dev`)
     // /v1/connectors sits behind session auth (401 anonymous), so any HTTP
     // response — including an error status — proves the server is up.
     const reachable = await fetch(`${lingxiEndpoint}/v1/connectors`, { signal: AbortSignal.timeout(3000) }).catch(() => {

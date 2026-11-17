@@ -136,4 +136,26 @@ register(server: string, provider: McpResourceProvider): () => void
 ```
 
 Source: [`packages/mcp/mcp-resources/src/index.ts`](../../packages/mcp/mcp-resources/src/index.ts)
+
+<a id="mcp-client-events"></a>
+
+### `mcp-client/*` events
+
+<a id="mcp-clientresolve-auth-provider--bail"></a>
+
+#### `mcp-client/resolve-auth-provider` — bail
+
+Resolve a provider owned by a plugin in the same Host.
+
+```ts cordis-catalog
+/**
+ * Resolve a provider owned by a plugin in the same Host.
+ * @param ref - opaque key supplied as `authProviderRef` in the MCP config.
+ * @returns the registered endpoint and provider, or undefined for an unknown ref.
+ * @mode bail
+ */
+'mcp-client/resolve-auth-provider'(ref: string): { url: string; provider: { token(): Promise<string | undefined> } } | undefined
+```
+
+Source: [`packages/mcp/mcp-client/src/index.ts`](../../packages/mcp/mcp-client/src/index.ts)
 <!-- END GENERATED cordis-surface -->

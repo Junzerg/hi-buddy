@@ -131,6 +131,8 @@ pnpm run build
 
 主体与 kit 联调使用 `pnpm run dev:web --kits`：它构建兄弟目录的 kit 源码，并链接到 `.artifacts/local-kits/home` 下的独立 Web profile；启动时以该目录作为 `DSH_HOME`，不使用日常 home。先安装各 kit 的开发依赖。修改 kit 或共享源码后，重新执行 `pnpm run prepare:local-kits`；宿主源码仍由正常的开发 watcher 跟踪。生成的 profile 在多次运行间保留配置与禁用状态，包括默认禁用的任务池。正式归档和 bundle 清单保持固定版本。[文档库](../haiercash/builtin-plugins/hi-buddy-doclib-kit/README.zh.md) 在本仓库维护，有独立的客户端构建命令。
 
+使用 `--hibuddy` 开发灵犀登录和连接器市场。该模式把配套的两个 kit 加载到 `.artifacts/local-kits-hi-buddy/home`，要求本机的 lingxi-server 监听 18881 端口。Web 回调使用 `127.0.0.1:3080`。
+
 ### 环境变量
 
 真实的 DeepSeek 适配器和需要密钥的 agent 演示从环境变量或仓库根目录一个被 gitignore 的 `.env` 文件读取凭证：

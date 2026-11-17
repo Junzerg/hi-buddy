@@ -126,6 +126,8 @@ pnpm run build
 
 For joint host/kit UI work, `pnpm run dev:web --kits` builds sibling kit sources and links them into an isolated Web profile under `.artifacts/local-kits/home`; it uses that directory as `DSH_HOME` instead of the normal home. Install the kits' development dependencies first. After kit or shared-source edits, rerun `pnpm run prepare:local-kits`; host sources retain the normal dev watchers. The generated profile retains its config and disabled rows between runs, including the default-disabled session pool. Release archives and bundle manifests stay pinned. The [document library](../haiercash/builtin-plugins/hi-buddy-doclib-kit/README.md) is maintained in this repository and has its own client build command.
 
+Use `--hibuddy` to develop with Lingxi login and the connector market. It loads the two matching kit packages into `.artifacts/local-kits-hi-buddy/home` and requires a local lingxi-server on port 18881. The Web callback uses `127.0.0.1:3080`.
+
 ### Environment variables
 
 The real DeepSeek adapter and key-backed agent demos read credentials from the environment or from a gitignored `.env` at the repo root:

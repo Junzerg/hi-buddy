@@ -1099,7 +1099,7 @@ describe('createTransport', () => {
       toolCallTimeoutMs: 60_000,
       failOnStartupError: false,
     }
-    const transport = createTransport(config)
+    const transport = createTransport(config, new Context())
     expect(transport).toBeDefined()
     expect(transport).toHaveProperty('start')
     expect(transport).toHaveProperty('close')
@@ -1114,7 +1114,7 @@ describe('createTransport', () => {
       toolCallTimeoutMs: 60_000,
       failOnStartupError: false,
     }
-    const transport = createTransport(config)
+    const transport = createTransport(config, new Context())
     expect(transport).toBeDefined()
     expect(transport).toHaveProperty('start')
     expect(transport).toHaveProperty('close')
@@ -1129,7 +1129,7 @@ describe('createTransport', () => {
       toolCallTimeoutMs: 60_000,
       failOnStartupError: false,
     }
-    const transport = createTransport(config)
+    const transport = createTransport(config, new Context())
     expect(transport).toBeDefined()
     expect(transport).toHaveProperty('start')
     expect(transport).toHaveProperty('close')
@@ -1154,8 +1154,8 @@ describe('createTransport', () => {
         failOnStartupError: false,
       }
       // StdioClientTransport keeps its env private; the observable contract is
-      // that createTransport(config) returns a transport without throwing.
-      const transport = createTransport(config)
+      // that createTransport(config, new Context()) returns a transport without throwing.
+      const transport = createTransport(config, new Context())
       expect(transport).toBeDefined()
     } finally {
       delete process.env.SAFE_VAR
@@ -1179,7 +1179,7 @@ describe('createTransport', () => {
       toolCallTimeoutMs: 60_000,
       failOnStartupError: false,
     }
-    const transport = createTransport(config)
+    const transport = createTransport(config, new Context())
     expect(transport).toBeDefined()
   })
 })

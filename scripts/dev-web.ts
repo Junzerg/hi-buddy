@@ -24,8 +24,8 @@
  * profile; rerun `prepare:local-kits` after kit/shared edits. Host watchers keep their
  * normal scope. The local kit profile uses its own DSH_HOME and keeps release pins untouched.
  *
- * `--hibuddy` uses the Hi-Buddy development profile: lingxi-server login through
- * hi-buddy-account-platform; it owns `--host`/`--port` for the 127.0.0.1:3080 callback.
+ * `--hibuddy` links the login and connector kits into a separate Hi-Buddy home.
+ * It fixes the Web address at 127.0.0.1:3080 for the login callback.
  * `--skip-build` requires the artifact tree from a prior `build` or `build:artifacts`: every
  * watcher is incremental over the previous stage's output and none of them
  * bootstraps a missing tree. `--no-serve` keeps only the watchers, for a
@@ -57,7 +57,7 @@ import {
 } from './client-build-environment.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
 import { localKitsStateDirectory, prepareLocalKits } from './prepare-local-kits.ts'
-import { configureHaierDevelopment } from '../haiercash/haier-simulator/profile.ts'
+import { configureHaierDevelopment, type DevMode } from '../haiercash/haier-simulator/profile.ts'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 
@@ -108,17 +108,6 @@ export interface DevWebArguments {
 const DEFAULT_POLL_INTERVAL = 500
 
 /**
- * Resolve the login-mode state directory: with `--kits` the served Host runs from the isolated
- * kits home, so the login patch must land there instead of the simulator state directory.
- * @param options - the parsed command line; only `kits` decides the target.
- * @param repositoryRoot - the Host repository root that owns `.artifacts/local-kits`.
- * @returns the state directory `--kits` serves, or undefined to keep the default.
- */
-export function developmentStateDirectory(options: Pick<DevWebArguments, 'kits'>, repositoryRoot = repoRoot): string | undefined {
-  return options.kits === true ? localKitsStateDirectory(repositoryRoot) : undefined
-}
-
-/**
  * Parse the script's command line. `--haier`, `--hibuddy`, `--kits`, `--skip-build`, `--no-serve`, and `--poll[=ms]`
  * belong to this script; a bare `--` is dropped; every other token is forwarded
  * to `dsh web`.
@@ -155,7 +144,7 @@ export function parseDevWebArguments(argv: readonly string[]): DevWebArguments {
   if (!serve && appArgs.length > 0) {
     throw new Error(`dev-web: --no-serve leaves no dsh web process for ${appArgs[0] ?? ''}`)
   }
-  return { haier, hibuddy, ...(kits ? { kits: true } : {}), skipBuild, serve, pollInterval, appArgs }
+  return { haier, hibuddy, ...(kits || hibuddy ? { kits: true } : {}), skipBuild, serve, pollInterval, appArgs }
 }
 
 /**
@@ -368,14 +357,15 @@ const invokedPath = process.argv[1]
 const isMain = invokedPath !== undefined && import.meta.url === pathToFileURL(resolve(invokedPath)).href
 if (isMain) {
   let options: DevWebArguments
+  let loginMode: DevMode | undefined
   try {
     options = parseDevWebArguments(process.argv.slice(2))
     if (options.haier || options.hibuddy) {
-      const stateDirectory = developmentStateDirectory(options)
+      loginMode = options.hibuddy ? 'hi-buddy' : 'company'
       const development = await configureHaierDevelopment({
         appArgs: options.appArgs,
-        mode: options.hibuddy ? 'hi-buddy' : 'company',
-        ...(stateDirectory !== undefined ? { stateDirectory } : {}),
+        mode: loginMode,
+        ...(options.kits ? { stateDirectory: localKitsStateDirectory(repoRoot, loginMode) } : {}),
       })
       Object.assign(process.env, development.env)
       options = { ...options, appArgs: development.appArgs }
@@ -419,7 +409,11 @@ if (isMain) {
 
   if (options.kits) {
     try {
-      process.env.DSH_HOME = await prepareLocalKits({ repositoryRoot: repoRoot, signal: startup.signal })
+      process.env.DSH_HOME = await prepareLocalKits({
+        repositoryRoot: repoRoot,
+        ...(loginMode !== undefined ? { loginMode } : {}),
+        signal: startup.signal,
+      })
       console.log(`dev-web: local kits use isolated DSH_HOME=${process.env.DSH_HOME}`)
     } catch (error) {
       if (shutdownRequested()) process.exit(await shutdown.promise)

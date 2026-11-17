@@ -254,6 +254,7 @@ export const EVENT_SCOPE_PAGE: Record<string, string> = {
   'schedule': 'schedule.md',
   'llm': 'llm-streaming.md',
   'llm-pi-ai': 'llm-streaming.md',
+  'mcp-client': 'mcp.md',
   'permission-presets': 'permission-presets.md',
   'session': 'session.md',
   'settings': 'settings.md',

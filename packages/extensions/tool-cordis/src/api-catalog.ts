@@ -5098,6 +5098,14 @@ export const EVENT_API: readonly EventApiEntry[] = [
     parameters: [{ name: 'options', description: 'the full request. A LOOP-built request carries the process-local {@link markAgentLoopRequest} identity and arrives deep-frozen (mutation throws): its content is a pure function of the session log (the reconstructability Agent Note), so listeners read it, never rewrite it. Hand-built calls do not carry that marker; callers own their request inputs and must keep them unchanged until the stream settles.' }],
   },
   {
+    name: 'mcp-client/resolve-auth-provider',
+    mode: 'bail',
+    signature: '\'mcp-client/resolve-auth-provider\'(ref: string): { url: string; provider: { token(): Promise<string | undefined> } } | undefined',
+    summary: 'Resolve a provider owned by a plugin in the same Host.',
+    description: 'Resolve a provider owned by a plugin in the same Host.',
+    parameters: [{ name: 'ref', description: 'opaque key supplied as `authProviderRef` in the MCP config.' }],
+  },
+  {
     name: 'permission-presets/catalog-changed',
     mode: 'emit',
     signature: '\'permission-presets/catalog-changed\'(): void',

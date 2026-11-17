@@ -79,6 +79,7 @@ test('prepareWeb company mode replaces the account row instead of merging it', t
   assert.equal(account.config.hiBuddyLogin, undefined, '旧 hi-buddy 键消失，非合并')
   assert.equal(account.config.companyLogin, true)
   assert.equal(account.config.companyLoginEndpoint, 'http://127.0.0.1:18081/company-login/exchange')
+  assert.deepEqual(rows.find(row => row.id === 'agent-default-model').config, { provider: 'company-gateway', model: '' })
 })
 
 test('prepareWeb hi-buddy mode replaces the default-model row: company-gateway cannot survive the switch', t => {
@@ -92,12 +93,17 @@ test('prepareWeb hi-buddy mode replaces the default-model row: company-gateway c
   assert.deepEqual(rows.find(row => row.id === 'agent-default-model').config, { provider: 'deepseek', model: '' })
 })
 
-test('configureHaierDevelopment hi-buddy treats any HTTP response as reachable and only rejects silence', async t => {
+test('configureHaierDevelopment hi-buddy accepts an auth challenge and diagnoses a failed probe', async t => {
   const root = mkdtempSync(join(tmpdir(), 'haier-simulator-hibuddy-probe-'))
   t.after(() => rmSync(root, { recursive: true, force: true }))
+  const unavailable = createServer(request => request.socket.destroy())
+  t.after(() => new Promise(resolve => unavailable.close(resolve)))
+  await new Promise(resolve => unavailable.listen(0, '127.0.0.1', resolve))
   await assert.rejects(
-    configureHaierDevelopment({ mode: 'hi-buddy', stateDirectory: root, lingxiEndpoint: 'http://127.0.0.1:9' }),
-    /cd hi-buddy-kit-packages\/lingxi-server && node src\/main\.mjs/,
+    configureHaierDevelopment({
+      mode: 'hi-buddy', stateDirectory: root, lingxiEndpoint: `http://127.0.0.1:${unavailable.address().port}`,
+    }),
+    /lingxi-server is not reachable/,
   )
 
   // /v1/connectors is session-authed (401 anonymous), so an error status still

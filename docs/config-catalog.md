@@ -879,11 +879,13 @@ export interface Config {
 ## `@deepseek-ai/dsh-deepseek-account-platform`
 
 - `inject`: `credentials` · `authorization`
-- `source`: [`packages/credentials/deepseek-account-platform/src/index.ts:31`](../packages/credentials/deepseek-account-platform/src/index.ts)
+- `source`: [`packages/credentials/deepseek-account-platform/src/index.ts:32`](../packages/credentials/deepseek-account-platform/src/index.ts)
 
 ```ts config-catalog
 /** Deployment-specific platform and request deadlines. */
 export interface Config {
+  /** [hiBuddy] Delegate the whole account surface to the mounted hi-buddy-account-platform service. */
+  hiBuddyLogin?: boolean
   /** Use company IAM code authorization and the shared company gateway-key completion. */
   companyLogin?: boolean
   /** Versions server endpoint exchanging IAM codes for personal gateway keys; required in company mode. */
@@ -2434,7 +2436,7 @@ export interface LspLocalServerConfig {
 ## `@deepseek-ai/dsh-mcp-client`
 
 - `inject`: `tools`
-- `source`: [`packages/mcp/mcp-client/src/index.ts:104`](../packages/mcp/mcp-client/src/index.ts)
+- `source`: [`packages/mcp/mcp-client/src/index.ts:121`](../packages/mcp/mcp-client/src/index.ts)
 
 ```ts config-catalog
 /** Configuration for one stdio or Streamable HTTP MCP server. */
@@ -2482,6 +2484,11 @@ export interface StreamableHttpConfig {
   url: string
   /** Additional headers attached to MCP requests. */
   headers: Record<string, string>
+  /**
+   * Optional ref resolved through `mcp-client/resolve-auth-provider`.
+   * The provider supplies authorization for requests to its registered URL.
+   */
+  authProviderRef?: string
   /** Timeout per tool call or resource request in milliseconds. */
   toolCallTimeoutMs: number
   /** Fail plugin activation when the initial connection or tool synchronization fails. */

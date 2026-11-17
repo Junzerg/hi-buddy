@@ -32,6 +32,8 @@ getPlatformSession 仅在已存授权的 issuer 与 platformOrigin 一致时导�
 <a id="use-this-package"></a>
 ## 使用此包
 
+在挂载了 `hi-buddy-account-platform` 的 profile 中设置 `hiBuddyLogin`，即可通过灵犀登录。灵犀凭证应保存在独立的 Harness home 中，同时省略 `companyLogin`。
+
 设置 `companyLogin: true` 后，本 provider 复用现有授权尝试、回调注册、取消、订阅和凭证授权记录。内置配置连接 IAM STG（`https://iam-stg.haierxj.com`，客户端 `APP176`），Desktop 回调为 `http://127.0.0.1:18743/oauth/callback`。授权码换取 token 后验证 userInfo；网关 account 取已验证邮箱中 @ 前的部分，保留大小写。取 Key 请求包含 system `lingxi-office` 和直达路由请求头；响应 username 必须等于 `lingxi-office_` 加 account。邮箱缺失或格式异常时登录失败。IAM access token 不持久化。公司模式不提供 DeepSeek 余额、奖励或内嵌 Platform 会话。
 
 两个应用密钥只由管理员在 versions 服务器配置。客户端将原回调校验过的授权码提交到 `companyLoginEndpoint`，服务器完成 IAM token、userInfo 和本人网关 Key 获取，返回个人 Key、已验证的账号信息和授权模型资料。客户端不读取或保存 `COMPANY_IAM_CLIENT_SECRET`、`COMPANY_GATEWAY_AUTH_SECRET`，普通 Windows 用户没有配置步骤。部署见 [versions 登录接口](../../../apps/desktop/packaging/README.zh.md#company-login)。

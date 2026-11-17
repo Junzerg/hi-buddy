@@ -27,7 +27,7 @@ const FIXTURE: Record<string, string> = {
     },
     include: ['vendor/**/*.ts', 'packages/**/*.ts'],
   }),
-  'vendor/cordis/src/context.ts': 'export class Context { private brand!: void }\n',
+  'vendor/cordis/src/context.ts': 'export class Context { private brand!: void; bail(..._args: unknown[]): unknown { return undefined } }\n',
   'vendor/cordis/src/events.ts': [
     'export class EventsService {',
     '  dispatch(type: string, args: unknown[]): unknown[] { return [type, args] }',
@@ -42,6 +42,9 @@ const FIXTURE: Record<string, string> = {
   // fallback must find the cross-file call in pkgb.
   'packages/fix/pkga/src/index.ts': [
     "import { EventsService } from '../../../../vendor/cordis/src/events.ts'",
+    "import { Context } from '../../../../vendor/cordis/src/context.ts'",
+    'declare const ctx: Context',
+    "ctx.bail('pkga/lookup')",
     'declare const events: EventsService',
     "function fireLocal(args: [string]): void { void events.dispatch('emit', args) }",
     "fireLocal(['pkga/local-event'])",
@@ -84,6 +87,10 @@ function dispatchersOf(pkgs: readonly string[], event: string): string[] {
 }
 
 describe('event relation call-site indexing', () => {
+  it('records a typed Context bail dispatch', () => {
+    expect(dispatchersOf(['pkga'], 'pkga/lookup')).toEqual(['pkga'])
+  })
+
   it('recovers a proven-local helper through the single-file fast path', () => {
     expect(dispatchersOf(['pkga', 'pkgb'], 'pkga/local-event')).toEqual(['pkga'])
   })

@@ -175,7 +175,7 @@ it('authorization flow run forwards handleAuthorizationRun; record-updated forwa
     signal: signal.signal,
     interaction: { notify: () => undefined, prompt: () => Promise.reject(new Error('no prompt')) },
   })
-  await vi.waitFor(() => expect(spy.count('handleAuthorizationRun')).toBe(1))
+  await vi.waitFor(() => { expect(spy.count('handleAuthorizationRun')).toBe(1) })
   const session = spy.calls.get('handleAuthorizationRun')![0]![0] as Record<string, unknown>
   expect(typeof session.commit).toBe('function')
   expect((session.signal as AbortSignal).aborted).toBe(false)

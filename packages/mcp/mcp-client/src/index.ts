@@ -26,8 +26,18 @@ import type {} from '@deepseek-ai/dsh-tools'
 export { createMcpToolDefinition } from './tools.ts'
 export type { McpResult, McpToolDefinitionOptions } from './tools.ts'
 export type { ReconnectConfig, ResolvedReconnectPolicy } from './connection.ts'
-// [lingxi] dynamic-credential seam for streamable-http configs.
-export { registerAuthProvider, resolveAuthProvider } from './auth-provider-registry.ts'
+
+declare module '@deepseek-ai/cordis' {
+  interface Events {
+    /**
+     * Resolve a provider owned by a plugin in the same Host.
+     * @param ref - opaque key supplied as `authProviderRef` in the MCP config.
+     * @returns the registered endpoint and provider, or undefined for an unknown ref.
+     * @mode bail
+     */
+    'mcp-client/resolve-auth-provider'(ref: string): { url: string; provider: { token(): Promise<string | undefined> } } | undefined
+  }
+}
 
 /** Cordis plugin name used by loader diagnostics. */
 export const name = 'mcp-client'
@@ -93,9 +103,8 @@ export interface StreamableHttpConfig {
   /** Additional headers attached to MCP requests. */
   headers: Record<string, string>
   /**
-   * [lingxi] Opaque ref to a provider registered via `registerAuthProvider`.
-   * When present, the transport asks that provider for each request's
-   * Authorization header (dynamic credentials); static `headers` stay as-is.
+   * Optional ref resolved through `mcp-client/resolve-auth-provider`.
+   * The provider supplies authorization for requests to its registered URL.
    */
   authProviderRef?: string
   /** Timeout per tool call or resource request in milliseconds. */

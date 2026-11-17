@@ -5,19 +5,25 @@ import { pathToFileURL } from 'node:url'
 import { parseArgs } from 'node:util'
 import { execa } from 'execa'
 import { PROFILE_TEMPLATES } from '../packages/util/official-bundles/src/bundles.ts'
+import type { DevMode } from '../haiercash/haier-simulator/profile.ts'
 import { pnpmInvocation } from './pnpm-invocation.ts'
 
-/** Kits from the sibling repository that `--kits` links for local development; ids name each kit in the local roster. */
+/** Kits linked by the standard development profile. */
 export const LOCAL_KITS = [
   { id: 'hi-buddy-claude', name: 'hi-buddy-claude-kit' },
   { id: 'project-glossary', name: 'hi-buddy-glossary-kit' },
   { id: 'session-pool', name: 'hi-buddy-session-pool-kit' },
+] as const
+
+const HI_BUDDY_KITS = [
   { id: 'hi-buddy-connector', name: 'hi-buddy-connector-kit' },
   { id: 'hi-buddy-account-platform', name: 'hi-buddy-account-platform' },
 ] as const
 
-/** Directory whose `home/` `--kits` serves; login-mode configuration must target it so its patch reaches the served profile. */
-export const localKitsStateDirectory = (repositoryRoot: string): string => resolve(repositoryRoot, '.artifacts/local-kits')
+/** Give each login mode its own development home and credential store. */
+export function localKitsStateDirectory(repositoryRoot: string, loginMode?: DevMode): string {
+  return resolve(repositoryRoot, '.artifacts', loginMode === undefined ? 'local-kits' : `local-kits-${loginMode}`)
+}
 
 interface KitManifest {
   name: string
@@ -30,6 +36,8 @@ interface KitManifest {
 export interface LocalKitOptions {
   repositoryRoot: string
   kitRoot?: string
+  /** Omit for the standard Web home. Hi-Buddy mode also links its login and connector kits. */
+  loginMode?: DevMode
   /** False validates existing artifacts without rebuilding them. */
   build?: boolean
   /** Cancels an in-progress build when the owning development loop stops. */
@@ -43,11 +51,14 @@ export interface LocalKitOptions {
  */
 export async function prepareLocalKits(options: LocalKitOptions): Promise<string> {
   const kitRoot = options.kitRoot ?? resolve(options.repositoryRoot, '../hi-buddy-kit-packages')
-  const kits = await Promise.all(LOCAL_KITS.map(async (kit) => {
+  const selected = options.loginMode === 'hi-buddy' ? [...LOCAL_KITS, ...HI_BUDDY_KITS] : LOCAL_KITS
+  const kits = await Promise.all(selected.map(async (kit) => {
     const directory = resolve(kitRoot, kit.name)
-    const manifest = JSON.parse(await readFile(resolve(directory, 'package.json'), 'utf8')) as KitManifest
-    // A kit without a `dsh.client` half is Host-only (hi-buddy-account-platform): it links the Host entry alone.
-    const hostOnly = manifest.dsh?.client === undefined
+    const manifestPath = resolve(directory, 'package.json')
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8').catch((cause: unknown) => {
+      throw new Error(`local-kits: cannot read ${manifestPath}. Check out the matching hi-buddy-kit-packages branch.`, { cause })
+    })) as KitManifest
+    const hostOnly = kit.name === 'hi-buddy-account-platform' && manifest.dsh?.client === undefined
     const client = hostOnly ? undefined : manifest.exports?.['./client']
     if (manifest.name !== kit.name || typeof manifest.main !== 'string'
       || (!hostOnly && (manifest.dsh?.client?.platform !== 'web' || typeof client !== 'string'))) {
@@ -65,7 +76,7 @@ export async function prepareLocalKits(options: LocalKitOptions): Promise<string
     }
     await Promise.all([access(kit.host), ...(kit.client !== undefined ? [access(kit.client)] : [])])
   }
-  const home = resolve(localKitsStateDirectory(options.repositoryRoot), 'home')
+  const home = resolve(localKitsStateDirectory(options.repositoryRoot, options.loginMode), 'home')
   const profile = resolve(home, 'profiles/web')
   await mkdir(resolve(profile, 'node_modules'), { recursive: true })
   for (const kit of kits) {
@@ -89,17 +100,17 @@ export async function prepareLocalKits(options: LocalKitOptions): Promise<string
     manifest = { private: true, dsh: { profile: PROFILE_TEMPLATES.web } }
   }
   manifest.dependencies = { ...manifest.dependencies, ...Object.fromEntries(kits.map(kit => [kit.name, `link:${kit.directory}`])) }
-  // Profile dependencies never compose plugin entries; each kit's Host half mounts only through its
-  // self-inserting bundle patch, so activate every kit in `dsh.profile.bundles`.
-  const fallback = PROFILE_TEMPLATES.web
-  if (fallback === undefined) throw new Error('local-kits: PROFILE_TEMPLATES.web template is missing')
-  const profileSection = (manifest.dsh as { profile?: { bundles?: unknown } } | undefined)?.profile ?? fallback
-  const active = Array.isArray(profileSection.bundles)
-    ? profileSection.bundles.filter((name): name is string => typeof name === 'string')
-    : fallback.bundles
-  manifest.dsh = {
-    ...(manifest.dsh as Record<string, unknown>),
-    profile: { ...profileSection, bundles: [...active, ...kits.map(kit => kit.name).filter(name => !active.includes(name))] },
+  if (options.loginMode === 'hi-buddy') {
+    const fallback = PROFILE_TEMPLATES.web
+    if (fallback === undefined) throw new Error('local-kits: PROFILE_TEMPLATES.web template is missing')
+    const profileSection = (manifest.dsh as { profile?: { bundles?: unknown } } | undefined)?.profile ?? fallback
+    const active = Array.isArray(profileSection.bundles)
+      ? profileSection.bundles.filter((name): name is string => typeof name === 'string')
+      : fallback.bundles
+    manifest.dsh = {
+      ...(manifest.dsh as Record<string, unknown>),
+      profile: { ...profileSection, bundles: [...new Set([...active, ...HI_BUDDY_KITS.map(kit => kit.name)])] },
+    }
   }
   const temporary = `${manifestPath}.${process.pid}.tmp`
   await writeFile(temporary, JSON.stringify(manifest, null, 2) + '\n')
@@ -109,15 +120,22 @@ export async function prepareLocalKits(options: LocalKitOptions): Promise<string
 
 if (process.argv[1] !== undefined && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   try {
-    const { values } = parseArgs({ options: { 'kit-root': { type: 'string' }, 'no-build': { type: 'boolean' } } })
+    const { values } = parseArgs({ options: {
+      'kit-root': { type: 'string' }, 'no-build': { type: 'boolean' },
+      haier: { type: 'boolean' }, hibuddy: { type: 'boolean' },
+    } })
+    if (values.haier && values.hibuddy) throw new Error('--haier and --hibuddy are mutually exclusive')
+    const loginMode = values.hibuddy ? 'hi-buddy' : values.haier ? 'company' : undefined
     const home = await prepareLocalKits({
       repositoryRoot: resolve(import.meta.dirname, '..'),
       ...(values['kit-root'] !== undefined ? { kitRoot: resolve(values['kit-root']) } : {}),
+      ...(loginMode !== undefined ? { loginMode } : {}),
       build: !values['no-build'],
     })
     console.log(`local-kits: DSH_HOME=${home}`)
-    console.log('Start the real Web application with: pnpm run dev:web --kits')
-    console.log('After kit/shared edits, rerun pnpm run prepare:local-kits; the Host reloads changed client bundles.')
+    const modeFlag = values.hibuddy ? ' --hibuddy' : values.haier ? ' --haier' : ''
+    console.log(`Start Web with: pnpm run dev:web --kits${modeFlag}`)
+    console.log(`After kit or shared edits, rerun pnpm run prepare:local-kits${modeFlag}`)
   } catch (error) {
     console.error(error instanceof Error ? error.message : error)
     process.exitCode = 1

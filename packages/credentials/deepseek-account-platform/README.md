@@ -32,6 +32,8 @@ Device identity reads validate the existing login device record and expose only 
 <a id="use-this-package"></a>
 ## Use this package
 
+Enable `hiBuddyLogin` in a profile that mounts `hi-buddy-account-platform` to sign in through Lingxi. Choose a separate Harness home for Lingxi credentials and omit `companyLogin`.
+
 With `companyLogin: true`, this provider reuses the existing authorization attempt, callback registration, cancellation, subscriptions and credential grant. The shipped profile targets IAM STG (`https://iam-stg.haierxj.com`, client `APP176`) with Desktop callback `http://127.0.0.1:18743/oauth/callback`. Authorization exchanges a code, validates userInfo, then uses the verified email prefix before @ as account, preserving case. The key request includes system `lingxi-office` and the direct-target header; response username must equal `lingxi-office_` plus account. Missing or malformed email fails sign-in. IAM access tokens are not stored. Company mode has no DeepSeek balance, bonus or embedded Platform session.
 
 Administrators configure both application secrets only on the versions server. The client submits the code from its existing state-validated callback to `companyLoginEndpoint`; that server performs IAM token exchange, userInfo validation and personal gateway-key retrieval, returning the personal key, verified identity and authorized model facts. The client neither reads nor stores `COMPANY_IAM_CLIENT_SECRET` or `COMPANY_GATEWAY_AUTH_SECRET`. Windows users have no configuration steps. See [versions login deployment](../../../apps/desktop/packaging/README.md#company-login).

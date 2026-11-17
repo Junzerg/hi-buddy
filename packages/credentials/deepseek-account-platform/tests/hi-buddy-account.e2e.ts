@@ -1,13 +1,7 @@
 /**
- * [hiBuddy] REAL composition spec: the Task 7 guard delegating to the real
- * hi-buddy-account-platform build against a real lingxi-server subprocess.
- * Everything is live — credential store, authorization seam, guard, delegate,
- * HTTP login protocol — except the browser step, which the dev IdP's autologin
- * replaces with one redirected GET.
- *
- * `HIBUDDY_TGZ=1` switches the delegate import from the built lib/ directory to
- * a freshly packed and unpacked tgz (CI / release verification); the default is
- * the directory build for the inner development loop.
+ * Run with `DSH_HIBUDDY_E2E=1 pnpm run test:e2e hi-buddy-account` from paired
+ * Host and kit checkouts. Install lingxi-server dependencies and build the
+ * account kit first. `HIBUDDY_TGZ=1` exercises the packed kit entrypoint.
  */
 import { afterEach, expect, it } from 'vitest'
 import { Context } from '@deepseek-ai/cordis'
@@ -15,7 +9,6 @@ import { mkdtemp, rm, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { createServer as createProbeServer } from 'node:net'
 import { execa } from 'execa'
 import AuthorizationService from '@deepseek-ai/dsh-authorization'
 import { LocalCredentialProvider } from '@deepseek-ai/dsh-credentials-local'
@@ -34,40 +27,35 @@ interface DelegateHandle {
   getSessionTicket(force?: boolean): Promise<string>
 }
 
-async function loadDelegateModule(): Promise<new (ctx: Context, config?: { endpoint?: string }) => DelegateHandle> {
+async function loadDelegateModule(root: string): Promise<new (ctx: Context, config?: { endpoint?: string }) => DelegateHandle> {
   const modulePath = process.env.HIBUDDY_TGZ === '1'
-    ? await packTgzModule()
+    ? await packTgzModule(root)
     : join(accountPlatformDir, 'lib/index.js')
-  const namespace = await import(pathToFileURL(modulePath).href) as { default?: unknown }
-  return (typeof namespace === 'function' ? namespace : namespace.default) as never
+  const namespace = await import(pathToFileURL(modulePath).href) as {
+    default: new (ctx: Context, config?: { endpoint?: string }) => DelegateHandle
+  }
+  return namespace.default
 }
 
-/** npm pack + unpack the platform package; verifies the published artifact, not the build tree.
- *  The unpacked copy gets the source package's node_modules symlinked in — an install
- *  would provide the same workspace links (same trick as dev-web.spec.ts). */
-async function packTgzModule(): Promise<string> {
-  const packDir = await mkdtemp(join(tmpdir(), 'hibuddy-tgz-'))
-  await execa('npm', ['pack', '--silent', '--pack-destination', packDir], { cwd: accountPlatformDir })
-  await execa('tar', ['-xzf', join(packDir, 'hi-buddy-account-platform-0.1.0.tgz'), '-C', packDir])
-  await symlink(join(accountPlatformDir, 'node_modules'), join(packDir, 'package/node_modules'), 'dir')
-  return join(packDir, 'package/lib/index.js')
+async function packTgzModule(root: string): Promise<string> {
+  const { stdout: filename } = await execa('npm', ['pack', '--silent', '--pack-destination', root], { cwd: accountPlatformDir })
+  await execa('tar', ['-xzf', join(root, filename), '-C', root])
+  await symlink(join(accountPlatformDir, 'node_modules'), join(root, 'package/node_modules'), process.platform === 'win32' ? 'junction' : 'dir')
+  return join(root, 'package/lib/index.js')
 }
-
-const HiBuddyAccount = await loadDelegateModule()
 
 const cleanups: Array<() => Promise<unknown>> = []
-afterEach(async () => { while (cleanups.length) await cleanups.pop()!() })
-
-function freePort(): Promise<number> {
-  return new Promise((resolvePort, rejectPort) => {
-    const probe = createProbeServer()
-    probe.listen(0, '127.0.0.1', () => {
-      const { port } = probe.address() as { port: number }
-      probe.close(() => resolvePort(port))
-    })
-    probe.on('error', rejectPort)
-  })
-}
+afterEach(async () => {
+  const failures: unknown[] = []
+  while (cleanups.length > 0) {
+    try {
+      await cleanups.pop()!()
+    } catch (error) {
+      failures.push(error)
+    }
+  }
+  if (failures.length > 0) throw new AggregateError(failures)
+})
 
 async function until(what: string, predicate: () => Promise<boolean> | boolean, timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs
@@ -78,31 +66,24 @@ async function until(what: string, predicate: () => Promise<boolean> | boolean, 
   throw new Error(`timed out waiting for ${what}`)
 }
 
-it('真实全链：begin→flow 转发→autologin→poll→commit→面板→续期→登出', async () => {
-  const root = await mkdtemp(join(tmpdir(), 'hibuddy-real-'))
+it.skipIf(process.env.DSH_HIBUDDY_E2E !== '1')('signs in, renews the session and signs out through the account adapter', async () => {
+  const root = await mkdtemp(join(tmpdir(), 'hibuddy-account-'))
   cleanups.push(() => rm(root, { recursive: true, force: true }))
-  const mainPort = await freePort()
-  const idpPort = await freePort()
-  const origin = `http://127.0.0.1:${mainPort}`
-  const server = execa(process.execPath, ['src/main.mjs'], {
+  const HiBuddyAccount = await loadDelegateModule(root)
+  const server = execa(process.execPath, ['--input-type=module', '-e', `
+    import { createServer } from './src/server.mjs'
+    const [dbPath, keysPath] = process.argv.slice(1)
+    const server = await createServer({ dbPath, keysPath, idpAutologinUser: 'dev' })
+    await new Promise((resolve, reject) => process.send(server.url, error => error ? reject(error) : resolve()))
+  `, join(root, 'lingxi.db'), join(root, 'keys.json')], {
     cwd: lingxiServerDir,
-    env: {
-      ...process.env,
-      LINGXI_PORT: String(mainPort),
-      LINGXI_IDP_PORT: String(idpPort),
-      LINGXI_DB_PATH: join(root, 'lingxi.db'),
-      LINGXI_KEYS_PATH: join(root, 'keys.json'),
-      LINGXI_IDP_DEV_AUTOLOGIN_USER: 'dev',
-    },
-    stdout: 'pipe', stderr: 'pipe',
+    ipc: true,
+    reject: false,
+    forceKillAfterDelay: 2_000,
   })
-  cleanups.push(async () => { server.kill(); await server.catch(() => undefined) })
-  // /v1/connectors is session-authed (401 anonymous), so any HTTP response means the server is up.
-  await until('lingxi-server to listen', async () => {
-    const probe = await fetch(`${origin}/v1/connectors`, { signal: AbortSignal.timeout(500) }).catch(() => undefined)
-    await probe?.body?.cancel().catch(() => {})
-    return probe !== undefined
-  }, 20_000)
+  cleanups.push(async () => { server.kill(); await server })
+  const origin = await server.getOneMessage()
+  if (typeof origin !== 'string') throw new Error('lingxi-server did not report an HTTP address')
 
   const ctx = new Context()
   const credentials = ctx.plugin(LocalCredentialProvider, { path: join(root, 'credentials.yaml'), watch: false })
@@ -111,7 +92,6 @@ it('真实全链：begin→flow 转发→autologin→poll→commit→面板→�
   const authorization = ctx.plugin(AuthorizationService)
   await authorization
   cleanups.push(() => authorization.dispose())
-  // The real delegate, mounted through the Loader-style path the Host will use.
   const delegateFiber = ctx.plugin(HiBuddyAccount, { endpoint: origin })
   await delegateFiber
   const delegate = ctx.get('hiBuddyAccount') as DelegateHandle
@@ -135,7 +115,6 @@ it('真实全链：begin→flow 转发→autologin→poll→commit→面板→�
   await browser.body?.cancel().catch(() => {})
 
   const watchSignal = new AbortController()
-  cleanups.push(async () => { watchSignal.abort() })
   await until('succeeded phase', async () => (await account.getState()).attempt?.phase === 'succeeded', 10_000)
 
   // 3. The single-shot ticket committed through the seam into the shared store.
@@ -158,11 +137,13 @@ it('真实全链：begin→flow 转发→autologin→poll→commit→面板→�
   const collector = (async () => {
     for await (const frame of account.watch(watchSignal.signal)) frames.push({ status: frame.status })
   })()
+  cleanups.push(async () => { watchSignal.abort(); await collector })
   await until('initial watch frame', () => frames.length >= 1, 10_000)
-  // Same-second HMAC tickets can be string-identical; cross the second boundary first.
-  await new Promise(resolve => setTimeout(resolve, 1030 - (Date.now() % 1000)))
-  const renewed = await delegate.getSessionTicket(true)
-  expect(renewed).not.toBe(storedTicket)
+  let renewed: string | undefined
+  await until('a distinct renewed ticket', async () => {
+    renewed = await delegate.getSessionTicket(true)
+    return renewed !== storedTicket
+  }, 5_000)
   const afterRenew = await ctx.credentials.readRecord(KEY)
   expect((afterRenew as { payload: { token: string } } | undefined)?.payload?.token).toBe(renewed)
   await until('renewal watch frame', () => frames.length >= 2, 10_000)

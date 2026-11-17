@@ -58,6 +58,7 @@ Add one entry per server; nothing else is required. After the harness starts, th
 | `serverName` | required | Namespace for the server's tool names; `[A-Za-z0-9_-]{1,32}`, unique inside one registration scope |
 | `command` / `args` / `env` / `cwd` | — | stdio: executable, arguments, extra env merged over scrubbed ambient env, working directory |
 | `url` / `headers` | — | streamable-http: endpoint URL and extra request headers |
+| `authProviderRef` | — | streamable-http: ref for a Host plugin's dynamic authorization provider. The registration must match the endpoint URL. |
 | `toolCallTimeoutMs` | `60,000` | Timeout per `tools/call` or resource request |
 | `maxInstructionBytes` | `32,768` | Maximum UTF-8 bytes of server instructions including attribution; an oversized value rejects the connection |
 | `failOnStartupError` | `false` | Reject plugin activation when the initial connection or tool synchronization fails |

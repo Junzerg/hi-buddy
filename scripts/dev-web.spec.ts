@@ -1,11 +1,10 @@
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join, resolve } from 'node:path'
+import { join } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { TsdownBundle } from 'tsdown'
 import { writeClientBuildRecord } from './client-build-environment.ts'
 import {
-  developmentStateDirectory,
   devWebBuildEnvironment,
   discoverLibraryDirs,
   discoverPluginDirs,
@@ -98,7 +97,7 @@ describe('parseDevWebArguments', () => {
 
   it('keeps the Hi-Buddy login opt-in out of the forwarded arguments', () => {
     expect(parseDevWebArguments(['--hibuddy', '--no-open'])).toEqual({
-      haier: false, hibuddy: true, skipBuild: false, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
+      haier: false, hibuddy: true, kits: true, skipBuild: false, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
     })
     expect(() => parseDevWebArguments(['--haier', '--hibuddy'])).toThrow('--haier and --hibuddy are mutually exclusive')
     expect(() => parseDevWebArguments(['--hibuddy', '--no-serve'])).toThrow('--hibuddy requires a served Web Host')
@@ -131,12 +130,6 @@ describe('parseDevWebArguments', () => {
   it('rejects dsh web arguments when no server is started', () => {
     expect(() => parseDevWebArguments(['--no-serve', '--no-open'])).toThrow('--no-serve leaves no dsh web process for --no-open')
   })
-})
-
-it('targets the isolated kits home for the login patch only under --kits', () => {
-  const repositoryRoot = resolve(import.meta.dirname, '..')
-  expect(developmentStateDirectory({ kits: true }, repositoryRoot)).toBe(join(repositoryRoot, '.artifacts/local-kits'))
-  expect(developmentStateDirectory({}, repositoryRoot)).toBeUndefined()
 })
 
 it('samples one local environment at startup without validating watcher outputs', async () => {
