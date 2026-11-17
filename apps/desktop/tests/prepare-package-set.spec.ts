@@ -193,7 +193,7 @@ it('ships the document-library workspace client in its built-in archive', () => 
 })
 
 it.each([
-  ['hi-buddy-claude-kit', '0.1.0-alpha.18'],
+  ['hi-buddy-claude-kit', '0.1.0-alpha.20'],
   ['hi-buddy-session-pool-kit', '0.2.2'],
   ['hi-buddy-glossary-kit', '0.3.0-rc.2'],
   ['local-dsh-plugin-doclib', '0.1.1'],
