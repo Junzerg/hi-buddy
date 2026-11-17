@@ -2,17 +2,17 @@
   "version": "0.2.2-rc.1.20261117.1",
   "sourceCommit": "3df195ddc9ad9034fb622c2f275ceb0d6bf786f2",
   "sourceBranch": "dev/junzerg",
-  "status": "prepared",
-  "notes": "The user confirmed the coordinated new build and that both previous-version builds had stopped. The source restores upstream Chat and tool presentation, retains the HiBuddy reply header, and pins the updated Claude archive. Both installers, platform archives, and installation acceptance are pending.",
+  "status": "published",
+  "notes": "The user confirmed the coordinated new build and that both previous-version builds had stopped. The source restores upstream Chat and tool presentation, retains the HiBuddy reply header, and pins the updated Claude archive. Both installers, platform archives, and installation acceptance are pending. Published on the intranet: Windows first on 2026-11-17, then the Mac arm64 follow-up from the -mac-arm64 overlay directory. Windows archive sha256 was c00c66820ed2da2219cb4949e89666d526c09b757e797fd50a11a639db203d79; the Mac archive sha256 starts with a806d9. Release tag pushed on 3df195ddc9.",
   "targets": {
     "win-x64": {
       "status": "pending",
       "signing": "unsigned",
       "buildCommit": null,
       "buildDirty": null,
-      "installer": null,
+      "installer": "HiBuddy-0.2.2-rc.1.20261117.1-win-x64-unsigned.exe",
       "bytes": null,
-      "sha256": null,
+      "sha256": "EB0CCCF16C32F88CFBC666DA53D29D1752140DE9E8A464D7A5E25DB343BFA9EA",
       "archive": null,
       "archiveSha256": null,
       "signingVerified": false,
@@ -95,5 +95,5 @@
     "requireBothInstallationsVerified": true,
     "cutoverVerified": false
   },
-  "published": false
+  "published": true
 }
