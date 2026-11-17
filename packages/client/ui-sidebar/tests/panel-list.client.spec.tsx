@@ -120,6 +120,15 @@ describe('sidebar task navigation', () => {
     expect(view.getByRole('button', { name: 'Scheduled tasks' }).getAttribute('aria-current')).toBe('page')
   })
 
+  it('renders the integrated connector kit panel row', async () => {
+    const { runtime, view } = await bench()
+    await mountPanel(runtime, { id: 'hi-buddy-connector' as MainPanelId, heading: 'Connectors content', label: 'Connectors' })
+    const navigation = view.getByRole('navigation', { name: 'Global panels' })
+    expect(within(navigation).getByRole('button', { name: 'Connectors' })).toBeTruthy()
+    fireEvent.click(view.getByRole('button', { name: 'Connectors' }))
+    expect(view.getByRole('heading', { name: 'Connectors content' })).toBeTruthy()
+  })
+
   it('retains hidden placeholder pages and updates their copy when the locale changes', async () => {
     const { runtime, view, locale, sidebar, layout } = await bench()
     act(() => { layout.selectPanel('sidebar-more' as MainPanelId) })

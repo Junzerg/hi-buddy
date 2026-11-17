@@ -1,10 +1,11 @@
 import { mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import type { TsdownBundle } from 'tsdown'
 import { writeClientBuildRecord } from './client-build-environment.ts'
 import {
+  developmentStateDirectory,
   devWebBuildEnvironment,
   discoverLibraryDirs,
   discoverPluginDirs,
@@ -77,20 +78,30 @@ describe('StageSupervisor', () => {
 describe('parseDevWebArguments', () => {
   it('keeps sibling sources opt-in and requires a served Host for their development profile', () => {
     expect(parseDevWebArguments(['--kits', '--skip-build', '--no-open'])).toEqual({
-      haier: false, kits: true, skipBuild: true, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
+      haier: false, hibuddy: false, kits: true, skipBuild: true, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
     })
     expect(() => parseDevWebArguments(['--kits', '--no-serve'])).toThrow('--kits requires a served Web Host')
   })
 
   it('builds, serves, and watches natively by default', () => {
-    expect(parseDevWebArguments([])).toEqual({ haier: false, skipBuild: false, serve: true, pollInterval: undefined, appArgs: [] })
+    expect(parseDevWebArguments([])).toEqual({
+      haier: false, hibuddy: false, skipBuild: false, serve: true, pollInterval: undefined, appArgs: [],
+    })
   })
 
   it('keeps the Haier simulator opt-in in the normal development entry', () => {
-    expect(parseDevWebArguments(['--haier', '--skip-build', '--no-open'])).toEqual({
+    expect(parseDevWebArguments(['--haier', '--skip-build', '--no-open'])).toEqual({ hibuddy: false,
       haier: true, skipBuild: true, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
     })
     expect(() => parseDevWebArguments(['--haier', '--no-serve'])).toThrow('--haier requires a served Web Host')
+  })
+
+  it('keeps the Hi-Buddy login opt-in out of the forwarded arguments', () => {
+    expect(parseDevWebArguments(['--hibuddy', '--no-open'])).toEqual({
+      haier: false, hibuddy: true, skipBuild: false, serve: true, pollInterval: undefined, appArgs: ['--no-open'],
+    })
+    expect(() => parseDevWebArguments(['--haier', '--hibuddy'])).toThrow('--haier and --hibuddy are mutually exclusive')
+    expect(() => parseDevWebArguments(['--hibuddy', '--no-serve'])).toThrow('--hibuddy requires a served Web Host')
   })
 
   it('reads the polling interval with its 500ms default', () => {
@@ -104,7 +115,7 @@ describe('parseDevWebArguments', () => {
 
   it('separates its own flags from the arguments forwarded to dsh web', () => {
     expect(parseDevWebArguments(['--skip-build', '--poll', '--no-open', '--port', '8080'])).toEqual({
-      haier: false, skipBuild: true, serve: true, pollInterval: 500, appArgs: ['--no-open', '--port', '8080'],
+      haier: false, hibuddy: false, skipBuild: true, serve: true, pollInterval: 500, appArgs: ['--no-open', '--port', '8080'],
     })
   })
 
@@ -120,6 +131,12 @@ describe('parseDevWebArguments', () => {
   it('rejects dsh web arguments when no server is started', () => {
     expect(() => parseDevWebArguments(['--no-serve', '--no-open'])).toThrow('--no-serve leaves no dsh web process for --no-open')
   })
+})
+
+it('targets the isolated kits home for the login patch only under --kits', () => {
+  const repositoryRoot = resolve(import.meta.dirname, '..')
+  expect(developmentStateDirectory({ kits: true }, repositoryRoot)).toBe(join(repositoryRoot, '.artifacts/local-kits'))
+  expect(developmentStateDirectory({}, repositoryRoot)).toBeUndefined()
 })
 
 it('samples one local environment at startup without validating watcher outputs', async () => {
