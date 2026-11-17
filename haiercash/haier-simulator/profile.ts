@@ -6,6 +6,12 @@ import { fileURLToPath } from 'node:url'
 
 const directory = fileURLToPath(new URL('.', import.meta.url))
 
+/** Which development login a profile wires: the company simulator or Hi-Buddy (lingxi). */
+export type DevMode = 'company' | 'hi-buddy'
+
+/** Default lingxi-server endpoint for --hibuddy development; the account package shares it. */
+export const LINGXI_ENDPOINT = 'http://127.0.0.1:18881'
+
 interface SimulatorPorts {
   servicesPort?: number | undefined
   exchangePort?: number | undefined
@@ -28,7 +34,26 @@ function profileRows(value: unknown): ProfileRow[] {
 }
 
 /** Initial writable profile pointing company authentication and models to loopback services. */
-export function simulatorPatch({ servicesPort = 18080, exchangePort = 18081 }: SimulatorPorts = {}): string {
+export function simulatorPatch(
+  mode: DevMode = 'company',
+  { servicesPort = 18080, exchangePort = 18081 }: SimulatorPorts = {},
+): string {
+  if (mode === 'hi-buddy') {
+    return `- id: deepseek-account
+  config:
+    hiBuddyLogin: true
+    allowLoopbackHttp: true
+    requestTimeoutMs: 10000
+- id: agent-default-model
+  config:
+    provider: deepseek
+    model: ''
+- id: ui-settings-account
+  config:
+    feedbackDestination: internal-team
+    requireIamLogin: true
+`
+  }
   const origin = `http://127.0.0.1:${servicesPort}`
   return `- id: deepseek-account
   config:
@@ -62,18 +87,31 @@ export function simulatorPatch({ servicesPort = 18080, exchangePort = 18081 }: S
 /** Update simulator endpoints while retaining saved models and the current default selection. */
 export function prepareWeb({
   stateDirectory = resolve(directory, '.state'), servicesPort, exchangePort, environment = process.env,
-}: SimulatorPorts & { stateDirectory?: string | undefined; environment?: NodeJS.ProcessEnv } = {}): { patch: string; env: NodeJS.ProcessEnv } {
+  mode = 'company',
+}: SimulatorPorts & { stateDirectory?: string | undefined; environment?: NodeJS.ProcessEnv; mode?: DevMode } = {}): { patch: string; env: NodeJS.ProcessEnv } {
   mkdirSync(stateDirectory, { recursive: true })
   const profile = resolve(stateDirectory, 'home/profiles/web')
   mkdirSync(profile, { recursive: true })
   const patch = resolve(profile, 'cordis.patch.yml')
-  const template = simulatorPatch({ servicesPort, exchangePort })
+  const template = simulatorPatch(mode, { servicesPort, exchangePort })
   if (!existsSync(patch)) writeFileSync(patch, template)
   else {
     const existing = profileRows(load(readFileSync(patch, 'utf8')))
     for (const row of profileRows(load(template))) {
       const previous = existing.find(value => value.id === row.id)
       if (!previous) { existing.push(row); continue }
+      // The active login mode owns the account row outright; the other mode's
+      // keys must not survive (hiBuddyLogin + companyLogin together throw).
+      if (row.id === 'deepseek-account') {
+        previous.config = { ...row.config }
+        continue
+      }
+      // Hi-buddy mode owns the default model too: company-gateway points at the
+      // simulator, which is not running there. Company mode keeps the saved selection.
+      if (row.id === 'agent-default-model' && mode === 'hi-buddy') {
+        previous.config = { ...row.config }
+        continue
+      }
       if (row.id === 'agent-default-model') continue
       if (row.id === 'llm-pi-ai') {
         const providers = record(previous.config?.providers)
@@ -91,14 +129,27 @@ export function prepareWeb({
     DSH_TELEMETRY_MODE: 'DISABLED', DSH_TELEMETRY_DISABLED: '1' } }
 }
 
-/** Configure the explicit --haier mode before the standard development loop starts. */
+/** Configure the explicit --haier/--hibuddy mode before the standard development loop starts. */
 export async function configureHaierDevelopment({
   appArgs = [], environment = process.env, stateDirectory,
-}: { appArgs?: readonly string[]; environment?: NodeJS.ProcessEnv; stateDirectory?: string | undefined } = {}): Promise<{
-  env: NodeJS.ProcessEnv; appArgs: readonly string[]
-}> {
+  mode = 'company', lingxiEndpoint = LINGXI_ENDPOINT,
+}: {
+  appArgs?: readonly string[]; environment?: NodeJS.ProcessEnv; stateDirectory?: string | undefined
+  mode?: DevMode; lingxiEndpoint?: string | undefined
+}): Promise<{ env: NodeJS.ProcessEnv; appArgs: readonly string[] }> {
   if (appArgs.some(value => ['--host', '--port', '--public-url'].some(flag => value === flag || value.startsWith(`${flag}=`)))) {
-    throw new Error('--haier owns --host and --port for the simulator 127.0.0.1:3080 callback; omit address overrides')
+    throw new Error('--haier/--hibuddy owns --host and --port for the 127.0.0.1:3080 callback; omit address overrides')
+  }
+  if (mode === 'hi-buddy') {
+    const unavailable = (): Error => new Error(`lingxi-server is not reachable at ${lingxiEndpoint}; start it with: cd hi-buddy-kit-packages/lingxi-server && node src/main.mjs`)
+    // /v1/connectors sits behind session auth (401 anonymous), so any HTTP
+    // response — including an error status — proves the server is up.
+    const reachable = await fetch(`${lingxiEndpoint}/v1/connectors`, { signal: AbortSignal.timeout(3000) }).catch(() => {
+      throw unavailable()
+    })
+    await reachable.body?.cancel().catch(() => {})
+    const { env } = prepareWeb({ stateDirectory, environment, mode })
+    return { env, appArgs: ['--host', '127.0.0.1', '--port', '3080', ...appArgs] }
   }
   const servicesPort = Number(environment.HAIER_SIMULATOR_PORT ?? 18080)
   const exchangePort = Number(environment.HAIER_EXCHANGE_PORT ?? 18081)
