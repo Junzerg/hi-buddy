@@ -1,0 +1,99 @@
+{
+  "version": "0.2.2-rc.1.20261117.1",
+  "sourceCommit": "3df195ddc9ad9034fb622c2f275ceb0d6bf786f2",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "The user confirmed the coordinated new build and that both previous-version builds had stopped. The source restores upstream Chat and tool presentation, retains the HiBuddy reply header, and pins the updated Claude archive. Both installers, platform archives, and installation acceptance are pending.",
+  "targets": {
+    "win-x64": {
+      "status": "pending",
+      "signing": "unsigned",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: fresh install and upgrade, startup and restart persistence, company login and authorized models, text and image prompts, intranet search/fetch, Office preview, retained Haier blue UI in light and dark themes, standard-mode process folding during and after generation, unframed command/write rows, final answer and brand header, bundled Claude native session resume, SDK controls and Host-backed web search",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261117.1-win-x64-unsigned.exe",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261117.1.tar.gz"
+    },
+    "mac-arm64": {
+      "status": "pending",
+      "signing": "signed-notarized",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: fresh install and upgrade, startup and restart persistence, company login and authorized models, text and image prompts, intranet search/fetch, Office preview, retained Haier blue UI in light and dark themes, standard-mode process folding during and after generation, unframed command/write rows, final answer and brand header, bundled Claude native session resume, SDK controls and Host-backed web search",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261117.1-mac-arm64.dmg",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261117.1-mac-arm64.tar.gz"
+    }
+  },
+  "plugins": {
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.17",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.17.tgz",
+      "sha256": "54f87f91a5efa40aa01939ff6ba68194d09e308f03a5f6b3666042b1c1cd9cea",
+      "sourceCommit": "cd1be069c7a70f1717ea3c90b91f73c7da2a741c"
+    },
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.2",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz",
+      "sha256": "416139ca33e84373325d55139fc1214ccf4999d99ee9364f0e4f6640ba72e3cb",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.2",
+      "enabled": false,
+      "archive": "haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz",
+      "sha256": "a9c6c149df06c33148a463cf16c973ecf7f1268c10c278c4347b56b24f7d0abd",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.1",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.1.tgz",
+      "sha256": "c3ccedc42d8479be5d4b43e60505d3f26eabbc491d22c18388c23dd28e0695f7",
+      "sourceCommit": "a23716228e456d34cdd59f768bf1428801c8d311"
+    }
+  },
+  "checks": {
+    "conversation": "passed: 2,386 Chat, Tool, and Conversation tests; Chromium checks for active and completed process folding, command and write rows, code output, response spacing, and reasoning previews",
+    "claudeCompatibility": "passed: 159 focused Host client component tests after restoring the shared DisclosureRow compatibility parameter",
+    "claudeKit": "passed: build and typecheck, 33 unit tests, production Host Loader integration using a local model fixture, and assembled Chromium smoke using the installed 0.1.0-alpha.17 archive",
+    "packagedKit": "passed: frozen pnpm install; installed manifest, Host, Client, and Remote files match the pinned archive",
+    "packageSet": "passed: 29 prepare-package-set and core-package-set tests, including unique kit archives and both platform dependency closures",
+    "fullBuild": "passed: all 11 Host, Client, native addon, Desktop bundle, and Web build gates; the generated slot catalog was synchronized separately",
+    "sourceDocs": "42 doc-sync gates passed; the stale generated client slot catalog was regenerated and passed its targeted check",
+    "targetNetwork": "pending: verify both installed clients and real company gateway and search on the intranet"
+  },
+  "serverPrerequisites": {
+    "companyLogin": {
+      "status": "pending",
+      "sourceCommit": "3df195ddc9ad9034fb622c2f275ceb0d6bf786f2",
+      "requirement": "Intranet operator verifies the existing company-login exchange serves authorized model metadata. Both installed clients must sign in, discover models, and send text and images."
+    }
+  },
+  "publication": {
+    "mode": "together",
+    "requiredTargets": [
+      "win-x64",
+      "mac-arm64"
+    ],
+    "status": "pending",
+    "requireBothInstallationsVerified": true,
+    "cutoverVerified": false
+  },
+  "published": false
+}
