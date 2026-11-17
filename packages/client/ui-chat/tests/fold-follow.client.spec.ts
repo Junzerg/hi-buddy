@@ -233,17 +233,6 @@ it('keeps a reader below folding rows on the same content without room or follow
   expect(h.reading.pending).toBe(false)
 })
 
-it.each([false, true])('keeps closing rows below the reading edge in flow (following=%s)', async (following) => {
-  const h = fixture({ earlier: 100, later: 500, top: 0, following })
-  h.viewport.motion.collapse(h.row, () => { h.row.hidden = true })
-  await Promise.resolve()
-  runFrameCount(6)
-  expect(h.row.style.opacity).toBe('1')
-  expect(h.row.style.translate).toBe('')
-  expect(Number.parseFloat(h.row.style.height)).toBeLessThan(1_800)
-  runFrames()
-})
-
 it('keeps manual off-bottom ownership and reclaims only space below the reader', async () => {
   const h = fixture(VISIBLE_ROW)
   await h.close()

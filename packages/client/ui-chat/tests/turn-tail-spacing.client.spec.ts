@@ -70,7 +70,8 @@ describe('Running status entrance after admitted steering', () => {
     expect(switches).toEqual(['.column[data-input-fold] .running'])
   })
 
-  it('sizes every first-output row to the travelled row height', () => {
+  it('sizes the first output rows to one font-scaled row', () => {
+    expect(read('ReasoningRow.module.css')).toMatch(new RegExp(String.raw`\.root:not\(\[data-expanded\]\) \{[^}]*height: ${row};`))
     expect(read('ChatGroupSeat.module.css')).toMatch(new RegExp(String.raw`\.title \{[^}]*line-height: ${row};`))
     expect(read('AssistantMarkdown.module.css')).toMatch(new RegExp(String.raw`\.root \{[^}]*line-height: ${row};`))
   })

@@ -344,9 +344,8 @@ export class ChatViewport {
             if (box.element.getBoundingClientRect().top - shift - box.marginTop >= viewportTop) travelling.add(box.element)
           }
         }
-        // Rows below the reading edge must close in flow. Holding them at their old screen positions
-        // leaves gaps as the preceding rows shrink, even when the landing scrolls backward.
-        for (const element of below) travelling.add(element)
+        // Scrolling forward past closing rows shows them shrinking; faded rows would leave their space empty.
+        if (tail && target > start) for (const element of below) travelling.add(element)
         return travelling
       },
       prepare: (progress, cancelled) => {

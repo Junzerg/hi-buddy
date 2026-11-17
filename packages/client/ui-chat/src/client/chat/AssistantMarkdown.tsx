@@ -8,7 +8,7 @@ import type { ChatNodeOwnerProps, ChatViewSlotProps, UseDisclosure, UsePresentat
 import type { AssistantBlock } from '../contract/snapshot.ts'
 import { hasAssistantReplyContent } from '../contract/assistant-content.ts'
 import { markdownLabels } from '../markdown-labels.ts'
-import { formatMessageClock, formatRunDuration } from './message-chrome.ts'
+import { formatMessageClock } from './message-chrome.ts'
 import { ReasoningRow } from './ReasoningRow.tsx'
 import { useCalendarDay } from './use-calendar-day.ts'
 import css from './AssistantMarkdown.module.css'
@@ -54,7 +54,7 @@ export interface AssistantMarkdownProps extends
   /** Resolved prose file mentions for this Assistant's closing turn. */
   mentions?: MarkdownFileMentions | undefined
   /** Workbench reply mark. Omitted for reasoning rows. */
-  identity?: { running: boolean; time?: number; elapsedMs?: number } | undefined
+  identity?: { running: boolean; time: number | undefined } | undefined
   /** The owning view's locale seat, passed down as a plain prop. */
   t: ChatViewSlotProps['t']
 }
@@ -153,7 +153,7 @@ export const AssistantMarkdown = memo(function AssistantMarkdown({
   return (
     <div className={css.root} data-streaming={streaming || undefined}>
       {identity !== undefined && hasAssistantReplyContent(blocks) && (
-        <AssistantIdentity running={identity.running} time={identity.time} elapsedMs={identity.elapsedMs} t={t} />
+        <AssistantIdentity running={identity.running} time={identity.time} t={t} />
       )}
       <div className={css.body}>
         {rendered}
@@ -165,18 +165,15 @@ export const AssistantMarkdown = memo(function AssistantMarkdown({
   )
 })
 
-function AssistantIdentity({ running, time, elapsedMs, t }: {
+function AssistantIdentity({ running, time, t }: {
   running: boolean
-  time?: number | undefined
-  elapsedMs?: number | undefined
+  time: number | undefined
   t: AssistantMarkdownProps['t']
 }) {
   const day = useCalendarDay()
   const label = running
     ? t('message.assistant.running')
-    : elapsedMs !== undefined
-      ? `${t('message.assistant.took')}${formatRunDuration(elapsedMs, t).map(part => part.text).join('')}`
-      : time === undefined ? null : formatMessageClock(time, t, day)
+    : time === undefined ? null : formatMessageClock(time, t, day)
   return (
     <div className={css.head}>
       <span className={css.avatar} aria-hidden><BrandLogo size={22} /></span>

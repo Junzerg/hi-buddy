@@ -226,7 +226,7 @@ describe('ReasoningRow', () => {
         t={t} blocks={[reasoning]} streaming loadImage={unusedImageLoader} />,
     )
     expect(view.getByRole('button').getAttribute('aria-expanded')).toBe('false')
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     view.rerender(
       <AssistantMarkdown renderSlot={renderSlot} useDisclosure={useDisclosure} useGroupAction={useSearchableHidden}
         usePresentation={useDetailedPresentation}
@@ -240,7 +240,7 @@ describe('ReasoningRow', () => {
     )
     expect(view.getByRole('button').getAttribute('aria-expanded')).toBe('true')
     expect(view.getByText(/Check persistence/)).toBeTruthy()
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     expect(view.getByRole('button').getAttribute('aria-expanded')).toBe('false')
   })
 
@@ -316,7 +316,7 @@ describe('ReasoningRow', () => {
     expect(row.getAttribute('aria-expanded')).toBe('true')
     expect(view.getByText(/Check persistence/)).toBeTruthy()
 
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     expect(row.getAttribute('aria-expanded')).toBe('false')
   })
 
@@ -345,7 +345,7 @@ describe('ReasoningRow', () => {
     expect(view.getByText('Comparing checkout and merge bases')).toBeTruthy()
     expect(view.queryByText('**Comparing checkout and merge bases**')).toBeNull()
 
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     expect(view.getByText('Comparing checkout and merge bases').tagName).toBe('STRONG')
     expect(view.container.querySelector('[class*="thinkBody"]')?.textContent).not.toContain('**')
   })
@@ -372,7 +372,7 @@ describe('ReasoningRow', () => {
     expect(compact?.querySelectorAll('h1, h2, h3, h4, h5, h6')).toHaveLength(6)
     expect(compact?.querySelector('p')?.textContent).toBe('Reasoning body.')
 
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     expect(view.getByText('# Section 1').tagName).toBe('SPAN')
     expect(view.queryByRole('heading')).toBeNull()
   })
@@ -388,7 +388,7 @@ describe('ReasoningRow', () => {
         loadImage={unusedImageLoader}
       />,
     )
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     const heading = view.getByRole('heading', { name: 'Investigation' })
     const emphasis = view.getByText('Check persistence')
     const text = first + Array.from({ length: 8 }, (_, index) => `Paragraph ${index}.`).join('\n\n')
@@ -416,7 +416,7 @@ describe('ReasoningRow', () => {
         loadImage={unusedImageLoader}
       />,
     )
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     expect(view.getAllByText(/Inspect the session/)).toHaveLength(1)
     expect(view.queryByText('IN')).toBeNull()
     expect(view.container.querySelector('[class*="ioCard"]')).toBeNull()
@@ -438,7 +438,7 @@ describe('ReasoningRow', () => {
     )
     // Collapsed: no `data-open`, so the sticky rule's gate never matches.
     expect(view.container.querySelector('[data-variant="think"] [data-open]')).toBeNull()
-    fireEvent.click(view.getByText('思考过程'))
+    fireEvent.click(view.getByText('思考'))
     expect(
       view.container.querySelector(
         '[data-variant="think"][data-expanded] [data-open] [data-disclosure-header]',

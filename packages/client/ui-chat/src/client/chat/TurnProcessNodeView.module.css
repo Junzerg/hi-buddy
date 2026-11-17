@@ -21,11 +21,6 @@
   cursor: default;
 }
 
-/* Successful Turns keep the control for layout anchors and move the duration to the assistant header. */
-.root[data-plain] {
-  display: none;
-}
-
 @media (hover: hover) {
   .root:hover:not(:disabled) {
     color: var(--dsw-alias-label-secondary);

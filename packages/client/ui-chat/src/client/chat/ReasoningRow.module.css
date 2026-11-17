@@ -1,55 +1,15 @@
 .root {
   display: flex;
   flex-direction: column;
-  margin: 8px 0;
-  border: 1px solid var(--dsw-alias-border-l2);
-  border-radius: 12px;
-  background: var(--dsw-alias-bg-module-platform);
 }
 
-.root .row {
+.root:not([data-expanded]) {
+  contain: size layout;
+  height: calc(24px + var(--dsh-content-font-delta, 0px));
+}
+
+.row {
   overflow: hidden;
-  box-sizing: border-box;
-  height: auto;
-  padding: 8px 0 8px 11px;
-  color: color-mix(in srgb, var(--dsw-alias-label-primary) 28%, var(--dsw-alias-label-secondary));
-}
-
-.root [data-disclosure-header][data-has-accessory] .row {
-  flex: 1 1 auto;
-}
-
-.chevronHit {
-  display: flex;
-  align-items: center;
-  align-self: stretch;
-  margin-left: auto;
-  cursor: pointer;
-}
-
-.chevron,
-.chevronOpen {
-  flex: none;
-  width: 13px;
-  height: 13px;
-  margin-right: 11px;
-  color: var(--dsw-alias-label-caption);
-  transition: transform 150ms ease;
-}
-
-.chevronOpen {
-  transform: rotate(90deg);
-}
-
-.separator,
-.summary {
-  display: none;
-}
-
-@media (hover: hover) {
-  .root .row:hover {
-    background: var(--dsw-alias-interactive-bg-hover-solid);
-  }
 }
 
 /* The uncapped body scrolls with the conversation; keep its collapse toggle
@@ -58,7 +18,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--dsw-alias-bg-module-platform);
+  background: var(--dsw-alias-bg-base);
 }
 
 .leading {
@@ -66,8 +26,7 @@
 }
 
 .title {
-  font-size: 12.5px;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .separator {

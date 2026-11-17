@@ -46,12 +46,6 @@ export const AssistantNodeView = memo(function AssistantNodeView({
       : turnProcess.spec.answerStep === data.step && turnProcess.spec.inlineReasoning)
     && !turnProcess.open
   const revealProcess = useCallback(() => { turnProcess?.setOpen(true) }, [turnProcess])
-  const reason = turn?.status === 'closed' ? turn.end?.data.reason.kind : undefined
-  const elapsedMs = owner === undefined || turn?.status !== 'closed'
-    || turn.start === undefined || turn.end === undefined
-    || reason === 'aborted' || reason === 'interrupted' || reason === 'error'
-    ? undefined
-    : Math.max(1000, turn.end.time - turn.start.time)
   return (
     <AssistantMarkdown
       blocks={data.blocks}
@@ -69,9 +63,7 @@ export const AssistantNodeView = memo(function AssistantNodeView({
       mentions={mentions}
       identity={groupPart === 'reasoning' ? undefined : {
         running: data.status === 'running',
-        ...(elapsedMs !== undefined
-          ? { elapsedMs }
-          : owner === undefined || tail?.closing?.time === undefined ? {} : { time: tail.closing.time }),
+        time: owner === undefined ? undefined : tail?.closing?.time,
       }}
       t={t}
     />

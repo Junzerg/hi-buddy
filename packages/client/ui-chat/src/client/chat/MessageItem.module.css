@@ -13,15 +13,11 @@
   align-items: flex-end;
   gap: 8px;
   min-width: 0;
-  /* Workbench user bubble: 78% of the transcript column. The 748px fallback
-     covers mounts outside the conversation column. */
-  max-width: min(78%, calc(var(--dsh-chat-content-width, 748px) * 0.78));
-}
-
-.userStack .userBubble {
-  background: var(--dsw-alias-interactive-bg-hover-solid);
-  border-radius: 14px 14px 4px 14px;
-  padding: 9px 13px;
+  /* The figma 525px cap held as a share of the width axis (525/748 ≈ 0.702):
+     resolves to the original 525px on the default column and widens with a
+     dragged or adaptive column. The 748px fallback covers mounts outside the
+     conversation column, where the axis variable is absent. */
+  max-width: min(calc(var(--dsh-chat-content-width, 748px) * 0.702), 82%);
 }
 .referenceSummary {
   color: var(--dsw-alias-label-tertiary);

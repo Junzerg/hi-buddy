@@ -31,15 +31,12 @@ export const TurnProcessNodeView = memo(function TurnProcessNodeView({
   const announcement = stopped ? t('message.stopped')
     : reason === 'error' ? t('message.turnProcess.failed')
       : t('message.turnProcess.worked')
-  // A successful Turn keeps its duration on the assistant header. Stopped and failed rows stay.
-  const plainReply = !canCollapse && !stopped && reason !== 'error'
   return (
     <>
       <span className={a11yCss.visuallyHidden} role="status" aria-live="polite" aria-atomic="true">{announcement}</span>
       <button
         type="button"
         className={css.root}
-        data-plain={plainReply || undefined}
         data-open={open || undefined}
         data-turn-process={node.data.turn}
         data-turn-process-messages={node.data.messageCount}

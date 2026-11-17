@@ -26,7 +26,7 @@ describe('pinned collapsible headers', () => {
       'position: sticky',
       'top: 0',
       'z-index: 1',
-      'background: var(--dsw-alias-bg-module-platform)',
+      'background: var(--dsw-alias-bg-base)',
     ]))
   })
 

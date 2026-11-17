@@ -14,8 +14,8 @@ afterEach(cleanup)
 describe('Chat presentation policy', () => {
   it.each([
     ['compact', true, 'collapsed', false, false],
-    ['standard', false, 'none', true, true],
-    ['detailed', false, 'none', true, true],
+    ['standard', true, 'collapsed', true, true],
+    ['detailed', true, 'history', true, true],
     ['verbose', false, 'none', true, false],
   ] as const)('maps %s to stable presentation capabilities', (mode, foldCompletedTurns, stepGrouping, settledReasoningPreview, liveProcessDetail) => {
     const policy = presentationPolicyFor(mode)
@@ -71,7 +71,7 @@ describe('Chat presentation policy', () => {
   })
 
   it('renders only consumers whose selected field changes', () => {
-    const mode = createSnapshotStore<TranscriptViewMode>('detailed')
+    const mode = createSnapshotStore<TranscriptViewMode>('compact')
     const timing = createSnapshotStore<CollapseTiming>('completion')
     const usePresentation = bindSnapshotSelector(derivePresentationPolicy(mode, timing, createSnapshotStore<FoldedReplies>('all')))
     const foldRender = vi.fn()
@@ -89,17 +89,17 @@ describe('Chat presentation policy', () => {
     render(<><Fold /><Preview /></>)
     expect(foldRender).toHaveBeenCalledTimes(1)
     expect(previewRender).toHaveBeenCalledTimes(1)
-    act(() => { mode.set('verbose') })
+    act(() => { mode.set('detailed') })
     expect(foldRender).toHaveBeenCalledTimes(1)
-    expect(previewRender).toHaveBeenCalledTimes(1)
-    act(() => { mode.set('compact') })
-    expect(foldRender).toHaveBeenCalledTimes(2)
     expect(previewRender).toHaveBeenCalledTimes(2)
     act(() => { mode.set('standard') })
-    expect(foldRender).toHaveBeenCalledTimes(3)
+    expect(foldRender).toHaveBeenCalledTimes(1)
+    expect(previewRender).toHaveBeenCalledTimes(2)
+    act(() => { mode.set('compact') })
+    expect(foldRender).toHaveBeenCalledTimes(1)
     expect(previewRender).toHaveBeenCalledTimes(3)
     act(() => { timing.set('next-input') })
-    expect(foldRender).toHaveBeenCalledTimes(3)
+    expect(foldRender).toHaveBeenCalledTimes(1)
     expect(previewRender).toHaveBeenCalledTimes(3)
   })
 })
