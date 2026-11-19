@@ -6,15 +6,15 @@
   "notes": "The user confirmed 0.2.2-rc.1.20261119.1 for a Windows-x64 repackage after the login button was changed to keep the deep brand blue in the dark theme. This replaces the abandoned 0.2.2-rc.1.20261117.3 Windows build; the published 20261117.2 remains the live version. Source is dev/subcribe_test on top of the Lingxi login integration, with the same pinned plugin set as 20261117.3. Both targets start with pending installer, archive, and installation evidence.",
   "targets": {
     "win-x64": {
-      "status": "pending",
+      "status": "built",
       "signing": "unsigned",
-      "buildCommit": null,
-      "buildDirty": null,
-      "installer": null,
-      "bytes": null,
-      "sha256": null,
-      "archive": null,
-      "archiveSha256": null,
+      "buildCommit": "eb1bb0037d9ee9d4479111200b027a911c7d109b",
+      "buildDirty": false,
+      "installer": "HiBuddy-0.2.2-rc.1.20261119.1-win-x64-unsigned.exe",
+      "bytes": 376391296,
+      "sha256": "3531E4C164EA4574C675CE975146F73E7922AAC37C60C927BADF721F2214099E",
+      "archive": "lingxi-office-release-0.2.2-rc.1.20261119.1.tar.gz",
+      "archiveSha256": "f561a9a34d9772c6ae6b467718647eed26ae7316f661bbf49758449765810faa",
       "signingVerified": false,
       "installationVerified": false,
       "acceptance": "pending: fresh installation and upgrade, startup and restart persistence, company login and authorized models, text and image conversation, intranet search/fetch, Office preview and Standard-mode process folding. In Claude, resume a native session, run two sessions concurrently in one project, queue a follow-up while a reply is streaming, verify the follow-up appears once after delivery, and recover undelivered text to the draft after stopping.",
@@ -73,7 +73,7 @@
     "packagedKit": "pending: re-run on the new source",
     "claudeBrowser": "pending: re-run on the new source",
     "packageSet": "pending: re-run on the new source",
-    "fullBuild": "pending: re-run on the new source",
+    "fullBuild": "passed: all 11 Host, Client, native addon, Desktop bundle, and Web build gates on 0.2.2-rc.1.20261119.1",
     "targetNetwork": "pending: installation, upgrade and feature acceptance on both platforms"
   },
   "serverPrerequisites": {
