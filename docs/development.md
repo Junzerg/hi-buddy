@@ -126,7 +126,7 @@ pnpm run build
 
 For joint host/kit UI work, `pnpm run dev:web --kits` builds sibling kit sources and links them into an isolated Web profile under `.artifacts/local-kits/home`; it uses that directory as `DSH_HOME` instead of the normal home. Install the kits' development dependencies first. After kit or shared-source edits, rerun `pnpm run prepare:local-kits`; host sources retain the normal dev watchers. The generated profile retains its config and disabled rows between runs, including the default-disabled session pool. Release archives and bundle manifests stay pinned. The [document library](../haiercash/builtin-plugins/hi-buddy-doclib-kit/README.md) is maintained in this repository and has its own client build command.
 
-Use `--hibuddy` to develop with Lingxi login and the connector market. It loads the two matching kit packages into `.artifacts/local-kits-hi-buddy/home` and requires a local lingxi-server on port 18881. The Web callback uses `127.0.0.1:3080`.
+Use `--hibuddy` to develop with Lingxi login and the connector market. It loads the two matching kit packages into `.artifacts/local-kits-hi-buddy/home` and connects to the hibuddy-server at `https://ai-mate-hibuddy.haierxj.cn` (set `HIBUDDY_ENDPOINT` to target a local server, e.g. `http://127.0.0.1:18881`). The Web callback uses `127.0.0.1:3080`.
 
 ### Environment variables
 
@@ -202,7 +202,7 @@ pnpm run start:desktop   # launch built Desktop artifacts
 pnpm run dev:desktop     # build, then launch Desktop
 ```
 
-Arguments after a Web command reach `dsh web`, for example `pnpm run dev:web --no-open --port 3081`; `dev:web` also accepts `--skip-build` to reuse the existing artifact tree and `--no-serve` to run only the rebuild watchers beside a server started elsewhere. Web uses the normal Harness home by default. The development-only `pnpm run dev:web --haier` option connects to the local [Haier service simulator](../haiercash/haier-simulator/README.md) with an isolated home on port 3080; start its Docker services first. Desktop retains port 18743 and company IAM in both development and installed launches. Desktop uses the isolated development home described in the [Desktop README](../apps/desktop/README.md). The root `Makefile` names the same commands as `make web`, `make dev-web`, `make desktop`, `make dev-desktop`, and `make build`; `ARGS='--no-open'` forwards options.
+Arguments after a Web command reach `dsh web`, for example `pnpm run dev:web --no-open --port 3081`; `dev:web` also accepts `--skip-build` to reuse the existing artifact tree and `--no-serve` to run only the rebuild watchers beside a server started elsewhere. `dev:web` watches with native filesystem events by default; `--poll[=ms]` (preset as the `dev:web:poll` script) switches the source watchers to polling for network mounts that deliver no change events. Web uses the normal Harness home by default. The development-only `pnpm run dev:web --haier` option connects to the local [Haier service simulator](../haiercash/haier-simulator/README.md) with an isolated home on port 3080; start its Docker services first. Desktop retains port 18743 and company IAM in both development and installed launches. Desktop uses the isolated development home described in the [Desktop README](../apps/desktop/README.md). The root `Makefile` names the same commands as `make web`, `make dev-web`, `make desktop`, `make dev-desktop`, and `make build`; `ARGS='--no-open'` forwards options.
 
 ### TODO markers
 

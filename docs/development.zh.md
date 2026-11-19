@@ -131,7 +131,7 @@ pnpm run build
 
 主体与 kit 联调使用 `pnpm run dev:web --kits`：它构建兄弟目录的 kit 源码，并链接到 `.artifacts/local-kits/home` 下的独立 Web profile；启动时以该目录作为 `DSH_HOME`，不使用日常 home。先安装各 kit 的开发依赖。修改 kit 或共享源码后，重新执行 `pnpm run prepare:local-kits`；宿主源码仍由正常的开发 watcher 跟踪。生成的 profile 在多次运行间保留配置与禁用状态，包括默认禁用的任务池。正式归档和 bundle 清单保持固定版本。[文档库](../haiercash/builtin-plugins/hi-buddy-doclib-kit/README.zh.md) 在本仓库维护，有独立的客户端构建命令。
 
-使用 `--hibuddy` 开发灵犀登录和连接器市场。该模式把配套的两个 kit 加载到 `.artifacts/local-kits-hi-buddy/home`，要求本机的 lingxi-server 监听 18881 端口。Web 回调使用 `127.0.0.1:3080`。
+使用 `--hibuddy` 开发灵犀登录和连接器市场。该模式把配套的两个 kit 加载到 `.artifacts/local-kits-hi-buddy/home`，默认连接 `https://ai-mate-hibuddy.haierxj.cn` 的 hibuddy-server（设 `HIBUDDY_ENDPOINT` 可改指本地服务器，如 `http://127.0.0.1:18881`）。Web 回调使用 `127.0.0.1:3080`。
 
 ### 环境变量
 
@@ -207,7 +207,7 @@ pnpm run start:desktop   # launch built Desktop artifacts
 pnpm run dev:desktop     # build, then launch Desktop
 ```
 
-Web 命令后面的参数会传给 `dsh web`，例如 `pnpm run dev:web --no-open --port 3081`；`dev:web` 还接受 `--skip-build` 复用现有产物树，以及 `--no-serve` 只运行重建 watcher、配合别处启动的服务器。Web 默认使用正常的 Harness home。仅供开发的 `pnpm run dev:web --haier` 选项使用独立 home 和 3080 端口连接本地[海尔服务模拟器](../haiercash/haier-simulator/README.zh.md)；使用前先启动其 Docker 服务。Desktop 开发版和安装版均保留 18743 端口和公司 IAM。Desktop 使用 [Desktop README](../apps/desktop/README.zh.md) 描述的隔离开发 home。根目录 `Makefile` 以 `make web`、`make dev-web`、`make desktop`、`make dev-desktop` 和 `make build` 命名同一套命令；`ARGS='--no-open'` 用于转发参数。
+Web 命令后面的参数会传给 `dsh web`，例如 `pnpm run dev:web --no-open --port 3081`；`dev:web` 还接受 `--skip-build` 复用现有产物树，以及 `--no-serve` 只运行重建 watcher、配合别处启动的服务器。`dev:web` 默认使用原生文件系统事件监听；`--poll[=毫秒]`（预设为 `dev:web:poll` 脚本）把源码 watcher 切换为轮询，供不产生变更事件的网络挂载使用。Web 默认使用正常的 Harness home。仅供开发的 `pnpm run dev:web --haier` 选项使用独立 home 和 3080 端口连接本地[海尔服务模拟器](../haiercash/haier-simulator/README.zh.md)；使用前先启动其 Docker 服务。Desktop 开发版和安装版均保留 18743 端口和公司 IAM。Desktop 使用 [Desktop README](../apps/desktop/README.zh.md) 描述的隔离开发 home。根目录 `Makefile` 以 `make web`、`make dev-web`、`make desktop`、`make dev-desktop` 和 `make build` 命名同一套命令；`ARGS='--no-open'` 用于转发参数。
 
 ### TODO 标记
 

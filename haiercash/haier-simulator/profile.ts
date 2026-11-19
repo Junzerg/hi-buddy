@@ -6,11 +6,11 @@ import { fileURLToPath } from 'node:url'
 
 const directory = fileURLToPath(new URL('.', import.meta.url))
 
-/** Which development login a profile wires: the company simulator or Hi-Buddy (lingxi). */
+/** Which development login a profile wires: the company simulator or Hi-Buddy. */
 export type DevMode = 'company' | 'hi-buddy'
 
-/** Default lingxi-server endpoint for --hibuddy development; the account package shares it. */
-export const LINGXI_ENDPOINT = 'http://127.0.0.1:18881'
+/** Default hibuddy-server endpoint for --hibuddy development; the account kit's default mirrors it. Set HIBUDDY_ENDPOINT to target a local server. */
+export const HIBUDDY_ENDPOINT = process.env.HIBUDDY_ENDPOINT ?? 'https://ai-mate-hibuddy.haierxj.cn'
 
 interface SimulatorPorts {
   servicesPort?: number | undefined
@@ -36,7 +36,7 @@ function profileRows(value: unknown): ProfileRow[] {
 /** Initial writable profile pointing company authentication and models to loopback services. */
 export function simulatorPatch(
   mode: DevMode = 'company',
-  { servicesPort = 18080, exchangePort = 18081 }: SimulatorPorts = {},
+  { servicesPort = 18080, exchangePort = 18081, hibuddyEndpoint = HIBUDDY_ENDPOINT }: SimulatorPorts & { hibuddyEndpoint?: string | undefined } = {},
 ): string {
   if (mode === 'hi-buddy') {
     return `- id: deepseek-account
@@ -44,6 +44,12 @@ export function simulatorPatch(
     hiBuddyLogin: true
     allowLoopbackHttp: true
     requestTimeoutMs: 10000
+- id: hi-buddy-account-platform
+  config:
+    endpoint: ${hibuddyEndpoint}
+- id: hi-buddy-connector-kit
+  config:
+    apiBaseUrl: ${hibuddyEndpoint}
 - id: agent-default-model
   config:
     provider: deepseek
@@ -87,13 +93,13 @@ export function simulatorPatch(
 /** Update simulator endpoints while retaining saved models and the current default selection. */
 export function prepareWeb({
   stateDirectory = resolve(directory, '.state'), servicesPort, exchangePort, environment = process.env,
-  mode = 'company',
-}: SimulatorPorts & { stateDirectory?: string | undefined; environment?: NodeJS.ProcessEnv; mode?: DevMode } = {}): { patch: string; env: NodeJS.ProcessEnv } {
+  mode = 'company', hibuddyEndpoint,
+}: SimulatorPorts & { stateDirectory?: string | undefined; environment?: NodeJS.ProcessEnv; mode?: DevMode; hibuddyEndpoint?: string | undefined } = {}): { patch: string; env: NodeJS.ProcessEnv } {
   mkdirSync(stateDirectory, { recursive: true })
   const profile = resolve(stateDirectory, 'home/profiles/web')
   mkdirSync(profile, { recursive: true })
   const patch = resolve(profile, 'cordis.patch.yml')
-  const template = simulatorPatch(mode, { servicesPort, exchangePort })
+  const template = simulatorPatch(mode, { servicesPort, exchangePort, hibuddyEndpoint })
   if (!existsSync(patch)) writeFileSync(patch, template)
   else {
     const existing = profileRows(load(readFileSync(patch, 'utf8')))
@@ -126,23 +132,23 @@ export function prepareWeb({
 /** Configure the explicit --haier/--hibuddy mode before the standard development loop starts. */
 export async function configureHaierDevelopment({
   appArgs = [], environment = process.env, stateDirectory,
-  mode = 'company', lingxiEndpoint = LINGXI_ENDPOINT,
+  mode = 'company', hibuddyEndpoint = HIBUDDY_ENDPOINT,
 }: {
   appArgs?: readonly string[]; environment?: NodeJS.ProcessEnv; stateDirectory?: string | undefined
-  mode?: DevMode; lingxiEndpoint?: string | undefined
+  mode?: DevMode; hibuddyEndpoint?: string | undefined
 }): Promise<{ env: NodeJS.ProcessEnv; appArgs: readonly string[] }> {
   if (appArgs.some(value => ['--host', '--port', '--public-url'].some(flag => value === flag || value.startsWith(`${flag}=`)))) {
     throw new Error('--haier/--hibuddy owns --host and --port for the 127.0.0.1:3080 callback; omit address overrides')
   }
   if (mode === 'hi-buddy') {
-    const unavailable = (): Error => new Error(`lingxi-server is not reachable at ${lingxiEndpoint}; start it with: cd ../hi-buddy-kit-packages/lingxi-server && pnpm run dev`)
+    const unavailable = (): Error => new Error(`hibuddy-server is not reachable at ${hibuddyEndpoint}; start a local one with: cd ../hi-buddy-kit-packages/hibuddy-server && npm run dev, or point HIBUDDY_ENDPOINT at a reachable deployment`)
     // /v1/connectors sits behind session auth (401 anonymous), so any HTTP
     // response — including an error status — proves the server is up.
-    const reachable = await fetch(`${lingxiEndpoint}/v1/connectors`, { signal: AbortSignal.timeout(3000) }).catch(() => {
+    const reachable = await fetch(`${hibuddyEndpoint}/v1/connectors`, { signal: AbortSignal.timeout(8000) }).catch(() => {
       throw unavailable()
     })
     await reachable.body?.cancel().catch(() => {})
-    const { env } = prepareWeb({ stateDirectory, environment, mode })
+    const { env } = prepareWeb({ stateDirectory, environment, mode, hibuddyEndpoint })
     return { env, appArgs: ['--host', '127.0.0.1', '--port', '3080', ...appArgs] }
   }
   const servicesPort = Number(environment.HAIER_SIMULATOR_PORT ?? 18080)

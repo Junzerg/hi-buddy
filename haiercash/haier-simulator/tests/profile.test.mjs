@@ -1,11 +1,11 @@
 // Task 8 profile specs: the --hibuddy development template, its
-// replace-not-merge account row, and the lingxi-server health probe.
+// replace-not-merge account row, and the hibuddy-server health probe.
 // company-mode template and merge semantics are pinned byte-identical here
 // and in services.test.mjs; anything this file changes is hi-buddy-only.
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { createServer } from 'node:http'
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { load } from 'js-yaml'
@@ -101,19 +101,19 @@ test('configureHaierDevelopment hi-buddy accepts an auth challenge and diagnoses
   await new Promise(resolve => unavailable.listen(0, '127.0.0.1', resolve))
   await assert.rejects(
     configureHaierDevelopment({
-      mode: 'hi-buddy', stateDirectory: root, lingxiEndpoint: `http://127.0.0.1:${unavailable.address().port}`,
+      mode: 'hi-buddy', stateDirectory: root, hibuddyEndpoint: `http://127.0.0.1:${unavailable.address().port}`,
     }),
-    /lingxi-server is not reachable/,
+    /hibuddy-server is not reachable/,
   )
 
   // /v1/connectors is session-authed (401 anonymous), so an error status still
-  // proves lingxi-server is up and must not block setup.
+  // proves hibuddy-server is up and must not block setup.
   const authed = createServer((_request, response) => { response.writeHead(401).end() })
   t.after(() => new Promise(resolve => authed.close(resolve)))
   await new Promise(resolve => authed.listen(0, '127.0.0.1', resolve))
   const configured = await configureHaierDevelopment({
     mode: 'hi-buddy', stateDirectory: root,
-    lingxiEndpoint: `http://127.0.0.1:${authed.address().port}`,
+    hibuddyEndpoint: `http://127.0.0.1:${authed.address().port}`,
   })
   assert.deepEqual(configured.appArgs, ['--host', '127.0.0.1', '--port', '3080'])
 })
@@ -130,10 +130,32 @@ test('configureHaierDevelopment hi-buddy succeeds against a live connector list 
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve))
   const configured = await configureHaierDevelopment({
     mode: 'hi-buddy', stateDirectory: root,
-    lingxiEndpoint: `http://127.0.0.1:${server.address().port}`,
+    hibuddyEndpoint: `http://127.0.0.1:${server.address().port}`,
   })
   assert.deepEqual(probed, ['/v1/connectors'])
   assert.deepEqual(configured.appArgs, ['--host', '127.0.0.1', '--port', '3080'])
   assert.equal(configured.env.DSH_HOME, join(root, 'home'))
   assert.match(readFileSync(join(root, 'home/profiles/web/cordis.patch.yml'), 'utf8'), /hiBuddyLogin: true/)
+  // The launcher's probed endpoint must reach both kits: neither bundled patch
+  // pins a server address, so these profile rows carry the probed HIBUDDY_ENDPOINT.
+  const rows = load(readFileSync(join(root, 'home/profiles/web/cordis.patch.yml'), 'utf8'))
+  const probedEndpoint = `http://127.0.0.1:${server.address().port}`
+  assert.equal(rows.find(row => row.id === 'hi-buddy-account-platform').config.endpoint, probedEndpoint)
+  assert.equal(rows.find(row => row.id === 'hi-buddy-connector-kit').config.apiBaseUrl, probedEndpoint)
+})
+
+test('prepareWeb hi-buddy appends kit rows to a pre-injection patch and updates them on endpoint change', t => {
+  const root = mkdtempSync(join(tmpdir(), 'haier-simulator-hibuddy-endpoint-update-'))
+  t.after(() => rmSync(root, { recursive: true, force: true }))
+  // Simulate a patch written before the launcher injected kit rows: the merge
+  // loop must append the missing kit rows, then update their addresses in place
+  // when HIBUDDY_ENDPOINT changes between runs.
+  mkdirSync(join(root, 'home/profiles/web'), { recursive: true })
+  writeFileSync(join(root, 'home/profiles/web/cordis.patch.yml'), '- id: deepseek-account\n  config:\n    hiBuddyLogin: true\n')
+  prepareWeb({ stateDirectory: root, mode: 'hi-buddy', hibuddyEndpoint: 'https://first.example.com' })
+  prepareWeb({ stateDirectory: root, mode: 'hi-buddy', hibuddyEndpoint: 'https://second.example.com' })
+  const rows = load(readFileSync(join(root, 'home/profiles/web/cordis.patch.yml'), 'utf8'))
+  assert.equal(rows.find(row => row.id === 'deepseek-account').config.hiBuddyLogin, true, '既有行保留')
+  assert.equal(rows.find(row => row.id === 'hi-buddy-account-platform').config.endpoint, 'https://second.example.com')
+  assert.equal(rows.find(row => row.id === 'hi-buddy-connector-kit').config.apiBaseUrl, 'https://second.example.com')
 })
