@@ -61,10 +61,10 @@ class HiBuddyAccountSpy extends Service {
 interface FixtureOptions {
   hiBuddyLogin?: boolean
   mountSpy?: boolean
-  presetLingxiGrant?: boolean
+  presetHibuddyGrant?: boolean
 }
 
-async function fixture({ hiBuddyLogin, mountSpy, presetLingxiGrant }: FixtureOptions = {}) {
+async function fixture({ hiBuddyLogin, mountSpy, presetHibuddyGrant }: FixtureOptions = {}) {
   const home = await mkdtemp(join(tmpdir(), 'dsh-guard-'))
   cleanups.push(() => rm(home, { recursive: true, force: true }))
   const ctx = new Context()
@@ -72,9 +72,9 @@ async function fixture({ hiBuddyLogin, mountSpy, presetLingxiGrant }: FixtureOpt
   await credentials
   const authorization = ctx.plugin(AuthorizationService)
   await authorization
-  if (presetLingxiGrant) {
+  if (presetHibuddyGrant) {
     await ctx.credentials.modifyRecord(KEY, () => Promise.resolve({
-      kind: 'grant', payload: { version: 1, token: 'lingxi-session-ticket', issuer: 'http://127.0.0.1:18881' },
+      kind: 'grant', payload: { version: 1, token: 'hibuddy-session-ticket', issuer: 'http://127.0.0.1:18881' },
     }))
   }
   let spy: HiBuddyAccountSpy | undefined
@@ -129,7 +129,7 @@ it('hiBuddyLogin: true → the 14 public methods forward verbatim arguments and 
   spy.returns.set('completeApiKeySignIn', undefined)
   spy.returns.set('cancelSignIn', stateView)
   spy.returns.set('signOut', stateView)
-  spy.returns.set('resolveToken', 'lingxi-ticket')
+  spy.returns.set('resolveToken', 'hibuddy-ticket')
   spy.returns.set('rejectToken', undefined)
   spy.returns.set('getPlatformSession', null)
   spy.returns.set('getDeviceIdentity', { osVersion: 'darwin 25' })
@@ -144,8 +144,8 @@ it('hiBuddyLogin: true → the 14 public methods forward verbatim arguments and 
   await expect(account.completeApiKeySignIn('sk-x')).resolves.toBeUndefined()
   await expect(account.cancelSignIn('a1' as never)).resolves.toBe(stateView)
   await expect(account.signOut(client)).resolves.toBe(stateView)
-  await expect(account.resolveToken('https://api.deepseek.com/v1/chat')).resolves.toBe('lingxi-ticket')
-  await expect(account.rejectToken('lingxi-ticket')).resolves.toBeUndefined()
+  await expect(account.resolveToken('https://api.deepseek.com/v1/chat')).resolves.toBe('hibuddy-ticket')
+  await expect(account.rejectToken('hibuddy-ticket')).resolves.toBeUndefined()
   await expect(account.getPlatformSession()).resolves.toBeNull()
   await expect(account.getDeviceIdentity()).resolves.toEqual({ osVersion: 'darwin 25' })
   const watchSignal = new AbortController()
@@ -162,7 +162,7 @@ it('hiBuddyLogin: true → the 14 public methods forward verbatim arguments and 
   expect(spy.calls.get('cancelSignIn')).toEqual([['a1']])
   expect(spy.calls.get('signOut')).toEqual([[client]])
   expect(spy.calls.get('resolveToken')).toEqual([['https://api.deepseek.com/v1/chat']])
-  expect(spy.calls.get('rejectToken')).toEqual([['lingxi-ticket']])
+  expect(spy.calls.get('rejectToken')).toEqual([['hibuddy-ticket']])
 })
 
 it('authorization flow run forwards handleAuthorizationRun; record-updated forwards notifyRecordUpdated', async () => {
@@ -190,13 +190,13 @@ it('authorization flow run forwards handleAuthorizationRun; record-updated forwa
   expect(spy.count('notifyRecordUpdated')).toBe(1)
 })
 
-it('init keeps a lingxi grant under hiBuddyLogin and still deletes foreign grants without the key', async () => {
-  const kept = await fixture({ hiBuddyLogin: true, mountSpy: true, presetLingxiGrant: true })
+it('init keeps a hibuddy grant under hiBuddyLogin and still deletes foreign grants without the key', async () => {
+  const kept = await fixture({ hiBuddyLogin: true, mountSpy: true, presetHibuddyGrant: true })
   expect(await kept.ctx.credentials.readRecord(KEY)).toMatchObject({
-    kind: 'grant', payload: { token: 'lingxi-session-ticket', issuer: 'http://127.0.0.1:18881' },
+    kind: 'grant', payload: { token: 'hibuddy-session-ticket', issuer: 'http://127.0.0.1:18881' },
   })
 
-  const legacy = await fixture({ presetLingxiGrant: true })
+  const legacy = await fixture({ presetHibuddyGrant: true })
   expect(await legacy.ctx.credentials.readRecord(KEY)).toBeUndefined()
 })
 

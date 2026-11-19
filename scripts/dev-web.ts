@@ -92,7 +92,7 @@ export interface DevWebArguments {
   readonly haier: boolean
   /** Build sibling kit sources and link them into an isolated development profile. */
   readonly kits?: true
-  /** Use the Hi-Buddy development profile: lingxi-server login through hi-buddy-account-platform. */
+  /** Use the Hi-Buddy development profile: hibuddy-server login through hi-buddy-account-platform. */
   readonly hibuddy: boolean
   /** Skip the `pnpm run build:artifacts` that otherwise precedes the watchers. */
   readonly skipBuild: boolean

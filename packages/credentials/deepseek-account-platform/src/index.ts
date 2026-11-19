@@ -223,7 +223,7 @@ export class PlatformAccount extends DeepSeekAccount {
   }
 
   async [Service.init](): Promise<void> {
-    // [hiBuddy] The stored grant is a lingxi session ticket with a lingxi issuer; this
+    // [hiBuddy] The stored grant is a hibuddy session ticket with a hibuddy issuer; this
     // provider's platform-origin cleanup must not delete it.
     if (this.hiBuddyLogin) return
     const record = await this.ctx.credentials.readRecord(KEY)

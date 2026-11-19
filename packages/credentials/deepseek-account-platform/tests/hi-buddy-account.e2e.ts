@@ -1,6 +1,6 @@
 /**
  * Run with `DSH_HIBUDDY_E2E=1 pnpm run test:e2e hi-buddy-account` from paired
- * Host and kit checkouts. Install lingxi-server dependencies and build the
+ * Host and kit checkouts. Install hibuddy-server dependencies and build the
  * account kit first. `HIBUDDY_TGZ=1` exercises the packed kit entrypoint.
  */
 import { afterEach, expect, it } from 'vitest'
@@ -17,7 +17,7 @@ import type { AccountClientMetadata } from '@deepseek-ai/dsh-deepseek-account'
 import { PlatformAccount } from '../src/index.ts'
 
 const repoRoot = fileURLToPath(new URL('../../../../', import.meta.url))
-const lingxiServerDir = resolve(repoRoot, '../hi-buddy-kit-packages/lingxi-server')
+const hibuddyServerDir = resolve(repoRoot, '../hi-buddy-kit-packages/hibuddy-server')
 const accountPlatformDir = resolve(repoRoot, '../hi-buddy-kit-packages/hi-buddy-account-platform')
 const KEY = credentialKey('deepseek-account-platform', 'default')
 const client: AccountClientMetadata = { version: '1.2.3', locale: 'zh-CN', timezoneOffsetSeconds: 0 }
@@ -75,15 +75,15 @@ it.skipIf(process.env.DSH_HIBUDDY_E2E !== '1')('signs in, renews the session and
     const [dbPath, keysPath] = process.argv.slice(1)
     const server = await createServer({ dbPath, keysPath, idpAutologinUser: 'dev' })
     await new Promise((resolve, reject) => process.send(server.url, error => error ? reject(error) : resolve()))
-  `, join(root, 'lingxi.db'), join(root, 'keys.json')], {
-    cwd: lingxiServerDir,
+  `, join(root, 'hibuddy.db'), join(root, 'keys.json')], {
+    cwd: hibuddyServerDir,
     ipc: true,
     reject: false,
     forceKillAfterDelay: 2_000,
   })
   cleanups.push(async () => { server.kill(); await server })
   const origin = await server.getOneMessage()
-  if (typeof origin !== 'string') throw new Error('lingxi-server did not report an HTTP address')
+  if (typeof origin !== 'string') throw new Error('hibuddy-server did not report an HTTP address')
 
   const ctx = new Context()
   const credentials = ctx.plugin(LocalCredentialProvider, { path: join(root, 'credentials.yaml'), watch: false })
