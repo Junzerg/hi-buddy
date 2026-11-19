@@ -4,15 +4,16 @@
  * account kit first. `HIBUDDY_TGZ=1` exercises the packed kit entrypoint.
  */
 import { afterEach, expect, it } from 'vitest'
-import { Context } from '@deepseek-ai/cordis'
+import { Context, Service } from '@deepseek-ai/cordis'
 import { mkdtemp, rm, symlink } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
+import { createServer as createHttpServer } from 'node:http'
 import { join, resolve } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { execa } from 'execa'
 import AuthorizationService from '@deepseek-ai/dsh-authorization'
 import { LocalCredentialProvider } from '@deepseek-ai/dsh-credentials-local'
-import { credentialKey } from '@deepseek-ai/dsh-credentials'
+import { credentialKey, credentialRef } from '@deepseek-ai/dsh-credentials'
 import type { AccountClientMetadata } from '@deepseek-ai/dsh-deepseek-account'
 import { PlatformAccount } from '../src/index.ts'
 
@@ -57,6 +58,77 @@ afterEach(async () => {
   if (failures.length > 0) throw new AggregateError(failures)
 })
 
+/** galois getOrCreate 的替身：同账号幂等，回固定 key + 单模型目录。
+ *  校验方法、direct-target 头与 authSecret——server 侧漏发任何一项即 403，
+ *  让 e2e 能抓住集成回归而非对一切回成功。 */
+function startGaloisStub(): Promise<{ url: string; close(): Promise<void> }> {
+  const upstream = createHttpServer((req, res) => {
+    let raw = ''
+    req.on('data', (chunk) => { raw += chunk })
+    req.on('end', () => {
+      let body: { account?: string; system?: string; authSecret?: string }
+      try { body = JSON.parse(raw) } catch {
+        res.writeHead(400, JSON_HEADERS); res.end('{}'); return
+      }
+      if (req.method !== 'POST' || body.authSecret !== 'e2e-galois-secret'
+        || req.headers['x-ploto-direct-target'] !== 'ploto-llm-admin-app') {
+        res.writeHead(403, JSON_HEADERS); res.end('{}'); return
+      }
+      res.writeHead(200, { 'content-type': 'application/json' })
+      res.end(JSON.stringify({
+        success: true,
+        status: { code: 20000 },
+        data: {
+          username: `${body.system}_${body.account}`,
+          apiKey: 'sk-e2e-gateway-key',
+          models: [{ modelName: 'deepseek-v3', contextLength: 65536, isMultimodal: false }],
+          authorizedModels: ['deepseek-v3'],
+        },
+      }))
+    })
+  })
+  return new Promise((resolve) => {
+    upstream.listen(0, '127.0.0.1', () => {
+      resolve({
+        url: `http://127.0.0.1:${upstream.address().port}/ploto-llm-admin-app/api/internal/apiKey/getOrCreate`,
+        close: () => new Promise((done) => { upstream.close(() => done()) }),
+      })
+    })
+  })
+}
+
+/** gateway-key provisioning 的模型配置面（kit 的 configuration 阶段校验它）。 */
+class GatewaySettingsStub extends Service {
+  private readonly namespaces: Record<string, unknown>
+  constructor(ctx: Context, namespaces: Record<string, unknown> = {}) {
+    super(ctx, 'settings')
+    this.namespaces = namespaces
+  }
+  describe(_options?: { redactSecrets?: boolean }): Array<{ ns: string; value?: unknown }> {
+    return Object.entries(this.namespaces).map(([ns, value]) => ({ ns, value }))
+  }
+  /** 真实 settings 服务是 provider 层深合并（兄弟字段保留），替身保持一致。 */
+  async update(ns: string, patch: { providers?: Record<string, Record<string, unknown>> }): Promise<unknown> {
+    const current = (this.namespaces[ns] ?? {}) as { providers?: Record<string, Record<string, unknown>> }
+    const providers = { ...current.providers }
+    for (const [name, route] of Object.entries(patch.providers ?? {})) {
+      providers[name] = { ...providers[name], ...route }
+    }
+    this.namespaces[ns] = { ...current, providers }
+    return this.namespaces[ns]
+  }
+}
+
+class GatewayDefaultModelStub extends Service {
+  private selection: { provider?: string; model?: string } = {}
+  constructor(ctx: Context) { super(ctx, 'agentDefaultModel') }
+  currentSelection(): { provider?: string; model?: string } { return { ...this.selection } }
+  async saveSelection(selection: { provider: string; model: string }): Promise<unknown> {
+    this.selection = selection
+    return { ...this.selection }
+  }
+}
+
 async function until(what: string, predicate: () => Promise<boolean> | boolean, timeoutMs: number): Promise<void> {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
@@ -70,16 +142,25 @@ it.skipIf(process.env.DSH_HIBUDDY_E2E !== '1')('signs in, renews the session and
   const root = await mkdtemp(join(tmpdir(), 'hibuddy-account-'))
   cleanups.push(() => rm(root, { recursive: true, force: true }))
   const HiBuddyAccount = await loadDelegateModule(root)
+  // The login walk now provisions the gateway key mid-attempt, so the server
+  // needs a galois upstream and the workspace needs the model configuration
+  // plane the provisioning validates against.
+  const galois = await startGaloisStub()
+  cleanups.push(() => galois.close())
   const server = execa(process.execPath, ['--input-type=module', '-e', `
     import { createServer } from './src/server.mjs'
     const [dbPath, keysPath] = process.argv.slice(1)
-    const server = await createServer({ dbPath, keysPath, idpAutologinUser: 'dev' })
+    const galois = process.env.HIBUDDY_GALOIS_URL
+      ? { url: process.env.HIBUDDY_GALOIS_URL, authSecret: process.env.HIBUDDY_GALOIS_AUTH_SECRET, system: 'lingxi-office' }
+      : undefined
+    const server = await createServer({ dbPath, keysPath, idpAutologinUser: 'dev', ...(galois ? { galois } : {}) })
     await new Promise((resolve, reject) => process.send(server.url, error => error ? reject(error) : resolve()))
   `, join(root, 'hibuddy.db'), join(root, 'keys.json')], {
     cwd: hibuddyServerDir,
     ipc: true,
     reject: false,
     forceKillAfterDelay: 2_000,
+    env: { ...process.env, HIBUDDY_GALOIS_URL: galois.url, HIBUDDY_GALOIS_AUTH_SECRET: 'e2e-galois-secret' },
   })
   cleanups.push(async () => { server.kill(); await server })
   const origin = await server.getOneMessage()
@@ -92,6 +173,17 @@ it.skipIf(process.env.DSH_HIBUDDY_E2E !== '1')('signs in, renews the session and
   const authorization = ctx.plugin(AuthorizationService)
   await authorization
   cleanups.push(() => authorization.dispose())
+  const settingsFiber = ctx.plugin(GatewaySettingsStub, {
+    'llm-pi-ai': { providers: { 'company-gateway': {
+      displayName: 'HaierCash', apiKeyEnv: 'COMPANY_GATEWAY_API_KEY', accountRequired: true,
+      api: 'anthropic-messages', baseURL: 'http://ai-gateway.haierxj.cn', models: [],
+    } } },
+  })
+  await settingsFiber
+  cleanups.push(() => settingsFiber.dispose())
+  const defaultsFiber = ctx.plugin(GatewayDefaultModelStub)
+  await defaultsFiber
+  cleanups.push(() => defaultsFiber.dispose())
   const delegateFiber = ctx.plugin(HiBuddyAccount, { endpoint: origin })
   await delegateFiber
   const delegate = ctx.get('hiBuddyAccount') as DelegateHandle
@@ -122,6 +214,20 @@ it.skipIf(process.env.DSH_HIBUDDY_E2E !== '1')('signs in, renews the session and
   expect(record?.kind).toBe('grant')
   const storedTicket = (record as { payload: { token: string } } | undefined)?.payload?.token
   expect(typeof storedTicket).toBe('string')
+
+  // 3b. The gateway key provisioned and the catalog wired into the model plane.
+  const settings = ctx.get('settings') as GatewaySettingsStub
+  const wired = (settings.describe()[0]?.value as { providers?: Record<string, { models?: unknown[] }> })
+    ?.providers?.['company-gateway']?.models ?? []
+  expect(wired).toEqual([{ id: 'deepseek-v3', name: 'deepseek-v3', contextWindow: 65536, input: ['text'] }])
+
+  // 3c. The default-model selection and the stored key ref land too.
+  const defaults = ctx.get('agentDefaultModel') as GatewayDefaultModelStub
+  expect(defaults.currentSelection()).toEqual({ provider: 'company-gateway', model: 'deepseek-v3' })
+  const storedKey = await (ctx.get('credentials') as {
+    resolve(ref: string): Promise<{ value?: string } | undefined>
+  }).resolve(credentialRef('COMPANY_GATEWAY_API_KEY'))
+  expect(storedKey?.value).toBe('sk-e2e-gateway-key')
 
   const state = await account.getState()
   expect(state.status).toBe('credential-stored')

@@ -39,6 +39,10 @@ export function simulatorPatch(
   { servicesPort = 18080, exchangePort = 18081, hibuddyEndpoint = HIBUDDY_ENDPOINT }: SimulatorPorts & { hibuddyEndpoint?: string | undefined } = {},
 ): string {
   if (mode === 'hi-buddy') {
+    // The llm-pi-ai company-gateway row is REQUIRED here: the kit's gateway-key
+    // provisioning validates this row (api/baseURL/apiKeyEnv) before wiring the
+    // key and catalog, so without it login can never complete its model step
+    // (docs/design/2026-11-19-hibuddy-gateway-key-provisioning-design.md).
     return `- id: deepseek-account
   config:
     hiBuddyLogin: true
@@ -50,6 +54,19 @@ export function simulatorPatch(
 - id: hi-buddy-connector-kit
   config:
     apiBaseUrl: ${hibuddyEndpoint}
+- id: llm-pi-ai
+  config:
+    providers:
+      company-gateway:
+        displayName: HaierCash
+        apiKeyEnv: COMPANY_GATEWAY_API_KEY
+        accountRequired: true
+        api: anthropic-messages
+        # dev hostname: this checkout cannot resolve ai-gateway.haierxj.cn; the
+        # production base patch keeps ai-gateway (kit repo design doc
+        # 2026-11-19-hibuddy-gateway-key-provisioning-design.md, 实现期偏差 #3).
+        baseURL: http://office.haierxj.cn
+        models: []
 - id: agent-default-model
   config:
     provider: deepseek

@@ -56,4 +56,4 @@ native/system/test/bin/
 docs/.doclib-index.json
 # Doclib runtime state: content-addressed chunk shards and the append-only context log.
 docs/.doclib/
-.workbuddy/
+.workbuddy/*.stackdump

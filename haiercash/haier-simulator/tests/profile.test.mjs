@@ -43,10 +43,15 @@ test('simulatorPatch("company") stays byte-identical to the pre-hibuddy template
   assert.equal(simulatorPatch('company'), companyTemplate)
 })
 
-test('simulatorPatch("hi-buddy") swaps the login row and drops the company gateway', () => {
+test('simulatorPatch("hi-buddy") swaps the login row and pins the company-gateway model route', () => {
   const rows = load(simulatorPatch('hi-buddy'))
   const ids = rows.map(row => row.id)
-  assert.ok(!ids.includes('llm-pi-ai'), '不写 company-gateway（无 llm-pi-ai 行）')
+  assert.ok(ids.includes('llm-pi-ai'), '模型接线校验依赖 company-gateway 行（gateway-key provisioning）')
+  // 与生产 base patch 同形：钥匙经 COMPANY_GATEWAY_API_KEY ref 解析。
+  assert.deepEqual(rows.find(row => row.id === 'llm-pi-ai').config.providers['company-gateway'], {
+    displayName: 'HaierCash', apiKeyEnv: 'COMPANY_GATEWAY_API_KEY', accountRequired: true,
+    api: 'anthropic-messages', baseURL: 'http://office.haierxj.cn', models: [],
+  })
   assert.deepEqual(rows.find(row => row.id === 'deepseek-account').config, {
     hiBuddyLogin: true, allowLoopbackHttp: true, requestTimeoutMs: 10000,
   })
