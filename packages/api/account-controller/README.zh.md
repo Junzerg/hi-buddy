@@ -28,6 +28,8 @@ account 命名空间提供 getState、getProfile / getBalance、getUnnotifiedBon
 
 `hasRunningAccountTasks` 通过账号模块的判断函数，检查运行中 Agent 最近记录的请求上下文，包括工具和重试阶段。空闲 Agent 及 API key 上下文不计入。移除凭据时，账号提供方独立取消匹配任务。
 
+客户端心跳调用 `ensureSessionTicket`：页面存活期间至多每 30 分钟一次，窗口恢复可见时一次，每个已登录快照帧到达时一次，因此重启在启动阶段就完成续期，而不必等第一个 tick。控制器把调用转发给账号提供方：Hi-Buddy 链路之外为 no-op；超过绝对上限的续期由 Hi-Buddy 委托方把账号结算为已登出，因此该调用以成功结束，不上抛续期失败。
+
 <a id="understand-the-implementation"></a>
 ## 理解实现
 

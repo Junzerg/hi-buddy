@@ -489,6 +489,26 @@ export class PlatformAccount extends DeepSeekAccount {
     return result.data.token
   }
 
+  /**
+   * Renew the session credential when near/past expiry and refresh the gateway
+   * model plane; the client heartbeat calls this. No-op outside the Hi-Buddy
+   * chain (only its delegate implements it; the platform and company chains
+   * authenticate per-request instead). Renewal past the absolute cap settles
+   * the account to signed-out in the delegate instead of surfacing an error;
+   * the only rejection this layer observes is a missing delegate mount.
+   */
+  async ensureSessionTicket(): Promise<void> {
+    if (!this.hiBuddyLogin) return
+    try { await this.hiBuddyDelegate().ensureSessionTicket() }
+    catch (error) {
+      // The kit's hygiene pass settles its own failures and never rejects, so
+      // this catch only ever sees the delegate wiring error; log it instead of
+      // letting the client's silent swallow hide a broken mount.
+      console.error('[deepseek-account] session heartbeat skipped',
+        { stage: 'ensure-session-ticket', reason: error instanceof Error ? error.message : 'non-error rejection' })
+    }
+  }
+
   override async startSignIn(client: AccountClientMetadata, callbackOrigin: string, loginSource: 'web' | 'desktop'): Promise<AccountView> {
     if (this.hiBuddyLogin) return this.hiBuddyDelegate().startSignIn(client, callbackOrigin, loginSource) // [hiBuddy]
     if (this.removing !== undefined) await this.removing

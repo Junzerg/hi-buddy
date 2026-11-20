@@ -34,6 +34,8 @@ getPlatformSession 仅在已存授权的 issuer 与 platformOrigin 一致时导�
 
 在挂载了 `hi-buddy-account-platform` 的 profile 中设置 `hiBuddyLogin`，即可通过灵犀登录。灵犀凭证应保存在独立的 Harness home 中，同时省略 `companyLogin`。
 
+设置 `hiBuddyLogin` 后，客户端心跳的 `ensureSessionTicket` 会转发给 hi-buddy-account-platform 委托方：会话票临近或超过到期即续期，网关 Key 或模型目录变化时刷新本地模型面。委托方自行结算失败——被拒绝的续期会移除本地授权记录并驱动失效流；链路之外该调用为 no-op。心跳落在缺失的委托挂载上时会输出唯一一条诊断日志（`session heartbeat skipped`），因为客户端静默吞掉心跳失败。
+
 设置 `companyLogin: true` 后，本 provider 复用现有授权尝试、回调注册、取消、订阅和凭证授权记录。内置配置连接 IAM STG（`https://iam-stg.haierxj.com`，客户端 `APP176`），Desktop 回调为 `http://127.0.0.1:18743/oauth/callback`。授权码换取 token 后验证 userInfo；网关 account 取已验证邮箱中 @ 前的部分，保留大小写。取 Key 请求包含 system `lingxi-office` 和直达路由请求头；响应 username 必须等于 `lingxi-office_` 加 account。邮箱缺失或格式异常时登录失败。IAM access token 不持久化。公司模式不提供 DeepSeek 余额、奖励或内嵌 Platform 会话。
 
 两个应用密钥只由管理员在 versions 服务器配置。客户端将原回调校验过的授权码提交到 `companyLoginEndpoint`，服务器完成 IAM token、userInfo 和本人网关 Key 获取，返回个人 Key、已验证的账号信息和授权模型资料。客户端不读取或保存 `COMPANY_IAM_CLIENT_SECRET`、`COMPANY_GATEWAY_AUTH_SECRET`，普通 Windows 用户没有配置步骤。部署见 [versions 登录接口](../../../apps/desktop/packaging/README.zh.md#company-login)。
@@ -73,7 +75,7 @@ getUnnotifiedBonuses 读取同一来源上的 GET /api/v0/users/get_unnotified_b
 
 已鉴权客户端提供浏览器可访问的回调来源（含 SSH 本地转发端口）和 UI 类型。提供者固定回调路径，并在初始化与兑换时使用同一个 redirect_uri。回调请求使用 state 和 PKCE 校验，不要求 RPC 鉴权。完成、取消和卸载仅移除本次尝试的路由。兑换失败发布 failed 状态，不自动重试：Web 关闭授权标签页，原标签页显示失败弹窗；回调页尝试自行关闭，并提供手动关闭提示。Desktop 收到 HTTP 204，并通过账号状态流聚焦现有登录界面。
 
-Host 诊断仅在请求、响应校验或登录失败时，通过 `console.error` 写入标准错误及 Host 调试器 Console，前缀为 `[deepseek-account]`。成功请求、调用方主动取消和正常账号状态变化不输出日志；请求超时仍记录为失败。失败诊断包含接口路径、HTTP 状态、数值响应码、失败阶段、校验失败的字段路径、实际类型和校验码，以及浏览器 URL 拒绝规则，不包含请求头、请求和响应正文、授权 URL 或原始异常。
+Host 诊断仅在请求、响应校验、登录或心跳接线失败时，通过 `console.error` 写入标准错误及 Host 调试器 Console，前缀为 `[deepseek-account]`。成功请求、调用方主动取消和正常账号状态变化不输出日志；请求超时仍记录为失败。失败诊断包含接口路径、HTTP 状态、数值响应码、失败阶段、校验失败的字段路径、实际类型和校验码，以及浏览器 URL 拒绝规则，不包含请求头、请求和响应正文、授权 URL 或原始异常。
 
 `rewriteBrowserOrigin` 默认为 `false`，要求浏览器地址同源。私有开发 patch 可设为 `true`，将授权页和完成页地址映射到 `platformOrigin`，保留固定路径和查询字符串。原地址必须使用 HTTPS 或已匹配配置来源；仍拒绝用户名密码、片段和非预期路径。发布的 profile 保持严格同源校验。
 

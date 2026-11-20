@@ -634,6 +634,46 @@ it('refreshes balances and the bonus read on one Settings entry, without polling
   expect(c.mock.remote.account.getUnnotifiedBonuses).toHaveBeenLastCalledWith(expect.objectContaining({ locale: 'en' }))
 }, 60_000)
 
+it('beats the session ticket on each 30-minute window edge, and disposes the heartbeat with the plugin', async ({ start, mock }) => {
+  vi.stubGlobal('dshDesktop', {})
+  const addListener = vi.spyOn(document, 'addEventListener')
+  const removeListener = vi.spyOn(document, 'removeEventListener')
+  const ensure = mock.remote.account.ensureSessionTicket
+  const c = await start()
+  const actions = operations(c)
+  // A restart with a stored grant renews on the first signed-in frame — the
+  // load-time renewal the interval alone would defer by up to 30 minutes.
+  c.mock.streams.push('account/watch', stored)
+  await vi.waitFor(() => { expect(actions.hooks.account.getSnapshot().view).toEqual(stored) })
+  await vi.waitFor(() => { expect(ensure).toHaveBeenCalledTimes(1) })
+  // Repeat signed-in frames and a window return inside the window stay silent.
+  c.mock.streams.push('account/watch', stored)
+  await c.flush()
+  expect(ensure).toHaveBeenCalledTimes(1)
+  document.dispatchEvent(new Event('visibilitychange'))
+  await c.flush()
+  expect(ensure).toHaveBeenCalledTimes(1)
+  // The next window edge renews once, then the throttle holds again.
+  const ahead = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 31 * 60_000)
+  document.dispatchEvent(new Event('visibilitychange'))
+  ahead.mockRestore()
+  await vi.waitFor(() => { expect(ensure).toHaveBeenCalledTimes(2) })
+  document.dispatchEvent(new Event('visibilitychange'))
+  await c.flush()
+  expect(ensure).toHaveBeenCalledTimes(2)
+  // Disposal removes the visibility listener it registered, so a window return
+  // after unload beats nothing.
+  const registered = addListener.mock.calls.find(([type]) => type === 'visibilitychange')
+  expect(registered).toBeDefined()
+  await c.unload(SELF)
+  expect(removeListener).toHaveBeenCalledWith('visibilitychange', registered![1])
+  const after = vi.spyOn(Date, 'now').mockReturnValue(Date.now() + 62 * 60_000)
+  document.dispatchEvent(new Event('visibilitychange'))
+  after.mockRestore()
+  await c.flush()
+  expect(ensure).toHaveBeenCalledTimes(2)
+}, 60_000)
+
 it('publishes a failed balance from a Settings entry without dropping the bonus read', async ({ start }) => {
   vi.stubGlobal('dshDesktop', {})
   const c = await start()

@@ -25,6 +25,7 @@ function fixture() {
     cancelSignIn: vi.fn<DeepSeekAccount['cancelSignIn']>().mockResolvedValue(state),
     signOut: vi.fn<DeepSeekAccount['signOut']>().mockResolvedValue(state),
     watch: vi.fn<DeepSeekAccount['watch']>(),
+    ensureSessionTicket: vi.fn<() => Promise<void>>().mockResolvedValue(undefined),
   }
   ctx.provide('deepseekAccount', provider as never)
   return { ctx, provider, controller: new AccountController(ctx) }
@@ -33,6 +34,8 @@ function fixture() {
 it('delegates account operations without coupling profile and balance queries', async () => {
   const { provider, controller } = fixture()
   expect(await controller.getState()).toBe(state)
+  await expect(controller.ensureSessionTicket()).resolves.toBeUndefined()
+  expect(provider.ensureSessionTicket).toHaveBeenCalledExactlyOnceWith()
   expect(await controller.getProfile(client)).toEqual({ status: 'failed' })
   expect(provider.getBalance).not.toHaveBeenCalled()
   expect(await controller.getBalance(client)).toBeNull()

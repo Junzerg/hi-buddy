@@ -61,20 +61,23 @@ afterEach(async () => {
 /** galois getOrCreate 的替身：同账号幂等，回固定 key + 单模型目录。
  *  校验方法、direct-target 头与 authSecret——server 侧漏发任何一项即 403，
  *  让 e2e 能抓住集成回归而非对一切回成功。 */
+/** The JSON content type the galois stub answers every branch with. */
+const JSON_HEADERS = { 'content-type': 'application/json' } as const
+
 function startGaloisStub(): Promise<{ url: string; close(): Promise<void> }> {
   const upstream = createHttpServer((req, res) => {
     let raw = ''
-    req.on('data', (chunk) => { raw += chunk })
+    req.on('data', (chunk: string) => { raw += chunk })
     req.on('end', () => {
       let body: { account?: string; system?: string; authSecret?: string }
-      try { body = JSON.parse(raw) } catch {
+      try { body = JSON.parse(raw) as typeof body } catch {
         res.writeHead(400, JSON_HEADERS); res.end('{}'); return
       }
       if (req.method !== 'POST' || body.authSecret !== 'e2e-galois-secret'
         || req.headers['x-ploto-direct-target'] !== 'ploto-llm-admin-app') {
         res.writeHead(403, JSON_HEADERS); res.end('{}'); return
       }
-      res.writeHead(200, { 'content-type': 'application/json' })
+      res.writeHead(200, JSON_HEADERS)
       res.end(JSON.stringify({
         success: true,
         status: { code: 20000 },
@@ -89,9 +92,12 @@ function startGaloisStub(): Promise<{ url: string; close(): Promise<void> }> {
   })
   return new Promise((resolve) => {
     upstream.listen(0, '127.0.0.1', () => {
+      const address = upstream.address()
+      if (address === null) throw new Error('galois stub failed to listen')
+      const port = typeof address === 'object' ? address.port : Number(address)
       resolve({
-        url: `http://127.0.0.1:${upstream.address().port}/ploto-llm-admin-app/api/internal/apiKey/getOrCreate`,
-        close: () => new Promise((done) => { upstream.close(() => done()) }),
+        url: `http://127.0.0.1:${port}/ploto-llm-admin-app/api/internal/apiKey/getOrCreate`,
+        close: () => new Promise((done) => { upstream.close(() => { done() }) }),
       })
     })
   })
@@ -216,15 +222,15 @@ it.skipIf(process.env.DSH_HIBUDDY_E2E !== '1')('signs in, renews the session and
   expect(typeof storedTicket).toBe('string')
 
   // 3b. The gateway key provisioned and the catalog wired into the model plane.
-  const settings = ctx.get('settings') as GatewaySettingsStub
+  const settings = ctx.get('settings') as unknown as GatewaySettingsStub
   const wired = (settings.describe()[0]?.value as { providers?: Record<string, { models?: unknown[] }> })
     ?.providers?.['company-gateway']?.models ?? []
   expect(wired).toEqual([{ id: 'deepseek-v3', name: 'deepseek-v3', contextWindow: 65536, input: ['text'] }])
 
   // 3c. The default-model selection and the stored key ref land too.
-  const defaults = ctx.get('agentDefaultModel') as GatewayDefaultModelStub
+  const defaults = ctx.get('agentDefaultModel') as unknown as GatewayDefaultModelStub
   expect(defaults.currentSelection()).toEqual({ provider: 'company-gateway', model: 'deepseek-v3' })
-  const storedKey = await (ctx.get('credentials') as {
+  const storedKey = await (ctx.get('credentials') as unknown as {
     resolve(ref: string): Promise<{ value?: string } | undefined>
   }).resolve(credentialRef('COMPANY_GATEWAY_API_KEY'))
   expect(storedKey?.value).toBe('sk-e2e-gateway-key')

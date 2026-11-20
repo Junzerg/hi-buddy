@@ -40,6 +40,8 @@ export const remoteDefaultResponses: RemoteTable = {
     // ui-settings-account bonus notice read and acknowledgement at signing in.
     'account/getUnnotifiedBonuses': ok(null),
     'account/ackBonusNotified': ok(true),
+    // ui-settings-account heartbeat renewal on each signed-in account frame.
+    'account/ensureSessionTicket': ok(undefined),
     // hi-buddy-claude-kit refreshes its model and project catalogs at boot and reconnect.
     'hiBuddyClaude/modelChoices': ok({ models: [], problems: [] }),
     'hiBuddyClaude/projects': ok([]),

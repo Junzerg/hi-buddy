@@ -89,6 +89,18 @@ export class AccountController extends TypertRemoteService {
     return this.ctx.agents.list().some(isRunningAccountTask)
   }
   /**
+   * Renew the session credential when near/past expiry and refresh the gateway
+   * model plane; called by the client heartbeat. No-op outside the Hi-Buddy
+   * chain; renewal past the absolute cap settles the account to signed-out in
+   * the Hi-Buddy delegate, so this call resolves without surfacing renewal
+   * failures.
+   */
+  @Remote
+  async ensureSessionTicket(): Promise<void> {
+    const provider = this.ctx.deepseekAccount as { ensureSessionTicket?(): Promise<void> }
+    await provider.ensureSessionTicket?.()
+  }
+  /**
    * Remove the local account grant and provider-owned synchronized credentials; independent API keys remain.
    * @param client - identity of the requesting UI, captured for the background revocation retries.
    * @returns state after removing the local account grant.

@@ -28,6 +28,8 @@ Every operation that reaches Platform takes the calling UI's `AccountClientMetad
 
 `hasRunningAccountTasks` checks running Agents through the account-owned predicate over their latest logged request context, including tools and retries. Idle Agents and API-key contexts are excluded. The account provider independently cancels matching tasks when credentials are removed.
 
+The client heartbeat calls `ensureSessionTicket` at most once every 30 minutes while a page lives, when the window regains visibility, and when a signed-in frame lands, so a restart renews during startup instead of waiting for the first tick. The controller forwards the call to the account provider: outside the Hi-Buddy chain it is a no-op, and renewal past the absolute cap settles the account to signed-out in the Hi-Buddy delegate, so the call resolves without surfacing renewal failures.
+
 <a id="understand-the-implementation"></a>
 ## Understand the implementation
 

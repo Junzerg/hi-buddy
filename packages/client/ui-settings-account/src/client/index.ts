@@ -121,6 +121,27 @@ export function apply(ctx: Context): void {
     return request
   }
   ctx.effect(() => () => { revision++ }, 'account: details request lifetime')
+  // Heartbeat: while signed in, renew the session credential when near/past
+  // expiry and refresh the gateway model plane (diff-guarded), at most once
+  // every 30 min — on the interval tick, on return to the window, and on each
+  // signed-in account frame, so a restart renews during startup instead of
+  // waiting for the first tick. Failures are silent — renewal past the
+  // absolute cap settles the account to signed-out via the watch stream.
+  const HEARTBEAT_MS = 30 * 60_000
+  let lastBeat = 0
+  const beat = (): void => {
+    if (Date.now() - lastBeat < HEARTBEAT_MS) return
+    if (snapshot.view?.status !== 'credential-stored') return
+    lastBeat = Date.now()
+    void Promise.resolve().then(() => ctx.remote.account.ensureSessionTicket()).catch(() => undefined)
+  }
+  const onVisible = (): void => { if (document.visibilityState === 'visible') beat() }
+  document.addEventListener('visibilitychange', onVisible)
+  const heartbeat = setInterval(beat, HEARTBEAT_MS)
+  ctx.effect(() => () => {
+    clearInterval(heartbeat)
+    document.removeEventListener('visibilitychange', onVisible)
+  }, 'account: heartbeat lifetime')
   // The account stream, and the reads it starts, follow access to this host's account state.
   ctx.remoteAccess.whenAccess('account/watch', function* () {
     const stream = ctx.remote.$stream<AccountView>({
@@ -159,7 +180,7 @@ export function apply(ctx: Context): void {
           ...(frame.value.status === 'credential-stored' && previousNotices ? { notices: previousNotices } : {}) })
         browser.update(frame.value)
         frame.accept()
-        if (frame.value.status === 'credential-stored') notices.begin()
+        if (frame.value.status === 'credential-stored') { notices.begin(); beat() }
         else notices.end()
         if (initialize) void (async () => {
           try {

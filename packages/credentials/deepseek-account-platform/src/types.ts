@@ -31,6 +31,10 @@ export interface HiBuddyAccountDelegate {
   handleAuthorizationRun(session: AuthorizationSession): Promise<void>
   /** The guard forwards `credentials/record-updated` for the shared record key here. */
   notifyRecordUpdated(): void
-  /** The session-ticket seam the connector kit consumes; renewing when stale or forced. */
+  /** The session-ticket seam the connector kit consumes; renewing when stale
+   *  (within the delegate's renewal margin of expiry) or forced. */
   getSessionTicket(force?: boolean): Promise<string>
+  /** Heartbeat hygiene: renew near/past expiry + refresh the gateway model
+   *  plane (diff-guarded); failures settle the account state instead. */
+  ensureSessionTicket(): Promise<void>
 }
