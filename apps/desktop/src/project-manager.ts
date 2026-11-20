@@ -24,7 +24,7 @@ import type { DesktopRelease } from './release.ts'
 import { readDesktopRuntime } from './runtime-tree.ts'
 import { initProfile, removeLinkProjections, sanitizeProfile } from '@deepseek-ai/dsh-app-boot'
 import { PROFILE_TEMPLATES, type ProfileTemplate } from '@deepseek-ai/dsh-official-bundles'
-import { upgradeCompanyProfile } from './company-profile-upgrade.ts'
+import { migrateCompanyProfile } from './company-profile-upgrade.ts'
 
 const PROJECT_NAME = '@deepseek-ai/dsh-desktop-runtime'
 const DSH_PACKAGE = '@deepseek-ai/dsh'
@@ -86,7 +86,7 @@ export class DesktopProjectManager {
       readDesktopRuntime(this.runtime.dsh)
       migrateProfileSettings(this.paths.profile)
       createPluginProfile(this.paths.profile)
-      await upgradeCompanyProfile(this.runtime.dsh, this.paths.profile)
+      await migrateCompanyProfile(this.paths.profile)
       removeLinkProjections(this.paths.profile)
     })
   }

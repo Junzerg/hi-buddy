@@ -46,6 +46,13 @@
     - id: doclib
       name: '@local/dsh-plugin-doclib'
 
+    # Hi-Buddy 账号登录（Host-only）：base 的 deepseek-account 行启用 hiBuddyLogin
+    # 时，账号服务全量委托给这个插件。endpoint 单点钉在生产 hibuddy-server。
+    - id: hi-buddy-account-platform
+      name: 'hi-buddy-account-platform'
+      config:
+        endpoint: https://ai-mate-hibuddy.haierxj.cn
+
     - id: session-pool
       name: hi-buddy-session-pool-kit
       disabled: true

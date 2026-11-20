@@ -1,12 +1,12 @@
-/** Desktop upgrades repair legacy connection overrides without changing user data or unrelated settings. */
+/** Desktop migration removes the legacy company-login connection row so the
+ *  bundled Hi-Buddy account chain applies; user data and unrelated rows stay. */
 import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { fileURLToPath } from 'node:url'
 import { afterEach, expect, it } from 'vitest'
 import * as yaml from 'js-yaml'
 import { entryListSchema } from '@deepseek-ai/cordis-plugin-include'
-import { upgradeCompanyProfile } from '../src/company-profile-upgrade.ts'
+import { migrateCompanyProfile } from '../src/company-profile-upgrade.ts'
 import { DesktopProjectManager } from '../src/project-manager.ts'
 import { resolveDesktopPaths } from '../src/paths.ts'
 import { runtimeFixture } from './runtime-fixture.ts'
@@ -19,10 +19,6 @@ function fixture(original: string) {
   roots.push(root)
   const runtime = join(root, 'runtime')
   runtimeFixture(runtime)
-  for (const [name, source] of [['dsh-base', 'base'], ['dsh-web-app', 'web-app']]) {
-    writeFileSync(join(runtime, 'node_modules/@deepseek-ai', name!, 'bundle.yml'),
-      readFileSync(fileURLToPath(new URL(`../../../packages/bundle/${source}/cordis.patch.yml`, import.meta.url)), 'utf8'))
-  }
   const home = join(root, 'home')
   const paths = resolveDesktopPaths(home)
   mkdirSync(paths.profile, { recursive: true })
@@ -33,90 +29,54 @@ function fixture(original: string) {
   return { runtime, paths, file, credentials }
 }
 
-const legacy = '# preserve my settings\n- id: locale\n  config:\n    preference: zh\n- id: webserver\n  config:\n    host: 127.0.0.1\n    port: !!js ctx.webStartup.port ?? 3080\n    compression: gzip\n- id: llm-pi-ai\n  config:\n    providers:\n      custom:\n        models: [{id: custom-model}]\n      company-gateway:\n        models: [{id: saved-model}]\n- id: deepseek-account\n  config:\n    companyLogin: false\n    platformOrigin: https://platform.deepseek.com\n    requestTimeoutMs: 12345\n- id: llm-deepseek\n  disabled: false\n'
+const legacy = '# preserve my settings\n- id: locale\n  config:\n    preference: zh\n'
+  + '- id: webserver\n  config:\n    host: 127.0.0.1\n    port: !!js ctx.webStartup.port ?? 3080\n    compression: gzip\n'
+  + '- id: llm-pi-ai\n  config:\n    providers:\n      custom:\n        models: [{id: custom-model}]\n'
+  + '- id: deepseek-account\n  config:\n    companyLogin: false\n    platformOrigin: https://platform.deepseek.com\n    requestTimeoutMs: 12345\n'
+  + '- id: llm-deepseek\n  disabled: false\n'
 
-it('upgrades .3 settings automatically during release preparation and preserves keys, custom providers and saved models', async () => {
+it('migrates via applyRelease: the company-connection row is removed, everything else survives', async () => {
   const f = fixture(legacy)
   const manager = new DesktopProjectManager(f.paths, { dsh: f.runtime })
   await manager.applyRelease()
   const after = readFileSync(f.file, 'utf8')
-  expect(after.startsWith(legacy.trimEnd())).toBe(true)
-  const rows = yaml.load(after, { schema: entryListSchema }) as { id: string; config?: Record<string, unknown>; disabled?: boolean }[]
-  expect(rows.findLast(row => row.id === 'webserver')?.config).toMatchObject({ port: 18743, compression: 'gzip' })
-  expect(rows.findLast(row => row.id === 'deepseek-account')?.config).toMatchObject({
-    companyLogin: true, platformOrigin: 'https://iam-stg.haierxj.com', requestTimeoutMs: 12345,
-    inferenceOrigin: 'http://ai-gateway.haierxj.cn', companyLoginEndpoint: 'http://172.28.236.3:18765/company-login/exchange',
-  })
-  expect(rows.findLast(row => row.id === 'llm-pi-ai')?.config).toMatchObject({ providers: {
-    custom: { models: [{ id: 'custom-model' }] },
-    'company-gateway': { displayName: 'HaierCash', api: 'anthropic-messages',
-      apiKeyEnv: 'COMPANY_GATEWAY_API_KEY', baseURL: 'http://ai-gateway.haierxj.cn', models: [{ id: 'saved-model' }] },
-  } })
-  expect(rows.findLast(row => row.id === 'llm-deepseek')?.disabled).toBe(true)
-  expect(rows.find(row => row.id === 'locale')?.config).toEqual({ preference: 'zh' })
+  // 机器写入的 company 连接行整体删除；其余行与用户数据原样保留。
+  expect(after).not.toContain('companyLogin')
+  expect(after).not.toContain('deepseek-account')
+  expect(after).toContain('preference: zh')
+  expect(after).toContain('custom-model')
+  expect(after).toContain('!!js')
+  expect(rows(after).some(row => row.id === 'locale')).toBe(true)
   expect(readFileSync(f.credentials, 'utf8')).toBe('legacy-personal-key: fixture-private-value\n')
   const backups = readdirSync(f.paths.profile).filter(name => name.includes('.before-company-upgrade-'))
   expect(backups).toHaveLength(1)
   expect(readFileSync(join(f.paths.profile, backups[0]!), 'utf8')).toBe(legacy)
-  await manager.applyRelease()
-  expect(readFileSync(f.file, 'utf8')).toBe(after)
-  expect(readdirSync(f.paths.profile).filter(name => name.includes('.before-company-upgrade-'))).toHaveLength(1)
 })
 
-it.each(['[]\n', '# fresh profile\n[]\n', '- id: locale\n  config:\n    preference: en\n'])
-('uses built-in company defaults without rewriting profiles with no legacy connections: %s', async (original) => {
-  const f = fixture(original)
-  await upgradeCompanyProfile(f.runtime, f.paths.profile)
-  expect(readFileSync(f.file, 'utf8')).toBe(original)
-  expect(readdirSync(f.paths.profile)).toEqual(['cordis.patch.yml'])
-})
-
-it('reads the ordered patch array declared by the bundled Web application', async () => {
+it('migrates directly and is idempotent: a patch without the legacy row stays byte-identical', async () => {
   const f = fixture(legacy)
-  const manifest = join(f.runtime, 'node_modules/@deepseek-ai/dsh-web-app/package.json')
-  const value = JSON.parse(readFileSync(manifest, 'utf8')) as { dsh: { bundle: { patch: string[] } } }
-  value.dsh.bundle.patch = ['./bundle.yml']
-  writeFileSync(manifest, JSON.stringify(value))
-  await upgradeCompanyProfile(f.runtime, f.paths.profile)
-  expect(readFileSync(f.file, 'utf8')).toContain('HaierCash')
+  await migrateCompanyProfile(f.paths.profile)
+  const once = readFileSync(f.file, 'utf8')
+  expect(once).not.toContain('companyLogin')
+  await migrateCompanyProfile(f.paths.profile)
+  expect(readFileSync(f.file, 'utf8')).toBe(once)
 })
 
-it.each(['[{id: llm-pi-ai, config: {providers: {}}}]\n', '[{id: llm-pi-ai, config: {providers: {}}},]\n'])
-('adds the built-in company route to legacy provider overrides in flow YAML: %s', async (original) => {
+it('a deepseek-account row without companyLogin is user-authored and stays', async () => {
+  const original = '- id: deepseek-account\n  config:\n    requestTimeoutMs: 12345\n'
   const f = fixture(original)
-  await upgradeCompanyProfile(f.runtime, f.paths.profile)
-  const rows = yaml.load(readFileSync(f.file, 'utf8'), { schema: entryListSchema }) as { config: { providers: Record<string, { displayName: string }> } }[]
-  expect(rows.at(-1)?.config.providers['company-gateway']?.displayName).toBe('HaierCash')
-})
-
-it.each([': invalid fixture-private-value', '- id: llm-pi-ai\n  config:\n    providers: invalid\n'])
-('preserves invalid user settings and refuses a partial rewrite: %s', async (original) => {
-  const f = fixture(original)
-  await expect(upgradeCompanyProfile(f.runtime, f.paths.profile)).rejects.toThrow('Desktop company upgrade:')
+  await migrateCompanyProfile(f.paths.profile)
   expect(readFileSync(f.file, 'utf8')).toBe(original)
-  expect(readdirSync(f.paths.profile)).toEqual(['cordis.patch.yml'])
+  expect(readdirSync(f.paths.profile).filter(name => name.includes('.before-company-upgrade-'))).toHaveLength(0)
 })
 
-it('repairs a stale development port back to the shared Desktop IAM port', async () => {
-  const original = '- id: webserver\n  config:\n    host: 127.0.0.1\n    port: 3080\n'
+it('invalid profile YAML throws and the original file is preserved', async () => {
+  const original = '- id: deepseek-account\n  config: [unclosed\n'
   const f = fixture(original)
-  await new DesktopProjectManager(f.paths, { dsh: f.runtime }).applyRelease()
-  const rows = yaml.load(readFileSync(f.file, 'utf8'), { schema: entryListSchema }) as { id: string; config?: Record<string, unknown> }[]
-  expect(rows.findLast(row => row.id === 'webserver')?.config).toMatchObject({ port: 18743 })
-  expect(readFileSync(f.credentials, 'utf8')).toBe('legacy-personal-key: fixture-private-value\n')
+  await expect(migrateCompanyProfile(f.paths.profile)).rejects.toThrow(/invalid profile YAML/)
+  expect(readFileSync(f.file, 'utf8')).toBe(original)
 })
 
-it('migrates a saved OpenAI company route to Anthropic without changing models or credentials', async () => {
-  const original = '- id: llm-pi-ai\n  config:\n    providers:\n      company-gateway:\n        api: openai-completions\n        baseURL: http://ai-gateway.haierxj.cn/v1\n        models: [{id: volces-glm5}]\n      personal:\n        api: openai-completions\n        baseURL: https://personal.example/v1\n        models: [{id: personal-model}]\n'
-  const f = fixture(original)
-  await upgradeCompanyProfile(f.runtime, f.paths.profile)
-  const after = readFileSync(f.file, 'utf8')
-  const rows = yaml.load(after, { schema: entryListSchema }) as { config: { providers: Record<string, unknown> } }[]
-  expect(rows.at(-1)?.config.providers).toMatchObject({
-    'company-gateway': { api: 'anthropic-messages', baseURL: 'http://ai-gateway.haierxj.cn', models: [{ id: 'volces-glm5' }] },
-    personal: { api: 'openai-completions', baseURL: 'https://personal.example/v1', models: [{ id: 'personal-model' }] },
-  })
-  expect(readFileSync(f.credentials, 'utf8')).toBe('legacy-personal-key: fixture-private-value\n')
-  await upgradeCompanyProfile(f.runtime, f.paths.profile)
-  expect(readFileSync(f.file, 'utf8')).toBe(after)
-})
+function rows(text: string): { id: string; config?: Record<string, unknown>; disabled?: boolean }[] {
+  return yaml.load(text, { schema: entryListSchema }) as { id: string; config?: Record<string, unknown>; disabled?: boolean }[]
+}

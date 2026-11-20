@@ -146,13 +146,13 @@ describe.skipIf(!existsSync(builtHost))('built Desktop welcome flow', () => {
       if (mode === 'company-upgrade') {
         writeFileSync(join(paths.profile, 'cordis.patch.yml'),
           readFileSync(join(paths.profile, 'cordis.patch.yml'), 'utf8')
-          + '- id: llm-pi-ai\n  config:\n    providers:\n      company-gateway:\n        models: [{id: old-model}]\n- id: llm-deepseek\n  disabled: false\n')
+          + '- id: llm-pi-ai\n  config:\n    providers:\n      company-gateway:\n        displayName: HaierCash\n        models: [{id: old-model}]\n- id: llm-deepseek\n  disabled: false\n')
+        // 第二次 applyRelease 触发迁移：旧 company 连接行删除，机器落在
+        // Hi-Buddy 默认上（hermetic 环境没有 hibuddy-server，无法重登）。
         await manager.applyRelease()
-        expect(readFileSync(join(paths.profile, 'cordis.patch.yml'), 'utf8')).toContain('HaierCash')
-        expect(readFileSync(join(paths.profile, 'cordis.patch.yml'), 'utf8')).toContain('port: 18743')
-        // The upgrade repairs the deployed callback port; this concurrent fixture then requests an OS-assigned listener.
-        writeFileSync(join(paths.profile, 'cordis.patch.yml'),
-          readFileSync(join(paths.profile, 'cordis.patch.yml'), 'utf8') + '- id: webserver\n  config:\n    host: 127.0.0.1\n    port: 0\n')
+        const migrated = readFileSync(join(paths.profile, 'cordis.patch.yml'), 'utf8')
+        expect(migrated).not.toContain('companyLogin')
+        expect(migrated).toContain('old-model')
       }
       let backend: DesktopWelcomeBackend
       let rpc: (method: string) => Promise<unknown>
@@ -198,11 +198,20 @@ describe.skipIf(!existsSync(builtHost))('built Desktop welcome flow', () => {
       const status = async () => backend.read()
       const fingerprint = (): string => createHash('sha256')
         .update(readFileSync(join(home, '.credentials.yaml'))).digest('hex')
+      const companyModels = async () => {
+        const catalog = await rpc('session/modelCatalog') as { groups: { id: string; models: unknown[] }[] }
+        return catalog.groups.find(group => group.id === 'company-gateway')?.models ?? []
+      }
+      if (mode === 'company-upgrade') {
+        // 迁移后的机器在 Hi-Buddy 链上以未登录态启动：hermetic 环境没有
+        // hibuddy-server 可供领钥匙，欢迎门与空目录行为保持。
+        await restart()
+        expect((await backend!.account.state()).status).toBe('signed-out')
+        expect(await companyModels()).toEqual([])
+        expect(needsWelcome(await status())).toBe(true)
+        return
+      }
       if (companyMode) {
-        const companyModels = async () => {
-          const catalog = await rpc('session/modelCatalog') as { groups: { id: string; models: unknown[] }[] }
-          return catalog.groups.find(group => group.id === 'company-gateway')?.models ?? []
-        }
         // Replace only the external gateway; credentials, discovery, settings and provider registration use the built Host.
         const redirectGateway = `const original = globalThis.fetch; globalThis.fetch = (input, init) => {
         const url = new URL(input instanceof Request ? input.url : input);

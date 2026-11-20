@@ -120,10 +120,7 @@
     - id: deepseek-account
       name: '@deepseek-ai/dsh-deepseek-account-platform'
       config:
-        companyLogin: true
-        companyLoginEndpoint: http://172.28.236.3:18765/company-login/exchange
-        platformOrigin: https://iam-stg.haierxj.com
-        inferenceOrigin: http://ai-gateway.haierxj.cn
+        hiBuddyLogin: true
         desktopPlatform: !!js "ctx.get('profileContext')?.name === 'desktop' && ['darwin', 'win32'].includes(process.platform) ? process.platform : null"
 
     - id: credentials
