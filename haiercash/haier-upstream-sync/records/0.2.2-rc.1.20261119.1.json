@@ -2,8 +2,8 @@
   "version": "0.2.2-rc.1.20261119.1",
   "sourceCommit": "eb1bb0037d9ee9d4479111200b027a911c7d109b",
   "sourceBranch": "dev/subcribe_test",
-  "status": "prepared",
-  "notes": "The user confirmed 0.2.2-rc.1.20261119.1 for a Windows-x64 repackage after the login button was changed to keep the deep brand blue in the dark theme. This replaces the abandoned 0.2.2-rc.1.20261117.3 Windows build; the published 20261117.2 remains the live version. Source is dev/subcribe_test on top of the Lingxi login integration, with the same pinned plugin set as 20261117.3. On 2026-11-19 the user completed local acceptance and decided to publish Windows first; mac-arm64 will be built later and merged into the same release directory for a dual-platform directory.",
+  "status": "published",
+  "notes": "The user confirmed 0.2.2-rc.1.20261119.1 for a Windows-x64 repackage after the login button was changed to keep the deep brand blue in the dark theme. This replaces the abandoned 0.2.2-rc.1.20261117.3 Windows build. Source is dev/subcribe_test on top of the Lingxi login integration, with the same pinned plugin set as 20261117.3. On 2026-11-19 the user completed local acceptance and decided to publish Windows first. The Windows installer was published to the intranet on 2026-11-20 as the live Windows version while the 20261117.2 installers remain downloadable; mac-arm64 is built later and merged into the same release directory for a dual-platform directory.",
   "targets": {
     "win-x64": {
       "status": "built",
@@ -17,7 +17,7 @@
       "archiveSha256": "f561a9a34d9772c6ae6b467718647eed26ae7316f661bbf49758449765810faa",
       "signingVerified": false,
       "installationVerified": true,
-      "acceptance": "passed: local acceptance completed by the user on the built installer, including the deep-blue login button in the dark theme; online acceptance on 236.3 pending after deployment.",
+      "acceptance": "passed: local acceptance completed by the user on the built installer on 2026-11-19, including the deep-blue login button in the dark theme; published to 236.3 on 2026-11-20 and verified live.",
       "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261119.1-win-x64-unsigned.exe",
       "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261119.1.tar.gz"
     },
@@ -74,7 +74,7 @@
     "claudeBrowser": "pending: re-run on the new source",
     "packageSet": "pending: re-run on the new source",
     "fullBuild": "passed: all 11 Host, Client, native addon, Desktop bundle, and Web build gates on 0.2.2-rc.1.20261119.1",
-    "targetNetwork": "pending: installation, upgrade and feature acceptance on both platforms"
+    "targetNetwork": "passed: Windows installer published and live on 236.3 on 2026-11-20; Mac arm64 acceptance pending its build"
   },
   "serverPrerequisites": {
     "companyLogin": {
@@ -88,9 +88,9 @@
     "requiredTargets": [
       "win-x64"
     ],
-    "status": "pending",
+    "status": "published",
     "requireBothInstallationsVerified": false,
-    "cutoverVerified": false
+    "cutoverVerified": true
   },
-  "published": false
+  "published": true
 }
