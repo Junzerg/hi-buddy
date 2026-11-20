@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-17",
+  "branch": "dev/junzerg",
+  "incomingBranch": "dev/xieyang",
+  "repositories": {
+    "hi-buddy": {
+      "beforeMerge": "eed977cc412066a10135ad0dd17ae4dcce9da47e",
+      "mergeCommit": "a71bb52356c38722d4c80d3fb12075d77c1ab5a0",
+      "afterIntegration": "bc211b84cf8c1ec580e469fa50398fbb4bb8c72b"
+    },
+    "hi-buddy-kit-packages": {
+      "beforeMerge": "6a55eddc7bd3b40001a7e4e7f79a1cd6c033a361",
+      "mergeCommit": "3224243a7a5ef63f0974c2fc6a1c1ef4a792a41a",
+      "afterIntegration": "71024d4dd720b7ab4edf1c4c54adddfd686f7384"
+    }
+  },
+  "lastRecordedIntranetRelease": {
+    "version": "0.2.2-rc.1.20261117.2",
+    "sourceCommit": "e095c9f9089f01289f10f7f4ddbcfcae271af18d",
+    "record": "0.2.2-rc.1.20261117.2.json",
+    "tag": "release/0.2.2-rc.1.20261117.2"
+  },
+  "verifiedBeforePackaging": [
+    "Web Host and Chromium showed the connector catalog after sign-in with the local Lingxi development IdP.",
+    "The real Loader registered the demo notes MCP tools. The tools wrote and read a note.",
+    "Sign-out removed the MCP tools and their authorization provider. Account renewal passed with both the source build and packed account plugin."
+  ],
+  "windowsRegressionPoints": [
+    "Install and launch the trial in a dedicated Windows test environment. Record the installed version and source commit.",
+    "In the company profile, check IAM sign-in, authorized models, a conversation, Office preview, and settings after restart.",
+    "If the trial includes Lingxi, verify its login and renewal, connector catalog, demo notes authorization and read/write, and tool removal after sign-out."
+  ]
+}
