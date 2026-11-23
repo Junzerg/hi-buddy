@@ -53,6 +53,14 @@
       config:
         endpoint: https://ai-mate-hibuddy.haierxj.cn
 
+    # Hi-Buddy 连接器市场（Host + Web Client）：侧边栏"连接器"面板与会话票鉴权的
+    # MCP 控制面。apiBaseUrl 与账号 endpoint 同钉生产 hibuddy-server（kit 与宿主
+    # 必须指向同一部署，见 kit 的 endpoint-mismatch 诊断）。
+    - id: hi-buddy-connector-kit
+      name: 'hi-buddy-connector-kit'
+      config:
+        apiBaseUrl: https://ai-mate-hibuddy.haierxj.cn
+
     - id: session-pool
       name: hi-buddy-session-pool-kit
       disabled: true

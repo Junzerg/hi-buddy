@@ -178,7 +178,7 @@ it('keeps built-in archive package names unique and matches the host dependency 
   }
   const pinned = Object.entries(host.dependencies).filter(([, specifier]) =>
     specifier.startsWith('file:../../../haiercash/builtin-plugins/'))
-  expect(pinned).toHaveLength(3)
+  expect(pinned).toHaveLength(5)
   for (const [name, specifier] of pinned) expect(archives.get(name)).toBe(basename(specifier))
 })
 
@@ -197,6 +197,7 @@ it.each([
   ['hi-buddy-session-pool-kit', '0.2.2'],
   ['hi-buddy-glossary-kit', '0.3.0-rc.2'],
   ['hi-buddy-account-platform', '0.1.0'],
+  ['hi-buddy-connector-kit', '0.1.0'],
   ['local-dsh-plugin-doclib', '0.1.1'],
 ])('ships %s and resolves its peers from the local package set', (name, version) => {
   const root = mkdtempSync(join(tmpdir(), 'desktop-kit-packages-'))
