@@ -104,6 +104,52 @@ window.__ModuleLoader__.load({
       return ext === '.md' || ext === '.markdown' || ext === '.mdx'
     }
 
+    /** The folder-source pseudo workspace is not a session artifact and stays out of the library. */
+    function isFolderWorkspace(workspace) {
+      return Boolean(workspace) && String(workspace.id) === 'folder'
+    }
+
+    /** One flat view per document, carrying the workspace/session it belongs to. */
+    function flattenTree(tree) {
+      const docs = []
+      for (const workspace of (tree && tree.workspaces) || []) {
+        if (isFolderWorkspace(workspace)) continue
+        for (const session of workspace.sessions || []) {
+          for (const doc of session.documents || []) {
+            docs.push({
+              ...doc,
+              workspace: workspace.title,
+              workspaceId: workspace.id,
+              session: session.title,
+              sessionId: session.id,
+            })
+          }
+        }
+      }
+      return docs
+    }
+
+    function typeLine(doc) {
+      const ext = extensionOf(doc).replace(/^\./, '').toUpperCase()
+      const label = classify(doc).label
+      return ext ? `${label} · ${ext}` : label
+    }
+
+    function sourceLabel(doc) {
+      switch (doc && doc.kind) {
+        case 'upload':
+          return '用户上传'
+        case 'image':
+          return '会话图片'
+        case 'folder':
+          return '本地目录'
+        case 'generated':
+          return '会话生成'
+        default:
+          return '本地产物'
+      }
+    }
+
     // ---- markdown rendering --------------------------------------------------
 
     const INLINE_RE = /(`[^`\n]+`|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|\[[^\]\n]*\]\([^)\s]+\))/g
@@ -340,6 +386,25 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function ClockIcon() {
+      return h(
+        'svg',
+        { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+          strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true },
+        h('circle', { cx: 12, cy: 12, r: 8.4 }),
+        h('path', { d: 'M12 7.6V12l2.9 1.9' }),
+      )
+    }
+
+    function FolderIcon() {
+      return h(
+        'svg',
+        { width: 15, height: 15, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+          strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true },
+        h('path', { d: 'M3.6 7.2a1.7 1.7 0 0 1 1.7-1.7h3.5l2 2.2h8a1.7 1.7 0 0 1 1.7 1.7v8.9a1.7 1.7 0 0 1-1.7 1.7H5.3a1.7 1.7 0 0 1-1.7-1.7z' }),
+      )
+    }
+
     // ---- composer bridge -----------------------------------------------------
 
     /**
@@ -454,6 +519,7 @@ window.__ModuleLoader__.load({
       const pending = request('/tree').then((tree) => {
         const docs = []
         for (const workspace of (tree && tree.workspaces) || []) {
+          if (isFolderWorkspace(workspace)) continue
           for (const session of workspace.sessions || []) {
             for (const doc of session.documents || []) {
               docNames.set(doc.key, doc.name)
@@ -687,15 +753,16 @@ window.__ModuleLoader__.load({
       )
     }
 
-    // ---- preview dialog ------------------------------------------------------
+    // ---- inline detail pane --------------------------------------------------
 
-    function DocumentDialog(props) {
+    function DocumentDetail(props) {
       const doc = props.doc
       const [state, setState] = React.useState({ loading: true, error: null, data: null })
       const [full, setFull] = React.useState(false)
 
       React.useEffect(() => {
         let alive = true
+        setFull(false)
         setState({ loading: true, error: null, data: null })
 
         // `/text` returns the body; `/doc` is the older chunk feed kept as a
@@ -722,14 +789,6 @@ window.__ModuleLoader__.load({
         }
       }, [doc.key])
 
-      React.useEffect(() => {
-        const onKey = (event) => {
-          if (event.key === 'Escape') props.onClose()
-        }
-        window.addEventListener('keydown', onKey)
-        return () => window.removeEventListener('keydown', onKey)
-      }, [props])
-
       const body = state.loading
         ? h('div', { className: 'dsh-dl-empty' }, '正在读取正文…')
         : state.error
@@ -740,78 +799,95 @@ window.__ModuleLoader__.load({
               ? renderMarkdown(state.data.text)
               : h('pre', { className: 'dsh-dl-md-pre' }, h('code', null, state.data.text))
 
-      const meta = [
-        classify(doc).label,
-        formatSize(doc.size),
-        doc.lines ? `${doc.lines} 行` : '',
-        relativeTime(doc.updatedAt),
+      const type = classify(doc)
+      const breadcrumb = [doc.workspace, doc.session].filter(Boolean).join(' › ')
+      const canDownload = doc.kind === 'upload' || doc.kind === 'image'
+      const previewMeta = [
+        state.data && state.data.lines ? `${state.data.lines} 行` : '',
         state.data && state.data.truncated ? '内容已截断' : '',
       ].filter(Boolean).join(' · ')
+      const fields = [
+        { k: '类型', v: typeLine(doc) },
+        { k: '大小', v: formatSize(doc.size) },
+        { k: '更新时间', v: relativeTime(doc.updatedAt) || '—' },
+        { k: '来源', v: sourceLabel(doc) },
+        { k: '工作区', v: doc.workspace || '—' },
+        { k: '会话', v: doc.session || '—' },
+        { k: '位置', v: doc.rel || doc.path || '—', wide: true },
+      ]
 
       return h(
-        'div',
+        'aside',
         {
-          className: 'dsh-dl-mask',
-          onClick: (event) => {
-            if (event.target === event.currentTarget) props.onClose()
-          },
+          className: 'dsh-dl-detail',
+          'data-doclib-detail': '',
+          role: 'region',
+          'aria-label': doc.name,
         },
         h(
           'div',
-          { className: 'dsh-dl-modal', role: 'dialog', 'aria-label': doc.name },
+          { className: 'dsh-dl-detailhead' },
+          h(DocIcon, { tone: type.tone, glyph: type.glyph }),
           h(
             'div',
-            { className: 'dsh-dl-modalhead' },
-            h(DocIcon, { tone: classify(doc).tone, glyph: classify(doc).glyph }),
-            h('span', { className: 'dsh-dl-modalname', title: doc.rel || doc.name }, doc.name),
-            h('span', { className: 'dsh-dl-meta' }, meta),
-            h(
-              'div',
-              { className: 'dsh-dl-modalactions' },
-              isMarkdown(doc)
-                ? h(
-                    'button',
-                    {
-                      type: 'button',
-                      className: 'dsh-dl-iconbtn',
-                      title: full ? '显示排版视图' : '显示 Markdown 原文',
-                      onClick: () => setFull((value) => !value),
-                    },
-                    full ? '¶' : '≡',
-                  )
-                : null,
-              h(
-                'button',
-                {
-                  type: 'button',
-                  className: 'dsh-dl-iconbtn',
-                  title: '复制引用（key）',
-                  onClick: () => props.onCopy(`《${doc.name}》 key=${doc.key}`),
-                },
-                '⧉',
-              ),
-              doc.path && doc.kind !== 'upload'
-                ? h(
-                    'a',
-                    {
-                      className: 'dsh-dl-iconbtn',
-                      title: '下载原文',
-                      href: `${BASE}/raw?key=${encodeURIComponent(doc.key)}`,
-                      target: '_blank',
-                      rel: 'noreferrer noopener',
-                    },
-                    '↧',
-                  )
-                : null,
-              h('button', { type: 'button', className: 'dsh-dl-iconbtn', title: '关闭', onClick: props.onClose }, '✕'),
-            ),
+            { className: 'dsh-dl-detailtitle' },
+            h('div', { className: 'dsh-dl-detailname', title: doc.rel || doc.name }, doc.name),
+            breadcrumb ? h('div', { className: 'dsh-dl-detailcrumb' }, breadcrumb) : null,
           ),
+          h('button', { type: 'button', className: 'dsh-dl-iconbtn', title: '关闭', onClick: props.onClose }, '✕'),
+        ),
+        h(
+          'div',
+          { className: 'dsh-dl-detailacts' },
+          doc.sessionId
+            ? h('button', {
+                type: 'button',
+                className: 'dsh-dl-btn',
+                'data-tone': 'primary',
+                onClick: () => props.onOpenSession(doc),
+              }, '继续阅读任务')
+            : null,
+          h('button', {
+            type: 'button',
+            className: 'dsh-dl-btn',
+            onClick: () => props.onCopy(`《${doc.name}》 key=${doc.key}`),
+          }, '复制引用'),
+          isMarkdown(doc)
+            ? h('button', {
+                type: 'button',
+                className: 'dsh-dl-btn',
+                onClick: () => setFull((value) => !value),
+              }, full ? '排版' : '原文')
+            : null,
+          canDownload
+            ? h('a', {
+                className: 'dsh-dl-btn',
+                href: `${BASE}/raw?key=${encodeURIComponent(doc.key)}`,
+                target: '_blank',
+                rel: 'noreferrer noopener',
+              }, '下载原文')
+            : null,
+        ),
+        h(
+          'div',
+          { className: 'dsh-dl-detailmeta' },
+          fields.map((field) => h(
+            'div',
+            { key: field.k, className: 'dsh-dl-detailfield', 'data-wide': field.wide ? 'true' : 'false' },
+            h('span', { className: 'dsh-dl-detailfieldk' }, field.k),
+            h('span', { className: 'dsh-dl-detailfieldv', title: field.v }, field.v),
+          )),
+        ),
+        h(
+          'div',
+          { className: 'dsh-dl-detailprev' },
           h(
             'div',
-            { className: 'dsh-dl-docview dsh-dl-modaldoc', 'data-raw': full ? 'true' : 'false' },
-            h('div', { className: 'dsh-dl-crumb' }, `${doc.workspace} › ${doc.session}`),
-            body,
+            { className: 'dsh-dl-detailsechead' },
+            h('span', null, '预览'),
+            previewMeta ? h('span', null, previewMeta) : null,
           ),
+          h('div', { className: 'dsh-dl-detailbody', 'data-raw': full ? 'true' : 'false' }, body),
         ),
       )
     }
@@ -834,7 +910,8 @@ window.__ModuleLoader__.load({
       const [filter, setFilter] = React.useState('all')
       const [selection, setSelection] = React.useState(() => new Set())
       const [expanded, setExpanded] = React.useState({})
-      const [open, setOpen] = React.useState(null)
+      const [node, setNode] = React.useState('recent')
+      const [activeDoc, setActiveDoc] = React.useState(null)
       const [busy, setBusy] = React.useState(false)
       const [error, setError] = React.useState(null)
       const [toast, setToast] = React.useState(null)
@@ -857,6 +934,8 @@ window.__ModuleLoader__.load({
           const shape = await request('/tree')
           setStatus(info)
           setTree(shape)
+          const keys = new Set(flattenTree(shape).map((doc) => doc.key))
+          setActiveDoc((current) => (current && keys.has(current.key) ? current : null))
           // First paint: open the newest workspace and its newest task.
           setExpanded((current) => {
             if (Object.keys(current).length) return current
@@ -894,7 +973,7 @@ window.__ModuleLoader__.load({
         const key = pendingPreview
         const doc = allDocuments().find((candidate) => candidate.key === key)
         pendingPreview = null
-        if (doc) setOpen(doc)
+        if (doc) setActiveDoc(doc)
       }, [tree])
 
       // The `文档` tab opened the library from a Session: reveal that Session's
@@ -908,6 +987,8 @@ window.__ModuleLoader__.load({
           const sessions = workspaceEntry.sessions || []
           if (!sessions.some((session) => String(session.id) === sessionId)) continue
           pendingSessionFocus = null
+          setNode('production')
+          setActiveDoc(null)
           setResults(null)
           setFilter('all')
           setExpanded((current) => ({ ...current, [`w:${workspaceEntry.id}`]: true, [`s:${sessionId}`]: true }))
@@ -925,6 +1006,47 @@ window.__ModuleLoader__.load({
 
       // A request outlives the panel that never saw its Session, so drop it on unmount.
       React.useEffect(() => () => { pendingSessionFocus = null }, [])
+
+      // A workspace removed by a rebuild falls back to the ungrouped list.
+      React.useEffect(() => {
+        if (!tree || node === 'recent' || node === 'production') return
+        const exists = ((tree && tree.workspaces) || []).some(
+          (workspace) => !isFolderWorkspace(workspace) && `ws:${workspace.id}` === node,
+        )
+        if (!exists) setNode('production')
+      }, [tree, node])
+
+      // The detail pane owns Escape; the list keeps its own keyboard behavior.
+      React.useEffect(() => {
+        if (!activeDoc) return
+        const onKey = (event) => {
+          if (event.key === 'Escape') setActiveDoc(null)
+        }
+        window.addEventListener('keydown', onKey)
+        return () => window.removeEventListener('keydown', onKey)
+      }, [activeDoc])
+
+      const selectNode = React.useCallback((next) => {
+        setNode(next)
+        setResults(null)
+        setQuery('')
+        setActiveDoc(null)
+      }, [])
+
+      const openDocSession = React.useCallback((doc) => {
+        if (!doc || !doc.sessionId) return
+        const workspace = service('uiWorkspace')
+        if (!workspace || typeof workspace.openSession !== 'function') {
+          flash('无法定位这篇文档的会话')
+          return
+        }
+        try {
+          workspace.openSession(doc.sessionId)
+          revealConversation()
+        } catch {
+          flash('打开原会话失败')
+        }
+      }, [flash])
 
       const runSearch = React.useCallback(
         async (event) => {
@@ -1075,19 +1197,12 @@ window.__ModuleLoader__.load({
       // ---- derived data ----------------------------------------------------
 
       function allDocuments() {
-        const docs = []
         if (results && Array.isArray(results.results)) {
-          for (const hit of results.results) docs.push({ ...hit, session: hit.session, workspace: hit.workspace })
-          return docs
+          return results.results
+            .filter((hit) => hit.kind !== 'folder')
+            .map((hit) => ({ ...hit, session: hit.session, workspace: hit.workspace }))
         }
-        for (const workspaceEntry of (tree && tree.workspaces) || []) {
-          for (const session of workspaceEntry.sessions || []) {
-            for (const doc of session.documents || []) {
-              docs.push({ ...doc, workspace: workspaceEntry.title, session: session.title, sessionId: session.id })
-            }
-          }
-        }
-        return docs
+        return flattenTree(tree)
       }
 
       function flatDocuments() {
@@ -1102,7 +1217,44 @@ window.__ModuleLoader__.load({
       // ---- rendering -------------------------------------------------------
 
       const isSearching = Boolean(results && Array.isArray(results.results))
-      const allDocs = allDocuments().filter(visible)
+      const treeDocs = React.useMemo(() => flattenTree(tree).filter(visible), [tree, filter])
+      const recentDocs = React.useMemo(() => {
+        const list = treeDocs.slice()
+        list.sort((a, b) => {
+          const at = Number(a.updatedAt) || 0
+          const bt = Number(b.updatedAt) || 0
+          if (at !== bt) return bt - at
+          return String(a.name).localeCompare(String(b.name), 'zh')
+        })
+        return list
+      }, [treeDocs])
+      const workspaceGroups = React.useMemo(() => {
+        const keys = new Set(treeDocs.map((doc) => doc.key))
+        return ((tree && tree.workspaces) || [])
+          .filter((workspace) => !isFolderWorkspace(workspace))
+          .map((workspace) => ({
+            id: String(workspace.id),
+            title: workspace.title,
+            count: (workspace.sessions || []).reduce(
+              (total, session) => total + (session.documents || []).filter((doc) => keys.has(doc.key)).length,
+              0,
+            ),
+            total: (workspace.sessions || []).reduce(
+              (sum, session) => sum + (session.documents || []).length,
+              0,
+            ),
+            sessions: (workspace.sessions || []).length,
+          }))
+      }, [tree, treeDocs])
+      const sessionCount = React.useMemo(
+        () => workspaceGroups.reduce((total, group) => total + group.sessions, 0),
+        [workspaceGroups],
+      )
+      const docCount = React.useMemo(
+        () => workspaceGroups.reduce((total, group) => total + group.total, 0),
+        [workspaceGroups],
+      )
+      const allDocs = React.useMemo(() => allDocuments().filter(visible), [tree, results, filter])
       const visibleKeys = allDocs.map((doc) => doc.key)
       const allSelected = visibleKeys.length > 0 && visibleKeys.every((key) => selection.has(key))
 
@@ -1115,9 +1267,9 @@ window.__ModuleLoader__.load({
             key: extraKey || doc.key,
             className: 'dsh-dl-row',
             'data-selected': isSelected ? 'true' : 'false',
-            'data-active': open && open.key === doc.key ? 'true' : 'false',
+            'data-active': activeDoc && activeDoc.key === doc.key ? 'true' : 'false',
             title: doc.rel || doc.name,
-            onClick: () => setOpen(doc),
+            onClick: () => setActiveDoc(doc),
           },
           h(
             'div',
@@ -1194,7 +1346,13 @@ window.__ModuleLoader__.load({
             ? h(
                 'div',
                 { className: 'dsh-dl-children', 'data-depth': '2' },
-                docs.map((doc) => documentRow(doc, `${key}/${doc.key}`)),
+                docs.map((doc) => documentRow({
+                  ...doc,
+                  workspace: workspaceEntry.title,
+                  workspaceId: workspaceEntry.id,
+                  session: session.title,
+                  sessionId: session.id,
+                }, `${key}/${doc.key}`)),
               )
             : null,
         )
@@ -1252,6 +1410,9 @@ window.__ModuleLoader__.load({
         )
       }
 
+      const selectedWorkspace = node.indexOf('ws:') === 0
+        ? ((tree && tree.workspaces) || []).find((workspace) => `ws:${workspace.id}` === node)
+        : null
       let body
       if (error && !tree && !results) {
         body = h('div', { className: 'dsh-dl-error' }, error)
@@ -1269,21 +1430,54 @@ window.__ModuleLoader__.load({
         )
       } else if (isSearching) {
         body = allDocs.map((doc) => documentRow(doc, `h:${doc.key}`))
+      } else if (node === 'recent') {
+        body = recentDocs.length
+          ? recentDocs.map((doc) => documentRow(doc, `r:${doc.key}`))
+          : h('div', { className: 'dsh-dl-empty' }, '还没有本地产物。')
       } else {
-        const groups = ((tree && tree.workspaces) || []).map((workspaceEntry) => workspaceBlock(workspaceEntry))
-        body = groups.filter(Boolean).length
-          ? groups
+        const groups = node === 'production'
+          ? ((tree && tree.workspaces) || [])
+              .filter((workspaceEntry) => !isFolderWorkspace(workspaceEntry))
+              .map((workspaceEntry) => workspaceBlock(workspaceEntry))
+          : selectedWorkspace
+            ? [workspaceBlock(selectedWorkspace)]
+            : []
+        const shown = groups.filter(Boolean)
+        body = shown.length
+          ? shown
           : h('div', { className: 'dsh-dl-empty' }, '当前类型筛选下没有文档。')
       }
 
-      const stats = status
-        ? `${status.workspaces} 个工作区 · ${status.sessions} 个会话 · ${status.documents} 篇文档`
-        : '正在读取索引'
+      const railButton = (id, icon, label, count, extraClass) => h(
+        'button',
+        {
+          key: id,
+          type: 'button',
+          className: `dsh-dl-nav${extraClass ? ` ${extraClass}` : ''}`,
+          'data-node': id,
+          'data-active': node === id ? 'true' : 'false',
+          'aria-pressed': node === id ? 'true' : 'false',
+          'aria-label': label,
+          onClick: () => selectNode(id),
+        },
+        h('span', { className: 'dsh-dl-navicon' }, icon),
+        h('span', { className: 'dsh-dl-navlabel', title: label }, label),
+        h('span', { className: 'dsh-dl-pill' }, String(count)),
+      )
+
+      const stats = tree
+        ? `${workspaceGroups.length} 个工作区 · ${sessionCount} 个会话 · ${docCount} 篇文档`
+        : status
+          ? `${status.workspaces} 个工作区 · ${status.sessions} 个会话 · ${status.documents} 篇文档`
+          : '正在读取索引'
       const when = status && status.lastIndexedAt ? relativeTime(new Date(status.lastIndexedAt).getTime()) : '尚未索引'
 
       return h(
         'div',
-        { className: 'dsh-dl-root' },
+        {
+          className: 'dsh-dl-root',
+          'data-detail': activeDoc ? 'open' : 'closed',
+        },
         h('style', null, CSS),
         h(
           'div',
@@ -1294,20 +1488,6 @@ window.__ModuleLoader__.load({
           h(
             'div',
             { className: 'dsh-dl-push' },
-            isSearching
-              ? h(
-                  'button',
-                  {
-                    type: 'button',
-                    className: 'dsh-dl-btn',
-                    onClick: () => {
-                      setResults(null)
-                      setQuery('')
-                    },
-                  },
-                  '返回目录',
-                )
-              : null,
             h('button', { type: 'button', className: 'dsh-dl-btn', onClick: rebuild, disabled: busy },
               busy ? '处理中…' : '重建索引'),
           ),
@@ -1336,58 +1516,97 @@ window.__ModuleLoader__.load({
               onChange: (event) => setQuery(event.target.value),
             }),
           ),
+          isSearching
+            ? h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dsh-dl-btn',
+                  onClick: () => {
+                    setResults(null)
+                    setQuery('')
+                  },
+                },
+                '返回目录',
+              )
+            : null,
           h('button', { type: 'button', className: 'dsh-dl-btn', onClick: runSearch, disabled: busy }, '搜索'),
         ),
         error ? h('div', { className: 'dsh-dl-error' }, error) : null,
         h(
           'div',
-          { className: 'dsh-dl-scroll' },
+          { className: 'dsh-dl-body' },
+          h(
+            'aside',
+            { className: 'dsh-dl-rail', 'aria-label': '文档库节点' },
+            railButton('recent', h(ClockIcon), '最近', recentDocs.length),
+            railButton('production', h(FolderIcon), '本地产物', treeDocs.length),
+            h('div', { className: 'dsh-dl-railtitle' }, '分组'),
+            workspaceGroups.length
+              ? workspaceGroups.map((workspace) => railButton(
+                  `ws:${workspace.id}`,
+                  h(FolderIcon),
+                  workspace.title,
+                  workspace.count,
+                  'dsh-dl-navgroup',
+                ))
+              : h('div', { className: 'dsh-dl-railnote' }, '暂无工作区'),
+          ),
           h(
             'div',
-            { className: 'dsh-dl-thead' },
+            { className: 'dsh-dl-mainpane' },
             h(
               'div',
-              { className: 'dsh-dl-check' },
-              visibleKeys.length
-                ? h('input', {
-                    type: 'checkbox',
-                    checked: allSelected,
-                    'aria-label': '全选',
-                    onChange: () => toggleMany(visibleKeys, !allSelected),
-                  })
-                : null,
+              { className: 'dsh-dl-scroll' },
+              h(
+                'div',
+                { className: 'dsh-dl-thead' },
+                h(
+                  'div',
+                  { className: 'dsh-dl-check' },
+                  visibleKeys.length
+                    ? h('input', {
+                        type: 'checkbox',
+                        checked: allSelected,
+                        'aria-label': '全选',
+                        onChange: () => toggleMany(visibleKeys, !allSelected),
+                      })
+                    : null,
+                ),
+                h('div', null, '名称'),
+                h('div', null, '类型'),
+                h('div', null, '工作区'),
+                h('div', null, '时间'),
+                h('div', null, '大小'),
+              ),
+              body,
             ),
-            h('div', null, '名称'),
-            h('div', null, '类型'),
-            h('div', null, '工作区'),
-            h('div', null, '时间'),
-            h('div', null, '大小'),
+            h(SelectionBar, {
+              count: selection.size,
+              onAdd: addToTask,
+              onClear: () => setSelection(new Set()),
+              targetHint: composerState.sessionId
+                ? '把选中的文档作为 @ 引用加入当前对话的输入框'
+                : '把选中的文档写成一段引用，便于粘贴到对话',
+            }),
           ),
-          body,
+          activeDoc
+            ? h(DocumentDetail, {
+                doc: activeDoc,
+                onClose: () => setActiveDoc(null),
+                onCopy: (text) => {
+                  try {
+                    navigator.clipboard.writeText(text)
+                    flash('引用已复制')
+                  } catch {
+                    flash('复制失败')
+                  }
+                },
+                onOpenSession: openDocSession,
+              })
+            : null,
         ),
-        h(SelectionBar, {
-          count: selection.size,
-          onAdd: addToTask,
-          onClear: () => setSelection(new Set()),
-          targetHint: composerState.sessionId
-            ? '把选中的文档作为 @ 引用加入当前对话的输入框'
-            : '把选中的文档写成一段引用，便于粘贴到对话',
-        }),
         toast ? h('div', { className: 'dsh-dl-toast' }, toast) : null,
-        open
-          ? h(DocumentDialog, {
-              doc: open,
-              onClose: () => setOpen(null),
-              onCopy: (text) => {
-                try {
-                  navigator.clipboard.writeText(text)
-                  flash('引用已复制')
-                } catch {
-                  flash('复制失败')
-                }
-              },
-            })
-          : null,
       )
     }
 

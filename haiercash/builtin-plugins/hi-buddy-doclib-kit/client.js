@@ -3,6 +3,7 @@
 (() => {
   // haiercash/builtin-plugins/hi-buddy-doclib-kit/src/client/styles.css
   var styles_default = `.dsh-dl-root { position: relative; display: flex; flex-direction: column; height: 100%; min-height: 0;
+  container-type: inline-size;
   background: var(--dsh-page-background, var(--dsw-alias-bg-base)); color: var(--dsw-alias-label-primary); font-size: 13px; }
 .dsh-dl-head { display: flex; align-items: center; gap: 10px; padding: 14px 18px 10px; }
 .dsh-dl-title { font-size: 15px; font-weight: 600; margin: 0; }
@@ -28,10 +29,33 @@
 .dsh-dl-search input:focus { border-color: var(--dsw-alias-brand-primary); }
 .dsh-dl-search svg { position: absolute; left: 9px; color: var(--dsw-alias-label-secondary); pointer-events: none; }
 
+/* Three panes: node rail / document list / inline detail. */
+.dsh-dl-body { position: relative; flex: 1; min-height: 0; display: flex; overflow: hidden; }
+.dsh-dl-rail { width: 196px; flex: none; overflow-y: auto; padding: 10px 8px 20px;
+  background: var(--dsw-alias-bg-layer-1); border-right: 1px solid var(--dsw-alias-border-l1); }
+.dsh-dl-nav { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 9px;
+  border: 0; border-radius: 7px; background: transparent; color: var(--dsw-alias-label-primary);
+  font: inherit; font-size: 12.5px; text-align: left; cursor: pointer; }
+.dsh-dl-nav:hover { background: var(--dsw-alias-bg-layer-2); }
+.dsh-dl-nav[data-active='true'] { background: var(--dsw-alias-interactive-bg-active);
+  font-weight: 600; box-shadow: inset 2px 0 0 var(--dsw-alias-brand-primary); }
+.dsh-dl-navicon { width: 16px; height: 16px; flex: none; display: inline-flex; align-items: center;
+  justify-content: center; color: var(--dsw-alias-label-secondary); }
+.dsh-dl-nav[data-active='true'] .dsh-dl-navicon { color: var(--dsw-alias-brand-primary); }
+.dsh-dl-navlabel { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dsh-dl-nav .dsh-dl-pill { flex: none; font-size: 10.5px; }
+.dsh-dl-navgroup { padding-left: 18px; color: var(--dsw-alias-label-secondary); font-size: 12px; }
+.dsh-dl-navgroup[data-active='true'] { color: var(--dsw-alias-label-primary); }
+.dsh-dl-railtitle { margin: 12px 4px 4px; padding: 8px 5px 2px; border-top: 1px solid var(--dsw-alias-border-l1);
+  color: var(--dsw-alias-label-secondary); font-size: 11px; }
+.dsh-dl-railnote { padding: 6px 10px; color: var(--dsw-alias-label-secondary); font-size: 11.5px; }
+.dsh-dl-mainpane { position: relative; flex: 1; min-width: 0; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--dsw-alias-bg-base); }
+
 .dsh-dl-scroll { flex: 1; min-height: 0; overflow: auto; padding-bottom: 84px; }
 
 .dsh-dl-thead, .dsh-dl-row { display: grid; align-items: center;
-  grid-template-columns: 30px minmax(180px, 1fr) 76px 150px 96px 76px; gap: 8px; padding: 0 18px; }
+  grid-template-columns: 28px minmax(0, 1fr) 58px minmax(0, 112px) 78px 66px; gap: 8px; padding: 0 12px; }
 .dsh-dl-thead { position: sticky; top: 0; z-index: 2; height: 34px; color: var(--dsw-alias-label-secondary);
   font-size: 11.5px; background: var(--dsw-alias-bg-base); border-bottom: 1px solid var(--dsw-alias-border-l1); }
 .dsh-dl-row { height: 44px; cursor: pointer; border-bottom: 1px solid transparent; }
@@ -108,23 +132,36 @@
   padding: 8px 14px; border-radius: 9px; font-size: 12.5px; background: var(--dsw-alias-bg-layer-2);
   border: 1px solid var(--dsw-alias-border-l2); box-shadow: 0 8px 24px rgba(0,0,0,.28); }
 
-.dsh-dl-mask { position: fixed; inset: 0; z-index: 2147483000; background: rgba(0,0,0,.55);
-  display: flex; align-items: center; justify-content: center; padding: 24px; }
-.dsh-dl-modal { display: flex; flex-direction: column; width: min(1100px, 94vw); height: min(86vh, 900px);
-  background: var(--dsw-alias-bg-base); color: var(--dsw-alias-label-primary); border-radius: 14px;
-  border: 1px solid var(--dsw-alias-border-l2); box-shadow: 0 24px 70px rgba(0,0,0,.5); overflow: hidden; }
-.dsh-dl-modalhead { display: flex; align-items: center; gap: 10px; padding: 12px 16px;
+.dsh-dl-detail { width: 380px; flex: none; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
+  background: var(--dsw-alias-bg-layer-1); border-left: 1px solid var(--dsw-alias-border-l1);
+  animation: dsh-dl-detail-in .12s ease-out; }
+@keyframes dsh-dl-detail-in {
+  from { transform: translateX(10px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.dsh-dl-detailhead { display: flex; align-items: flex-start; gap: 10px; padding: 14px 14px 10px;
   border-bottom: 1px solid var(--dsw-alias-border-l1); }
-.dsh-dl-modalname { font-size: 14px; font-weight: 600; min-width: 0; overflow: hidden;
-  text-overflow: ellipsis; white-space: nowrap; }
-.dsh-dl-modalactions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
-.dsh-dl-iconbtn { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
+.dsh-dl-detailhead .dsh-dl-icon { width: 36px; height: 36px; border-radius: 8px; font-size: 12px; }
+.dsh-dl-detailtitle { flex: 1; min-width: 0; }
+.dsh-dl-detailname { font-size: 14px; font-weight: 600; line-height: 1.4; word-break: break-all; }
+.dsh-dl-detailcrumb { margin-top: 3px; color: var(--dsw-alias-label-secondary); font-size: 11.5px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dsh-dl-detailacts { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; }
+.dsh-dl-detailmeta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 12px;
+  padding: 0 14px 12px; border-bottom: 1px solid var(--dsw-alias-border-l1); }
+.dsh-dl-detailfield { min-width: 0; }
+.dsh-dl-detailfield[data-wide='true'] { grid-column: 1 / -1; }
+.dsh-dl-detailfieldk { display: block; color: var(--dsw-alias-label-secondary); font-size: 10.5px; }
+.dsh-dl-detailfieldv { display: block; margin-top: 2px; color: var(--dsw-alias-label-primary); font-size: 12px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dsh-dl-detailprev { flex: 1; min-height: 0; overflow: auto; padding: 12px 14px 30px; }
+.dsh-dl-detailsechead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
+  color: var(--dsw-alias-label-secondary); font-size: 11.5px; }
+.dsh-dl-detailbody .dsh-dl-md-head:first-child { margin-top: 0; }
+.dsh-dl-iconbtn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
   border-radius: 7px; border: 1px solid transparent; background: transparent; color: var(--dsw-alias-label-secondary);
   cursor: pointer; font-size: 13px; }
 .dsh-dl-iconbtn:hover { background: var(--dsw-alias-bg-layer-2); color: var(--dsw-alias-label-primary); }
-.dsh-dl-modaldoc { flex: 1; min-height: 0; overflow: auto; padding: 20px 26px 40px; }
-.dsh-dl-modaldoc[data-raw='true'] { padding: 16px 18px; }
-.dsh-dl-crumb { color: var(--dsw-alias-label-secondary); font-size: 11.5px; margin-bottom: 10px; word-break: break-all; }
 
 .dsh-dl-md-head { margin: 20px 0 10px; line-height: 1.35; font-weight: 650; }
 .dsh-dl-md-h1 { font-size: 20px; } .dsh-dl-md-h2 { font-size: 17px; } .dsh-dl-md-h3 { font-size: 15px; }
@@ -147,6 +184,15 @@
 .dsh-dl-md-hr { border: 0; border-top: 1px solid var(--dsw-alias-border-l1); margin: 18px 0; }
 .dsh-dl-md-link { color: var(--dsw-alias-brand-primary); text-decoration: none; }
 .dsh-dl-md-link:hover { text-decoration: underline; }
+
+/* A narrow panel overlays the detail instead of squeezing the list below reading width. */
+@container (max-width: 1024px) {
+  .dsh-dl-detail { position: absolute; top: 0; right: 0; bottom: 0; z-index: 15;
+    width: min(400px, 92%); box-shadow: -12px 0 32px rgba(0,0,0,.14); }
+}
+@container (max-width: 720px) {
+  .dsh-dl-rail { width: 168px; }
+}
 `;
 
   // haiercash/builtin-plugins/hi-buddy-doclib-kit/src/client/index.js
@@ -264,6 +310,46 @@
       function isMarkdown(doc) {
         const ext = extensionOf(doc);
         return ext === ".md" || ext === ".markdown" || ext === ".mdx";
+      }
+      function isFolderWorkspace(workspace) {
+        return Boolean(workspace) && String(workspace.id) === "folder";
+      }
+      function flattenTree(tree) {
+        const docs = [];
+        for (const workspace of tree && tree.workspaces || []) {
+          if (isFolderWorkspace(workspace)) continue;
+          for (const session of workspace.sessions || []) {
+            for (const doc of session.documents || []) {
+              docs.push({
+                ...doc,
+                workspace: workspace.title,
+                workspaceId: workspace.id,
+                session: session.title,
+                sessionId: session.id
+              });
+            }
+          }
+        }
+        return docs;
+      }
+      function typeLine(doc) {
+        const ext = extensionOf(doc).replace(/^\./, "").toUpperCase();
+        const label = classify(doc).label;
+        return ext ? `${label} \xB7 ${ext}` : label;
+      }
+      function sourceLabel(doc) {
+        switch (doc && doc.kind) {
+          case "upload":
+            return "\u7528\u6237\u4E0A\u4F20";
+          case "image":
+            return "\u4F1A\u8BDD\u56FE\u7247";
+          case "folder":
+            return "\u672C\u5730\u76EE\u5F55";
+          case "generated":
+            return "\u4F1A\u8BDD\u751F\u6210";
+          default:
+            return "\u672C\u5730\u4EA7\u7269";
+        }
       }
       const INLINE_RE = /(`[^`\n]+`|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|\[[^\]\n]*\]\([^)\s]+\))/g;
       function renderInline(text, keys) {
@@ -487,6 +573,41 @@
           h("path", { d: "M16 16l4 4" })
         );
       }
+      function ClockIcon() {
+        return h(
+          "svg",
+          {
+            width: 15,
+            height: 15,
+            viewBox: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            strokeWidth: 1.7,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            "aria-hidden": true
+          },
+          h("circle", { cx: 12, cy: 12, r: 8.4 }),
+          h("path", { d: "M12 7.6V12l2.9 1.9" })
+        );
+      }
+      function FolderIcon() {
+        return h(
+          "svg",
+          {
+            width: 15,
+            height: 15,
+            viewBox: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            strokeWidth: 1.7,
+            strokeLinecap: "round",
+            strokeLinejoin: "round",
+            "aria-hidden": true
+          },
+          h("path", { d: "M3.6 7.2a1.7 1.7 0 0 1 1.7-1.7h3.5l2 2.2h8a1.7 1.7 0 0 1 1.7 1.7v8.9a1.7 1.7 0 0 1-1.7 1.7H5.3a1.7 1.7 0 0 1-1.7-1.7z" })
+        );
+      }
       const composerState = { sessionId: null, draft: "", draftRev: 0 };
       let panelContext = null;
       function service(name) {
@@ -547,6 +668,7 @@
         const pending = request("/tree").then((tree) => {
           const docs = [];
           for (const workspace of tree && tree.workspaces || []) {
+            if (isFolderWorkspace(workspace)) continue;
             for (const session of workspace.sessions || []) {
               for (const doc of session.documents || []) {
                 docNames.set(doc.key, doc.name);
@@ -731,12 +853,13 @@
           h("button", { type: "button", className: "dsh-dl-btn", onClick: props.onClear }, "\u6E05\u9664")
         );
       }
-      function DocumentDialog(props) {
+      function DocumentDetail(props) {
         const doc = props.doc;
         const [state, setState] = React.useState({ loading: true, error: null, data: null });
         const [full, setFull] = React.useState(false);
         React.useEffect(() => {
           let alive = true;
+          setFull(false);
           setState({ loading: true, error: null, data: null });
           const load = async () => {
             try {
@@ -756,81 +879,89 @@
             alive = false;
           };
         }, [doc.key]);
-        React.useEffect(() => {
-          const onKey = (event) => {
-            if (event.key === "Escape") props.onClose();
-          };
-          window.addEventListener("keydown", onKey);
-          return () => window.removeEventListener("keydown", onKey);
-        }, [props]);
         const body = state.loading ? h("div", { className: "dsh-dl-empty" }, "\u6B63\u5728\u8BFB\u53D6\u6B63\u6587\u2026") : state.error ? h("div", { className: "dsh-dl-error" }, state.error) : !state.data || !state.data.text ? h("div", { className: "dsh-dl-empty" }, "\u8FD9\u7BC7\u6587\u6863\u6CA1\u6709\u53EF\u9884\u89C8\u7684\u6587\u672C\u5185\u5BB9\uFF08\u4E8C\u8FDB\u5236\uFF0C\u6216\u8D85\u51FA\u5355\u6587\u4EF6\u4E0A\u9650\uFF09\u3002") : isMarkdown(doc) && !full ? renderMarkdown(state.data.text) : h("pre", { className: "dsh-dl-md-pre" }, h("code", null, state.data.text));
-        const meta = [
-          classify(doc).label,
-          formatSize(doc.size),
-          doc.lines ? `${doc.lines} \u884C` : "",
-          relativeTime(doc.updatedAt),
+        const type = classify(doc);
+        const breadcrumb = [doc.workspace, doc.session].filter(Boolean).join(" \u203A ");
+        const canDownload = doc.kind === "upload" || doc.kind === "image";
+        const previewMeta = [
+          state.data && state.data.lines ? `${state.data.lines} \u884C` : "",
           state.data && state.data.truncated ? "\u5185\u5BB9\u5DF2\u622A\u65AD" : ""
         ].filter(Boolean).join(" \xB7 ");
+        const fields = [
+          { k: "\u7C7B\u578B", v: typeLine(doc) },
+          { k: "\u5927\u5C0F", v: formatSize(doc.size) },
+          { k: "\u66F4\u65B0\u65F6\u95F4", v: relativeTime(doc.updatedAt) || "\u2014" },
+          { k: "\u6765\u6E90", v: sourceLabel(doc) },
+          { k: "\u5DE5\u4F5C\u533A", v: doc.workspace || "\u2014" },
+          { k: "\u4F1A\u8BDD", v: doc.session || "\u2014" },
+          { k: "\u4F4D\u7F6E", v: doc.rel || doc.path || "\u2014", wide: true }
+        ];
         return h(
-          "div",
+          "aside",
           {
-            className: "dsh-dl-mask",
-            onClick: (event) => {
-              if (event.target === event.currentTarget) props.onClose();
-            }
+            className: "dsh-dl-detail",
+            "data-doclib-detail": "",
+            role: "region",
+            "aria-label": doc.name
           },
           h(
             "div",
-            { className: "dsh-dl-modal", role: "dialog", "aria-label": doc.name },
+            { className: "dsh-dl-detailhead" },
+            h(DocIcon, { tone: type.tone, glyph: type.glyph }),
             h(
               "div",
-              { className: "dsh-dl-modalhead" },
-              h(DocIcon, { tone: classify(doc).tone, glyph: classify(doc).glyph }),
-              h("span", { className: "dsh-dl-modalname", title: doc.rel || doc.name }, doc.name),
-              h("span", { className: "dsh-dl-meta" }, meta),
-              h(
-                "div",
-                { className: "dsh-dl-modalactions" },
-                isMarkdown(doc) ? h(
-                  "button",
-                  {
-                    type: "button",
-                    className: "dsh-dl-iconbtn",
-                    title: full ? "\u663E\u793A\u6392\u7248\u89C6\u56FE" : "\u663E\u793A Markdown \u539F\u6587",
-                    onClick: () => setFull((value) => !value)
-                  },
-                  full ? "\xB6" : "\u2261"
-                ) : null,
-                h(
-                  "button",
-                  {
-                    type: "button",
-                    className: "dsh-dl-iconbtn",
-                    title: "\u590D\u5236\u5F15\u7528\uFF08key\uFF09",
-                    onClick: () => props.onCopy(`\u300A${doc.name}\u300B key=${doc.key}`)
-                  },
-                  "\u29C9"
-                ),
-                doc.path && doc.kind !== "upload" ? h(
-                  "a",
-                  {
-                    className: "dsh-dl-iconbtn",
-                    title: "\u4E0B\u8F7D\u539F\u6587",
-                    href: `${BASE}/raw?key=${encodeURIComponent(doc.key)}`,
-                    target: "_blank",
-                    rel: "noreferrer noopener"
-                  },
-                  "\u21A7"
-                ) : null,
-                h("button", { type: "button", className: "dsh-dl-iconbtn", title: "\u5173\u95ED", onClick: props.onClose }, "\u2715")
-              )
+              { className: "dsh-dl-detailtitle" },
+              h("div", { className: "dsh-dl-detailname", title: doc.rel || doc.name }, doc.name),
+              breadcrumb ? h("div", { className: "dsh-dl-detailcrumb" }, breadcrumb) : null
             ),
+            h("button", { type: "button", className: "dsh-dl-iconbtn", title: "\u5173\u95ED", onClick: props.onClose }, "\u2715")
+          ),
+          h(
+            "div",
+            { className: "dsh-dl-detailacts" },
+            doc.sessionId ? h("button", {
+              type: "button",
+              className: "dsh-dl-btn",
+              "data-tone": "primary",
+              onClick: () => props.onOpenSession(doc)
+            }, "\u7EE7\u7EED\u9605\u8BFB\u4EFB\u52A1") : null,
+            h("button", {
+              type: "button",
+              className: "dsh-dl-btn",
+              onClick: () => props.onCopy(`\u300A${doc.name}\u300B key=${doc.key}`)
+            }, "\u590D\u5236\u5F15\u7528"),
+            isMarkdown(doc) ? h("button", {
+              type: "button",
+              className: "dsh-dl-btn",
+              onClick: () => setFull((value) => !value)
+            }, full ? "\u6392\u7248" : "\u539F\u6587") : null,
+            canDownload ? h("a", {
+              className: "dsh-dl-btn",
+              href: `${BASE}/raw?key=${encodeURIComponent(doc.key)}`,
+              target: "_blank",
+              rel: "noreferrer noopener"
+            }, "\u4E0B\u8F7D\u539F\u6587") : null
+          ),
+          h(
+            "div",
+            { className: "dsh-dl-detailmeta" },
+            fields.map((field) => h(
+              "div",
+              { key: field.k, className: "dsh-dl-detailfield", "data-wide": field.wide ? "true" : "false" },
+              h("span", { className: "dsh-dl-detailfieldk" }, field.k),
+              h("span", { className: "dsh-dl-detailfieldv", title: field.v }, field.v)
+            ))
+          ),
+          h(
+            "div",
+            { className: "dsh-dl-detailprev" },
             h(
               "div",
-              { className: "dsh-dl-docview dsh-dl-modaldoc", "data-raw": full ? "true" : "false" },
-              h("div", { className: "dsh-dl-crumb" }, `${doc.workspace} \u203A ${doc.session}`),
-              body
-            )
+              { className: "dsh-dl-detailsechead" },
+              h("span", null, "\u9884\u89C8"),
+              previewMeta ? h("span", null, previewMeta) : null
+            ),
+            h("div", { className: "dsh-dl-detailbody", "data-raw": full ? "true" : "false" }, body)
           )
         );
       }
@@ -849,7 +980,8 @@
         const [filter, setFilter] = React.useState("all");
         const [selection, setSelection] = React.useState(() => /* @__PURE__ */ new Set());
         const [expanded, setExpanded] = React.useState({});
-        const [open, setOpen] = React.useState(null);
+        const [node, setNode] = React.useState("recent");
+        const [activeDoc, setActiveDoc] = React.useState(null);
         const [busy, setBusy] = React.useState(false);
         const [error, setError] = React.useState(null);
         const [toast, setToast] = React.useState(null);
@@ -869,6 +1001,8 @@
             const shape = await request("/tree");
             setStatus(info);
             setTree(shape);
+            const keys = new Set(flattenTree(shape).map((doc) => doc.key));
+            setActiveDoc((current) => current && keys.has(current.key) ? current : null);
             setExpanded((current) => {
               if (Object.keys(current).length) return current;
               const next = {};
@@ -900,7 +1034,7 @@
           const key = pendingPreview;
           const doc = allDocuments().find((candidate) => candidate.key === key);
           pendingPreview = null;
-          if (doc) setOpen(doc);
+          if (doc) setActiveDoc(doc);
         }, [tree]);
         React.useEffect(() => {
           if (!tree || !pendingSessionFocus) return;
@@ -909,6 +1043,8 @@
             const sessions = workspaceEntry.sessions || [];
             if (!sessions.some((session) => String(session.id) === sessionId)) continue;
             pendingSessionFocus = null;
+            setNode("production");
+            setActiveDoc(null);
             setResults(null);
             setFilter("all");
             setExpanded((current) => ({ ...current, [`w:${workspaceEntry.id}`]: true, [`s:${sessionId}`]: true }));
@@ -926,6 +1062,41 @@
         React.useEffect(() => () => {
           pendingSessionFocus = null;
         }, []);
+        React.useEffect(() => {
+          if (!tree || node === "recent" || node === "production") return;
+          const exists = (tree && tree.workspaces || []).some(
+            (workspace) => !isFolderWorkspace(workspace) && `ws:${workspace.id}` === node
+          );
+          if (!exists) setNode("production");
+        }, [tree, node]);
+        React.useEffect(() => {
+          if (!activeDoc) return;
+          const onKey = (event) => {
+            if (event.key === "Escape") setActiveDoc(null);
+          };
+          window.addEventListener("keydown", onKey);
+          return () => window.removeEventListener("keydown", onKey);
+        }, [activeDoc]);
+        const selectNode = React.useCallback((next) => {
+          setNode(next);
+          setResults(null);
+          setQuery("");
+          setActiveDoc(null);
+        }, []);
+        const openDocSession = React.useCallback((doc) => {
+          if (!doc || !doc.sessionId) return;
+          const workspace = service("uiWorkspace");
+          if (!workspace || typeof workspace.openSession !== "function") {
+            flash("\u65E0\u6CD5\u5B9A\u4F4D\u8FD9\u7BC7\u6587\u6863\u7684\u4F1A\u8BDD");
+            return;
+          }
+          try {
+            workspace.openSession(doc.sessionId);
+            revealConversation();
+          } catch {
+            flash("\u6253\u5F00\u539F\u4F1A\u8BDD\u5931\u8D25");
+          }
+        }, [flash]);
         const runSearch = React.useCallback(
           async (event) => {
             if (event) event.preventDefault();
@@ -1046,19 +1217,10 @@
           }
         }
         function allDocuments() {
-          const docs = [];
           if (results && Array.isArray(results.results)) {
-            for (const hit of results.results) docs.push({ ...hit, session: hit.session, workspace: hit.workspace });
-            return docs;
+            return results.results.filter((hit) => hit.kind !== "folder").map((hit) => ({ ...hit, session: hit.session, workspace: hit.workspace }));
           }
-          for (const workspaceEntry of tree && tree.workspaces || []) {
-            for (const session of workspaceEntry.sessions || []) {
-              for (const doc of session.documents || []) {
-                docs.push({ ...doc, workspace: workspaceEntry.title, session: session.title, sessionId: session.id });
-              }
-            }
-          }
-          return docs;
+          return flattenTree(tree);
         }
         function flatDocuments() {
           return allDocuments();
@@ -1068,7 +1230,42 @@
           return classify(doc).tone === filter;
         }
         const isSearching = Boolean(results && Array.isArray(results.results));
-        const allDocs = allDocuments().filter(visible);
+        const treeDocs = React.useMemo(() => flattenTree(tree).filter(visible), [tree, filter]);
+        const recentDocs = React.useMemo(() => {
+          const list = treeDocs.slice();
+          list.sort((a, b) => {
+            const at = Number(a.updatedAt) || 0;
+            const bt = Number(b.updatedAt) || 0;
+            if (at !== bt) return bt - at;
+            return String(a.name).localeCompare(String(b.name), "zh");
+          });
+          return list;
+        }, [treeDocs]);
+        const workspaceGroups = React.useMemo(() => {
+          const keys = new Set(treeDocs.map((doc) => doc.key));
+          return (tree && tree.workspaces || []).filter((workspace) => !isFolderWorkspace(workspace)).map((workspace) => ({
+            id: String(workspace.id),
+            title: workspace.title,
+            count: (workspace.sessions || []).reduce(
+              (total, session) => total + (session.documents || []).filter((doc) => keys.has(doc.key)).length,
+              0
+            ),
+            total: (workspace.sessions || []).reduce(
+              (sum, session) => sum + (session.documents || []).length,
+              0
+            ),
+            sessions: (workspace.sessions || []).length
+          }));
+        }, [tree, treeDocs]);
+        const sessionCount = React.useMemo(
+          () => workspaceGroups.reduce((total, group) => total + group.sessions, 0),
+          [workspaceGroups]
+        );
+        const docCount = React.useMemo(
+          () => workspaceGroups.reduce((total, group) => total + group.total, 0),
+          [workspaceGroups]
+        );
+        const allDocs = React.useMemo(() => allDocuments().filter(visible), [tree, results, filter]);
         const visibleKeys = allDocs.map((doc) => doc.key);
         const allSelected = visibleKeys.length > 0 && visibleKeys.every((key) => selection.has(key));
         function documentRow(doc, extraKey) {
@@ -1080,9 +1277,9 @@
               key: extraKey || doc.key,
               className: "dsh-dl-row",
               "data-selected": isSelected ? "true" : "false",
-              "data-active": open && open.key === doc.key ? "true" : "false",
+              "data-active": activeDoc && activeDoc.key === doc.key ? "true" : "false",
               title: doc.rel || doc.name,
-              onClick: () => setOpen(doc)
+              onClick: () => setActiveDoc(doc)
             },
             h(
               "div",
@@ -1151,7 +1348,13 @@
             isOpen ? h(
               "div",
               { className: "dsh-dl-children", "data-depth": "2" },
-              docs.map((doc) => documentRow(doc, `${key}/${doc.key}`))
+              docs.map((doc) => documentRow({
+                ...doc,
+                workspace: workspaceEntry.title,
+                workspaceId: workspaceEntry.id,
+                session: session.title,
+                sessionId: session.id
+              }, `${key}/${doc.key}`))
             ) : null
           );
         }
@@ -1202,6 +1405,7 @@
             ) : null
           );
         }
+        const selectedWorkspace = node.indexOf("ws:") === 0 ? (tree && tree.workspaces || []).find((workspace) => `ws:${workspace.id}` === node) : null;
         let body;
         if (error && !tree && !results) {
           body = h("div", { className: "dsh-dl-error" }, error);
@@ -1217,15 +1421,37 @@
           );
         } else if (isSearching) {
           body = allDocs.map((doc) => documentRow(doc, `h:${doc.key}`));
+        } else if (node === "recent") {
+          body = recentDocs.length ? recentDocs.map((doc) => documentRow(doc, `r:${doc.key}`)) : h("div", { className: "dsh-dl-empty" }, "\u8FD8\u6CA1\u6709\u672C\u5730\u4EA7\u7269\u3002");
         } else {
-          const groups = (tree && tree.workspaces || []).map((workspaceEntry) => workspaceBlock(workspaceEntry));
-          body = groups.filter(Boolean).length ? groups : h("div", { className: "dsh-dl-empty" }, "\u5F53\u524D\u7C7B\u578B\u7B5B\u9009\u4E0B\u6CA1\u6709\u6587\u6863\u3002");
+          const groups = node === "production" ? (tree && tree.workspaces || []).filter((workspaceEntry) => !isFolderWorkspace(workspaceEntry)).map((workspaceEntry) => workspaceBlock(workspaceEntry)) : selectedWorkspace ? [workspaceBlock(selectedWorkspace)] : [];
+          const shown = groups.filter(Boolean);
+          body = shown.length ? shown : h("div", { className: "dsh-dl-empty" }, "\u5F53\u524D\u7C7B\u578B\u7B5B\u9009\u4E0B\u6CA1\u6709\u6587\u6863\u3002");
         }
-        const stats = status ? `${status.workspaces} \u4E2A\u5DE5\u4F5C\u533A \xB7 ${status.sessions} \u4E2A\u4F1A\u8BDD \xB7 ${status.documents} \u7BC7\u6587\u6863` : "\u6B63\u5728\u8BFB\u53D6\u7D22\u5F15";
+        const railButton = (id, icon, label, count, extraClass) => h(
+          "button",
+          {
+            key: id,
+            type: "button",
+            className: `dsh-dl-nav${extraClass ? ` ${extraClass}` : ""}`,
+            "data-node": id,
+            "data-active": node === id ? "true" : "false",
+            "aria-pressed": node === id ? "true" : "false",
+            "aria-label": label,
+            onClick: () => selectNode(id)
+          },
+          h("span", { className: "dsh-dl-navicon" }, icon),
+          h("span", { className: "dsh-dl-navlabel", title: label }, label),
+          h("span", { className: "dsh-dl-pill" }, String(count))
+        );
+        const stats = tree ? `${workspaceGroups.length} \u4E2A\u5DE5\u4F5C\u533A \xB7 ${sessionCount} \u4E2A\u4F1A\u8BDD \xB7 ${docCount} \u7BC7\u6587\u6863` : status ? `${status.workspaces} \u4E2A\u5DE5\u4F5C\u533A \xB7 ${status.sessions} \u4E2A\u4F1A\u8BDD \xB7 ${status.documents} \u7BC7\u6587\u6863` : "\u6B63\u5728\u8BFB\u53D6\u7D22\u5F15";
         const when = status && status.lastIndexedAt ? relativeTime(new Date(status.lastIndexedAt).getTime()) : "\u5C1A\u672A\u7D22\u5F15";
         return h(
           "div",
-          { className: "dsh-dl-root" },
+          {
+            className: "dsh-dl-root",
+            "data-detail": activeDoc ? "open" : "closed"
+          },
           h("style", null, styles_default),
           h(
             "div",
@@ -1236,18 +1462,6 @@
             h(
               "div",
               { className: "dsh-dl-push" },
-              isSearching ? h(
-                "button",
-                {
-                  type: "button",
-                  className: "dsh-dl-btn",
-                  onClick: () => {
-                    setResults(null);
-                    setQuery("");
-                  }
-                },
-                "\u8FD4\u56DE\u76EE\u5F55"
-              ) : null,
               h(
                 "button",
                 { type: "button", className: "dsh-dl-btn", onClick: rebuild, disabled: busy },
@@ -1279,52 +1493,87 @@
                 onChange: (event) => setQuery(event.target.value)
               })
             ),
+            isSearching ? h(
+              "button",
+              {
+                type: "button",
+                className: "dsh-dl-btn",
+                onClick: () => {
+                  setResults(null);
+                  setQuery("");
+                }
+              },
+              "\u8FD4\u56DE\u76EE\u5F55"
+            ) : null,
             h("button", { type: "button", className: "dsh-dl-btn", onClick: runSearch, disabled: busy }, "\u641C\u7D22")
           ),
           error ? h("div", { className: "dsh-dl-error" }, error) : null,
           h(
             "div",
-            { className: "dsh-dl-scroll" },
+            { className: "dsh-dl-body" },
+            h(
+              "aside",
+              { className: "dsh-dl-rail", "aria-label": "\u6587\u6863\u5E93\u8282\u70B9" },
+              railButton("recent", h(ClockIcon), "\u6700\u8FD1", recentDocs.length),
+              railButton("production", h(FolderIcon), "\u672C\u5730\u4EA7\u7269", treeDocs.length),
+              h("div", { className: "dsh-dl-railtitle" }, "\u5206\u7EC4"),
+              workspaceGroups.length ? workspaceGroups.map((workspace) => railButton(
+                `ws:${workspace.id}`,
+                h(FolderIcon),
+                workspace.title,
+                workspace.count,
+                "dsh-dl-navgroup"
+              )) : h("div", { className: "dsh-dl-railnote" }, "\u6682\u65E0\u5DE5\u4F5C\u533A")
+            ),
             h(
               "div",
-              { className: "dsh-dl-thead" },
+              { className: "dsh-dl-mainpane" },
               h(
                 "div",
-                { className: "dsh-dl-check" },
-                visibleKeys.length ? h("input", {
-                  type: "checkbox",
-                  checked: allSelected,
-                  "aria-label": "\u5168\u9009",
-                  onChange: () => toggleMany(visibleKeys, !allSelected)
-                }) : null
+                { className: "dsh-dl-scroll" },
+                h(
+                  "div",
+                  { className: "dsh-dl-thead" },
+                  h(
+                    "div",
+                    { className: "dsh-dl-check" },
+                    visibleKeys.length ? h("input", {
+                      type: "checkbox",
+                      checked: allSelected,
+                      "aria-label": "\u5168\u9009",
+                      onChange: () => toggleMany(visibleKeys, !allSelected)
+                    }) : null
+                  ),
+                  h("div", null, "\u540D\u79F0"),
+                  h("div", null, "\u7C7B\u578B"),
+                  h("div", null, "\u5DE5\u4F5C\u533A"),
+                  h("div", null, "\u65F6\u95F4"),
+                  h("div", null, "\u5927\u5C0F")
+                ),
+                body
               ),
-              h("div", null, "\u540D\u79F0"),
-              h("div", null, "\u7C7B\u578B"),
-              h("div", null, "\u5DE5\u4F5C\u533A"),
-              h("div", null, "\u65F6\u95F4"),
-              h("div", null, "\u5927\u5C0F")
+              h(SelectionBar, {
+                count: selection.size,
+                onAdd: addToTask,
+                onClear: () => setSelection(/* @__PURE__ */ new Set()),
+                targetHint: composerState.sessionId ? "\u628A\u9009\u4E2D\u7684\u6587\u6863\u4F5C\u4E3A @ \u5F15\u7528\u52A0\u5165\u5F53\u524D\u5BF9\u8BDD\u7684\u8F93\u5165\u6846" : "\u628A\u9009\u4E2D\u7684\u6587\u6863\u5199\u6210\u4E00\u6BB5\u5F15\u7528\uFF0C\u4FBF\u4E8E\u7C98\u8D34\u5230\u5BF9\u8BDD"
+              })
             ),
-            body
+            activeDoc ? h(DocumentDetail, {
+              doc: activeDoc,
+              onClose: () => setActiveDoc(null),
+              onCopy: (text) => {
+                try {
+                  navigator.clipboard.writeText(text);
+                  flash("\u5F15\u7528\u5DF2\u590D\u5236");
+                } catch {
+                  flash("\u590D\u5236\u5931\u8D25");
+                }
+              },
+              onOpenSession: openDocSession
+            }) : null
           ),
-          h(SelectionBar, {
-            count: selection.size,
-            onAdd: addToTask,
-            onClear: () => setSelection(/* @__PURE__ */ new Set()),
-            targetHint: composerState.sessionId ? "\u628A\u9009\u4E2D\u7684\u6587\u6863\u4F5C\u4E3A @ \u5F15\u7528\u52A0\u5165\u5F53\u524D\u5BF9\u8BDD\u7684\u8F93\u5165\u6846" : "\u628A\u9009\u4E2D\u7684\u6587\u6863\u5199\u6210\u4E00\u6BB5\u5F15\u7528\uFF0C\u4FBF\u4E8E\u7C98\u8D34\u5230\u5BF9\u8BDD"
-          }),
-          toast ? h("div", { className: "dsh-dl-toast" }, toast) : null,
-          open ? h(DocumentDialog, {
-            doc: open,
-            onClose: () => setOpen(null),
-            onCopy: (text) => {
-              try {
-                navigator.clipboard.writeText(text);
-                flash("\u5F15\u7528\u5DF2\u590D\u5236");
-              } catch {
-                flash("\u590D\u5236\u5931\u8D25");
-              }
-            }
-          }) : null
+          toast ? h("div", { className: "dsh-dl-toast" }, toast) : null
         );
       }
       function createPanelIcon(selectPanel) {

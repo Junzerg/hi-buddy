@@ -45,6 +45,8 @@
 
     - id: doclib
       name: '@local/dsh-plugin-doclib'
+      config:
+        includeLibraryFolder: false
 
     - id: session-pool
       name: hi-buddy-session-pool-kit
