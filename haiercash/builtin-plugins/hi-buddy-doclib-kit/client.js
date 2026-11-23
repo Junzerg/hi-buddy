@@ -74,6 +74,8 @@
 .dsh-dl-icon { flex: none; width: 20px; height: 20px; border-radius: 5px; display: inline-flex;
   align-items: center; justify-content: center; font-size: 9.5px; font-weight: 700; color: #fff; letter-spacing: -.04em; }
 .dsh-dl-icon[data-tone='doc'] { background: #4d8df6; }
+.dsh-dl-icon[data-tone='sheet'] { background: #1d6f42; }
+.dsh-dl-icon[data-tone='web'] { background: #0f7b6c; }
 .dsh-dl-icon[data-tone='code'] { background: #8b6cf0; }
 .dsh-dl-icon[data-tone='file'] { background: #6b7a90; }
 .dsh-dl-icon[data-tone='image'] { background: #2fa4a0; }
@@ -132,32 +134,38 @@
   padding: 8px 14px; border-radius: 9px; font-size: 12.5px; background: var(--dsw-alias-bg-layer-2);
   border: 1px solid var(--dsw-alias-border-l2); box-shadow: 0 8px 24px rgba(0,0,0,.28); }
 
-.dsh-dl-detail { width: 380px; flex: none; min-height: 0; display: flex; flex-direction: column; overflow: hidden;
-  background: var(--dsw-alias-bg-layer-1); border-left: 1px solid var(--dsw-alias-border-l1);
-  animation: dsh-dl-detail-in .12s ease-out; }
-@keyframes dsh-dl-detail-in {
-  from { transform: translateX(10px); opacity: 0; }
-  to { transform: none; opacity: 1; }
-}
-.dsh-dl-detailhead { display: flex; align-items: flex-start; gap: 10px; padding: 14px 14px 10px;
+.dsh-dl-mask { position: fixed; inset: 0; z-index: 2147483000; display: flex; align-items: center;
+  justify-content: center; padding: 24px; background: var(--dsw-alias-bg-mask-1); }
+.dsh-dl-card { display: flex; flex-direction: column; width: min(560px, 94vw); max-height: 86vh;
+  background: var(--dsw-alias-bg-layer-1); color: var(--dsw-alias-label-primary);
+  border: 1px solid var(--dsw-alias-border-l2); border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.28); overflow: hidden; }
+.dsh-dl-cardhead { display: flex; align-items: flex-start; gap: 10px; padding: 16px 20px 12px;
   border-bottom: 1px solid var(--dsw-alias-border-l1); }
-.dsh-dl-detailhead .dsh-dl-icon { width: 36px; height: 36px; border-radius: 8px; font-size: 12px; }
-.dsh-dl-detailtitle { flex: 1; min-width: 0; }
-.dsh-dl-detailname { font-size: 14px; font-weight: 600; line-height: 1.4; word-break: break-all; }
-.dsh-dl-detailcrumb { margin-top: 3px; color: var(--dsw-alias-label-secondary); font-size: 11.5px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dsh-dl-detailacts { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 14px; }
-.dsh-dl-detailmeta { display: grid; grid-template-columns: 1fr 1fr; gap: 9px 12px;
-  padding: 0 14px 12px; border-bottom: 1px solid var(--dsw-alias-border-l1); }
-.dsh-dl-detailfield { min-width: 0; }
-.dsh-dl-detailfield[data-wide='true'] { grid-column: 1 / -1; }
-.dsh-dl-detailfieldk { display: block; color: var(--dsw-alias-label-secondary); font-size: 10.5px; }
-.dsh-dl-detailfieldv { display: block; margin-top: 2px; color: var(--dsw-alias-label-primary); font-size: 12px;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dsh-dl-detailprev { flex: 1; min-height: 0; overflow: auto; padding: 12px 14px 30px; }
-.dsh-dl-detailsechead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;
-  color: var(--dsw-alias-label-secondary); font-size: 11.5px; }
-.dsh-dl-detailbody .dsh-dl-md-head:first-child { margin-top: 0; }
+.dsh-dl-cardtitle { flex: 1; min-width: 0; }
+.dsh-dl-cardname { font-size: 15px; font-weight: 600; line-height: 1.4; word-break: break-all; }
+.dsh-dl-cardsub { margin-top: 3px; color: var(--dsw-alias-label-secondary); font-size: 12px; }
+.dsh-dl-cardbody { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 20px; }
+.dsh-dl-cardlabel { margin-bottom: 7px; color: var(--dsw-alias-label-secondary); font-size: 11.5px; }
+.dsh-dl-cardpreview { border: 1px solid var(--dsw-alias-border-l1); border-radius: 8px;
+  background: var(--dsw-alias-bg-layer-2); padding: 22px; }
+.dsh-dl-cardph { min-height: 110px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 10px; text-align: center; }
+.dsh-dl-cardph .dsh-dl-icon { width: 46px; height: 56px; border-radius: 6px; font-size: 12px; }
+.dsh-dl-cardphtext { color: var(--dsw-alias-label-secondary); font-size: 13px; }
+.dsh-dl-cardstate { padding: 26px 10px; text-align: center; color: var(--dsw-alias-label-secondary);
+  font-size: 12.5px; line-height: 1.7; }
+.dsh-dl-cardtext { color: var(--dsw-alias-label-primary); font-size: 13px; }
+.dsh-dl-cardtext .dsh-dl-md-head:first-child,
+.dsh-dl-cardtext .dsh-dl-md-p:first-child { margin-top: 0; }
+.dsh-dl-cardpreview .dsh-dl-md-pre { margin: 0; padding: 0; border: 0; background: transparent; }
+.dsh-dl-cardmeta { margin-top: 14px; }
+.dsh-dl-kv { display: flex; gap: 12px; padding: 4px 0; font-size: 12.5px; line-height: 1.6; }
+.dsh-dl-kv-k { width: 84px; flex: none; color: var(--dsw-alias-label-secondary); }
+.dsh-dl-kv-v { flex: 1; min-width: 0; color: var(--dsw-alias-label-primary); word-break: break-all; }
+.dsh-dl-cardft { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 20px 16px;
+  border-top: 1px solid var(--dsw-alias-border-l1); }
+.dsh-dl-cardft .dsh-dl-btn { padding: 7px 16px; border-radius: 8px; }
 .dsh-dl-iconbtn { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px;
   border-radius: 7px; border: 1px solid transparent; background: transparent; color: var(--dsw-alias-label-secondary);
   cursor: pointer; font-size: 13px; }
@@ -185,11 +193,6 @@
 .dsh-dl-md-link { color: var(--dsw-alias-brand-primary); text-decoration: none; }
 .dsh-dl-md-link:hover { text-decoration: underline; }
 
-/* A narrow panel overlays the detail instead of squeezing the list below reading width. */
-@container (max-width: 1024px) {
-  .dsh-dl-detail { position: absolute; top: 0; right: 0; bottom: 0; z-index: 15;
-    width: min(400px, 92%); box-shadow: -12px 0 32px rgba(0,0,0,.14); }
-}
 @container (max-width: 720px) {
   .dsh-dl-rail { width: 168px; }
 }
@@ -292,6 +295,9 @@
         ".html",
         ".htm"
       ]);
+      const SHEET_EXT = /* @__PURE__ */ new Set([".xlsx", ".xls", ".csv", ".tsv"]);
+      const PPT_EXT = /* @__PURE__ */ new Set([".pptx", ".ppt"]);
+      const WEB_EXT = /* @__PURE__ */ new Set([".html", ".htm"]);
       function extensionOf(doc) {
         if (!doc) return "";
         if (doc.ext) return String(doc.ext).toLowerCase();
@@ -304,6 +310,10 @@
         if (doc.kind === "image") return { label: "\u56FE\u7247", tone: "image", glyph: "\u25A3" };
         const ext = extensionOf(doc);
         if (CODE_EXT.has(ext)) return { label: "\u4EE3\u7801", tone: "code", glyph: "</>" };
+        if (SHEET_EXT.has(ext)) return { label: "\u8868\u683C", tone: "sheet", glyph: ext === ".csv" || ext === ".tsv" ? "CSV" : "XLS" };
+        if (WEB_EXT.has(ext)) return { label: "\u7F51\u7AD9", tone: "web", glyph: "WEB" };
+        if (PPT_EXT.has(ext)) return { label: "\u6587\u6863", tone: "doc", glyph: "PPT" };
+        if (ext === ".pdf") return { label: "\u6587\u6863", tone: "doc", glyph: "PDF" };
         if (DOC_EXT.has(ext)) return { label: "\u6587\u6863", tone: "doc", glyph: "M" };
         return { label: "\u6587\u4EF6", tone: "file", glyph: "?" };
       }
@@ -331,25 +341,6 @@
           }
         }
         return docs;
-      }
-      function typeLine(doc) {
-        const ext = extensionOf(doc).replace(/^\./, "").toUpperCase();
-        const label = classify(doc).label;
-        return ext ? `${label} \xB7 ${ext}` : label;
-      }
-      function sourceLabel(doc) {
-        switch (doc && doc.kind) {
-          case "upload":
-            return "\u7528\u6237\u4E0A\u4F20";
-          case "image":
-            return "\u4F1A\u8BDD\u56FE\u7247";
-          case "folder":
-            return "\u672C\u5730\u76EE\u5F55";
-          case "generated":
-            return "\u4F1A\u8BDD\u751F\u6210";
-          default:
-            return "\u672C\u5730\u4EA7\u7269";
-        }
       }
       const INLINE_RE = /(`[^`\n]+`|\*\*[^*\n]+\*\*|__[^_\n]+__|\*[^*\n]+\*|_[^_\n]+_|~~[^~\n]+~~|\[[^\]\n]*\]\([^)\s]+\))/g;
       function renderInline(text, keys) {
@@ -853,13 +844,11 @@
           h("button", { type: "button", className: "dsh-dl-btn", onClick: props.onClear }, "\u6E05\u9664")
         );
       }
-      function DocumentDetail(props) {
+      function DocumentDialog(props) {
         const doc = props.doc;
         const [state, setState] = React.useState({ loading: true, error: null, data: null });
-        const [full, setFull] = React.useState(false);
         React.useEffect(() => {
           let alive = true;
-          setFull(false);
           setState({ loading: true, error: null, data: null });
           const load = async () => {
             try {
@@ -879,98 +868,103 @@
             alive = false;
           };
         }, [doc.key]);
-        const body = state.loading ? h("div", { className: "dsh-dl-empty" }, "\u6B63\u5728\u8BFB\u53D6\u6B63\u6587\u2026") : state.error ? h("div", { className: "dsh-dl-error" }, state.error) : !state.data || !state.data.text ? h("div", { className: "dsh-dl-empty" }, "\u8FD9\u7BC7\u6587\u6863\u6CA1\u6709\u53EF\u9884\u89C8\u7684\u6587\u672C\u5185\u5BB9\uFF08\u4E8C\u8FDB\u5236\uFF0C\u6216\u8D85\u51FA\u5355\u6587\u4EF6\u4E0A\u9650\uFF09\u3002") : isMarkdown(doc) && !full ? renderMarkdown(state.data.text) : h("pre", { className: "dsh-dl-md-pre" }, h("code", null, state.data.text));
         const type = classify(doc);
-        const breadcrumb = [doc.workspace, doc.session].filter(Boolean).join(" \u203A ");
-        const canDownload = doc.kind === "upload" || doc.kind === "image";
-        const previewMeta = [
-          state.data && state.data.lines ? `${state.data.lines} \u884C` : "",
-          state.data && state.data.truncated ? "\u5185\u5BB9\u5DF2\u622A\u65AD" : ""
-        ].filter(Boolean).join(" \xB7 ");
+        const place = doc.workspace || "\u672C\u5730\u4EA7\u7269";
+        const whenText = relativeTime(doc.updatedAt) || "\u2014";
+        const subtitle = ["\u672C\u673A", place, whenText].filter(Boolean).join(" \xB7 ");
         const fields = [
-          { k: "\u7C7B\u578B", v: typeLine(doc) },
-          { k: "\u5927\u5C0F", v: formatSize(doc.size) },
-          { k: "\u66F4\u65B0\u65F6\u95F4", v: relativeTime(doc.updatedAt) || "\u2014" },
-          { k: "\u6765\u6E90", v: sourceLabel(doc) },
-          { k: "\u5DE5\u4F5C\u533A", v: doc.workspace || "\u2014" },
-          { k: "\u4F1A\u8BDD", v: doc.session || "\u2014" },
-          { k: "\u4F4D\u7F6E", v: doc.rel || doc.path || "\u2014", wide: true }
+          { k: "\u6240\u6709\u8005", v: "\u672C\u673A" },
+          { k: "\u6240\u5728\u4F4D\u7F6E", v: place },
+          { k: "\u7C7B\u578B", v: `${type.label}${doc.size ? ` \xB7 ${formatSize(doc.size)}` : ""}` },
+          { k: "\u6700\u8FD1\u8BBF\u95EE", v: whenText }
         ];
+        let preview;
+        if (state.loading) {
+          preview = h("div", { className: "dsh-dl-cardstate" }, "\u6B63\u5728\u8BFB\u53D6\u6B63\u6587\u2026");
+        } else if (state.error) {
+          preview = h("div", { className: "dsh-dl-cardstate" }, state.error);
+        } else if (!state.data || !state.data.text) {
+          preview = h(
+            "div",
+            { className: "dsh-dl-cardph" },
+            h(DocIcon, { tone: type.tone, glyph: type.glyph }),
+            h("div", { className: "dsh-dl-cardphtext" }, "\u8BE5\u6587\u4EF6\u7C7B\u578B\u6682\u4E0D\u652F\u6301\u9884\u89C8")
+          );
+        } else if (isMarkdown(doc)) {
+          preview = h("div", { className: "dsh-dl-cardtext" }, renderMarkdown(state.data.text));
+        } else {
+          preview = h("pre", { className: "dsh-dl-md-pre" }, h("code", null, state.data.text));
+        }
         return h(
-          "aside",
+          "div",
           {
-            className: "dsh-dl-detail",
-            "data-doclib-detail": "",
-            role: "region",
-            "aria-label": doc.name
+            className: "dsh-dl-mask",
+            onClick: (event) => {
+              if (event.target === event.currentTarget) props.onClose();
+            }
           },
           h(
             "div",
-            { className: "dsh-dl-detailhead" },
-            h(DocIcon, { tone: type.tone, glyph: type.glyph }),
+            {
+              className: "dsh-dl-card",
+              role: "dialog",
+              "aria-modal": "true",
+              "aria-label": doc.name,
+              "data-doclib-dialog": ""
+            },
             h(
               "div",
-              { className: "dsh-dl-detailtitle" },
-              h("div", { className: "dsh-dl-detailname", title: doc.rel || doc.name }, doc.name),
-              breadcrumb ? h("div", { className: "dsh-dl-detailcrumb" }, breadcrumb) : null
+              { className: "dsh-dl-cardhead" },
+              h(
+                "div",
+                { className: "dsh-dl-cardtitle" },
+                h("div", { className: "dsh-dl-cardname", title: doc.rel || doc.name }, doc.name),
+                h("div", { className: "dsh-dl-cardsub" }, subtitle)
+              ),
+              h("button", { type: "button", className: "dsh-dl-iconbtn", title: "\u5173\u95ED", onClick: props.onClose }, "\u2715")
             ),
-            h("button", { type: "button", className: "dsh-dl-iconbtn", title: "\u5173\u95ED", onClick: props.onClose }, "\u2715")
-          ),
-          h(
-            "div",
-            { className: "dsh-dl-detailacts" },
-            doc.sessionId ? h("button", {
-              type: "button",
-              className: "dsh-dl-btn",
-              "data-tone": "primary",
-              onClick: () => props.onOpenSession(doc)
-            }, "\u7EE7\u7EED\u9605\u8BFB\u4EFB\u52A1") : null,
-            h("button", {
-              type: "button",
-              className: "dsh-dl-btn",
-              onClick: () => props.onCopy(`\u300A${doc.name}\u300B key=${doc.key}`)
-            }, "\u590D\u5236\u5F15\u7528"),
-            isMarkdown(doc) ? h("button", {
-              type: "button",
-              className: "dsh-dl-btn",
-              onClick: () => setFull((value) => !value)
-            }, full ? "\u6392\u7248" : "\u539F\u6587") : null,
-            canDownload ? h("a", {
-              className: "dsh-dl-btn",
-              href: `${BASE}/raw?key=${encodeURIComponent(doc.key)}`,
-              target: "_blank",
-              rel: "noreferrer noopener"
-            }, "\u4E0B\u8F7D\u539F\u6587") : null
-          ),
-          h(
-            "div",
-            { className: "dsh-dl-detailmeta" },
-            fields.map((field) => h(
-              "div",
-              { key: field.k, className: "dsh-dl-detailfield", "data-wide": field.wide ? "true" : "false" },
-              h("span", { className: "dsh-dl-detailfieldk" }, field.k),
-              h("span", { className: "dsh-dl-detailfieldv", title: field.v }, field.v)
-            ))
-          ),
-          h(
-            "div",
-            { className: "dsh-dl-detailprev" },
             h(
               "div",
-              { className: "dsh-dl-detailsechead" },
-              h("span", null, "\u9884\u89C8"),
-              previewMeta ? h("span", null, previewMeta) : null
+              { className: "dsh-dl-cardbody" },
+              h("div", { className: "dsh-dl-cardlabel" }, "\u9884\u89C8"),
+              h("div", { className: "dsh-dl-cardpreview" }, preview),
+              h(
+                "div",
+                { className: "dsh-dl-cardmeta" },
+                fields.map((field) => h(
+                  "div",
+                  { key: field.k, className: "dsh-dl-kv" },
+                  h("span", { className: "dsh-dl-kv-k" }, field.k),
+                  h("span", { className: "dsh-dl-kv-v", title: field.v }, field.v)
+                ))
+              )
             ),
-            h("div", { className: "dsh-dl-detailbody", "data-raw": full ? "true" : "false" }, body)
+            h(
+              "div",
+              { className: "dsh-dl-cardft" },
+              h("button", { type: "button", className: "dsh-dl-btn", onClick: props.onClose }, "\u5173\u95ED"),
+              h(
+                "button",
+                {
+                  type: "button",
+                  className: "dsh-dl-btn",
+                  "data-tone": "primary",
+                  onClick: () => props.onAddToTask(doc)
+                },
+                "\u6DFB\u52A0\u5230\u4EFB\u52A1"
+              )
+            )
           )
         );
       }
       const FILTERS = [
         { id: "all", label: "\u5168\u90E8\u7C7B\u578B" },
         { id: "doc", label: "\u6587\u6863" },
+        { id: "sheet", label: "\u8868\u683C" },
+        { id: "web", label: "\u7F51\u7AD9" },
         { id: "code", label: "\u4EE3\u7801" },
-        { id: "file", label: "\u6587\u4EF6" },
-        { id: "image", label: "\u56FE\u7247" }
+        { id: "image", label: "\u56FE\u7247" },
+        { id: "file", label: "\u6587\u4EF6" }
       ];
       function DocLibraryPanel() {
         const [status, setStatus] = React.useState(null);
@@ -1083,20 +1077,6 @@
           setQuery("");
           setActiveDoc(null);
         }, []);
-        const openDocSession = React.useCallback((doc) => {
-          if (!doc || !doc.sessionId) return;
-          const workspace = service("uiWorkspace");
-          if (!workspace || typeof workspace.openSession !== "function") {
-            flash("\u65E0\u6CD5\u5B9A\u4F4D\u8FD9\u7BC7\u6587\u6863\u7684\u4F1A\u8BDD");
-            return;
-          }
-          try {
-            workspace.openSession(doc.sessionId);
-            revealConversation();
-          } catch {
-            flash("\u6253\u5F00\u539F\u4F1A\u8BDD\u5931\u8D25");
-          }
-        }, [flash]);
         const runSearch = React.useCallback(
           async (event) => {
             if (event) event.preventDefault();
@@ -1153,8 +1133,7 @@
             return next;
           });
         }, []);
-        const addToTask = React.useCallback(() => {
-          const chosen = flatDocuments().filter((doc) => selection.has(doc.key));
+        const addDocumentsToTask = React.useCallback((chosen) => {
           if (!chosen.length) return;
           const inserted = insertDocReferences(chosen);
           if (inserted > 0) {
@@ -1178,7 +1157,15 @@
           } else {
             flash("\u6DFB\u52A0\u5931\u8D25\uFF1A\u8BF7\u5148\u5728\u5BF9\u8BDD\u91CC\u6253\u5F00\u4E00\u4E2A\u4F1A\u8BDD\uFF0C\u518D\u56DE\u6765\u91CD\u8BD5");
           }
-        }, [selection, flash]);
+        }, [flash]);
+        const addToTask = React.useCallback(() => {
+          const chosen = flatDocuments().filter((doc) => selection.has(doc.key));
+          addDocumentsToTask(chosen);
+        }, [selection, addDocumentsToTask]);
+        const addActiveDocToTask = React.useCallback((doc) => {
+          setActiveDoc(null);
+          addDocumentsToTask([doc]);
+        }, [addDocumentsToTask]);
         function runInsert(text) {
           const sessionId = composerState.sessionId;
           if (sessionId) {
@@ -1448,10 +1435,7 @@
         const when = status && status.lastIndexedAt ? relativeTime(new Date(status.lastIndexedAt).getTime()) : "\u5C1A\u672A\u7D22\u5F15";
         return h(
           "div",
-          {
-            className: "dsh-dl-root",
-            "data-detail": activeDoc ? "open" : "closed"
-          },
+          { className: "dsh-dl-root" },
           h("style", null, styles_default),
           h(
             "div",
@@ -1558,21 +1542,13 @@
                 onClear: () => setSelection(/* @__PURE__ */ new Set()),
                 targetHint: composerState.sessionId ? "\u628A\u9009\u4E2D\u7684\u6587\u6863\u4F5C\u4E3A @ \u5F15\u7528\u52A0\u5165\u5F53\u524D\u5BF9\u8BDD\u7684\u8F93\u5165\u6846" : "\u628A\u9009\u4E2D\u7684\u6587\u6863\u5199\u6210\u4E00\u6BB5\u5F15\u7528\uFF0C\u4FBF\u4E8E\u7C98\u8D34\u5230\u5BF9\u8BDD"
               })
-            ),
-            activeDoc ? h(DocumentDetail, {
-              doc: activeDoc,
-              onClose: () => setActiveDoc(null),
-              onCopy: (text) => {
-                try {
-                  navigator.clipboard.writeText(text);
-                  flash("\u5F15\u7528\u5DF2\u590D\u5236");
-                } catch {
-                  flash("\u590D\u5236\u5931\u8D25");
-                }
-              },
-              onOpenSession: openDocSession
-            }) : null
+            )
           ),
+          activeDoc ? h(DocumentDialog, {
+            doc: activeDoc,
+            onClose: () => setActiveDoc(null),
+            onAddToTask: addActiveDocToTask
+          }) : null,
           toast ? h("div", { className: "dsh-dl-toast" }, toast) : null
         );
       }

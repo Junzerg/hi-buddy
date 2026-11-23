@@ -80,6 +80,9 @@ window.__ModuleLoader__.load({
       '.pdf', '.doc', '.docx', '.csv', '.tsv', '.json', '.jsonl', '.yaml', '.yml',
       '.toml', '.ini', '.log', '.xml', '.html', '.htm',
     ])
+    const SHEET_EXT = new Set(['.xlsx', '.xls', '.csv', '.tsv'])
+    const PPT_EXT = new Set(['.pptx', '.ppt'])
+    const WEB_EXT = new Set(['.html', '.htm'])
 
     function extensionOf(doc) {
       if (!doc) return ''
@@ -95,6 +98,10 @@ window.__ModuleLoader__.load({
       if (doc.kind === 'image') return { label: '图片', tone: 'image', glyph: '▣' }
       const ext = extensionOf(doc)
       if (CODE_EXT.has(ext)) return { label: '代码', tone: 'code', glyph: '</>' }
+      if (SHEET_EXT.has(ext)) return { label: '表格', tone: 'sheet', glyph: ext === '.csv' || ext === '.tsv' ? 'CSV' : 'XLS' }
+      if (WEB_EXT.has(ext)) return { label: '网站', tone: 'web', glyph: 'WEB' }
+      if (PPT_EXT.has(ext)) return { label: '文档', tone: 'doc', glyph: 'PPT' }
+      if (ext === '.pdf') return { label: '文档', tone: 'doc', glyph: 'PDF' }
       if (DOC_EXT.has(ext)) return { label: '文档', tone: 'doc', glyph: 'M' }
       return { label: '文件', tone: 'file', glyph: '?' }
     }
@@ -127,27 +134,6 @@ window.__ModuleLoader__.load({
         }
       }
       return docs
-    }
-
-    function typeLine(doc) {
-      const ext = extensionOf(doc).replace(/^\./, '').toUpperCase()
-      const label = classify(doc).label
-      return ext ? `${label} · ${ext}` : label
-    }
-
-    function sourceLabel(doc) {
-      switch (doc && doc.kind) {
-        case 'upload':
-          return '用户上传'
-        case 'image':
-          return '会话图片'
-        case 'folder':
-          return '本地目录'
-        case 'generated':
-          return '会话生成'
-        default:
-          return '本地产物'
-      }
     }
 
     // ---- markdown rendering --------------------------------------------------
@@ -753,16 +739,14 @@ window.__ModuleLoader__.load({
       )
     }
 
-    // ---- inline detail pane --------------------------------------------------
+    // ---- document card ------------------------------------------------------
 
-    function DocumentDetail(props) {
+    function DocumentDialog(props) {
       const doc = props.doc
       const [state, setState] = React.useState({ loading: true, error: null, data: null })
-      const [full, setFull] = React.useState(false)
 
       React.useEffect(() => {
         let alive = true
-        setFull(false)
         setState({ loading: true, error: null, data: null })
 
         // `/text` returns the body; `/doc` is the older chunk feed kept as a
@@ -789,105 +773,94 @@ window.__ModuleLoader__.load({
         }
       }, [doc.key])
 
-      const body = state.loading
-        ? h('div', { className: 'dsh-dl-empty' }, '正在读取正文…')
-        : state.error
-          ? h('div', { className: 'dsh-dl-error' }, state.error)
-          : !state.data || !state.data.text
-            ? h('div', { className: 'dsh-dl-empty' }, '这篇文档没有可预览的文本内容（二进制，或超出单文件上限）。')
-            : isMarkdown(doc) && !full
-              ? renderMarkdown(state.data.text)
-              : h('pre', { className: 'dsh-dl-md-pre' }, h('code', null, state.data.text))
-
       const type = classify(doc)
-      const breadcrumb = [doc.workspace, doc.session].filter(Boolean).join(' › ')
-      const canDownload = doc.kind === 'upload' || doc.kind === 'image'
-      const previewMeta = [
-        state.data && state.data.lines ? `${state.data.lines} 行` : '',
-        state.data && state.data.truncated ? '内容已截断' : '',
-      ].filter(Boolean).join(' · ')
+      const place = doc.workspace || '本地产物'
+      const whenText = relativeTime(doc.updatedAt) || '—'
+      const subtitle = ['本机', place, whenText].filter(Boolean).join(' · ')
       const fields = [
-        { k: '类型', v: typeLine(doc) },
-        { k: '大小', v: formatSize(doc.size) },
-        { k: '更新时间', v: relativeTime(doc.updatedAt) || '—' },
-        { k: '来源', v: sourceLabel(doc) },
-        { k: '工作区', v: doc.workspace || '—' },
-        { k: '会话', v: doc.session || '—' },
-        { k: '位置', v: doc.rel || doc.path || '—', wide: true },
+        { k: '所有者', v: '本机' },
+        { k: '所在位置', v: place },
+        { k: '类型', v: `${type.label}${doc.size ? ` · ${formatSize(doc.size)}` : ''}` },
+        { k: '最近访问', v: whenText },
       ]
 
+      let preview
+      if (state.loading) {
+        preview = h('div', { className: 'dsh-dl-cardstate' }, '正在读取正文…')
+      } else if (state.error) {
+        preview = h('div', { className: 'dsh-dl-cardstate' }, state.error)
+      } else if (!state.data || !state.data.text) {
+        preview = h(
+          'div',
+          { className: 'dsh-dl-cardph' },
+          h(DocIcon, { tone: type.tone, glyph: type.glyph }),
+          h('div', { className: 'dsh-dl-cardphtext' }, '该文件类型暂不支持预览'),
+        )
+      } else if (isMarkdown(doc)) {
+        preview = h('div', { className: 'dsh-dl-cardtext' }, renderMarkdown(state.data.text))
+      } else {
+        preview = h('pre', { className: 'dsh-dl-md-pre' }, h('code', null, state.data.text))
+      }
+
       return h(
-        'aside',
+        'div',
         {
-          className: 'dsh-dl-detail',
-          'data-doclib-detail': '',
-          role: 'region',
-          'aria-label': doc.name,
+          className: 'dsh-dl-mask',
+          onClick: (event) => {
+            if (event.target === event.currentTarget) props.onClose()
+          },
         },
         h(
           'div',
-          { className: 'dsh-dl-detailhead' },
-          h(DocIcon, { tone: type.tone, glyph: type.glyph }),
+          {
+            className: 'dsh-dl-card',
+            role: 'dialog',
+            'aria-modal': 'true',
+            'aria-label': doc.name,
+            'data-doclib-dialog': '',
+          },
           h(
             'div',
-            { className: 'dsh-dl-detailtitle' },
-            h('div', { className: 'dsh-dl-detailname', title: doc.rel || doc.name }, doc.name),
-            breadcrumb ? h('div', { className: 'dsh-dl-detailcrumb' }, breadcrumb) : null,
+            { className: 'dsh-dl-cardhead' },
+            h(
+              'div',
+              { className: 'dsh-dl-cardtitle' },
+              h('div', { className: 'dsh-dl-cardname', title: doc.rel || doc.name }, doc.name),
+              h('div', { className: 'dsh-dl-cardsub' }, subtitle),
+            ),
+            h('button', { type: 'button', className: 'dsh-dl-iconbtn', title: '关闭', onClick: props.onClose }, '✕'),
           ),
-          h('button', { type: 'button', className: 'dsh-dl-iconbtn', title: '关闭', onClick: props.onClose }, '✕'),
-        ),
-        h(
-          'div',
-          { className: 'dsh-dl-detailacts' },
-          doc.sessionId
-            ? h('button', {
+          h(
+            'div',
+            { className: 'dsh-dl-cardbody' },
+            h('div', { className: 'dsh-dl-cardlabel' }, '预览'),
+            h('div', { className: 'dsh-dl-cardpreview' }, preview),
+            h(
+              'div',
+              { className: 'dsh-dl-cardmeta' },
+              fields.map((field) => h(
+                'div',
+                { key: field.k, className: 'dsh-dl-kv' },
+                h('span', { className: 'dsh-dl-kv-k' }, field.k),
+                h('span', { className: 'dsh-dl-kv-v', title: field.v }, field.v),
+              )),
+            ),
+          ),
+          h(
+            'div',
+            { className: 'dsh-dl-cardft' },
+            h('button', { type: 'button', className: 'dsh-dl-btn', onClick: props.onClose }, '关闭'),
+            h(
+              'button',
+              {
                 type: 'button',
                 className: 'dsh-dl-btn',
                 'data-tone': 'primary',
-                onClick: () => props.onOpenSession(doc),
-              }, '继续阅读任务')
-            : null,
-          h('button', {
-            type: 'button',
-            className: 'dsh-dl-btn',
-            onClick: () => props.onCopy(`《${doc.name}》 key=${doc.key}`),
-          }, '复制引用'),
-          isMarkdown(doc)
-            ? h('button', {
-                type: 'button',
-                className: 'dsh-dl-btn',
-                onClick: () => setFull((value) => !value),
-              }, full ? '排版' : '原文')
-            : null,
-          canDownload
-            ? h('a', {
-                className: 'dsh-dl-btn',
-                href: `${BASE}/raw?key=${encodeURIComponent(doc.key)}`,
-                target: '_blank',
-                rel: 'noreferrer noopener',
-              }, '下载原文')
-            : null,
-        ),
-        h(
-          'div',
-          { className: 'dsh-dl-detailmeta' },
-          fields.map((field) => h(
-            'div',
-            { key: field.k, className: 'dsh-dl-detailfield', 'data-wide': field.wide ? 'true' : 'false' },
-            h('span', { className: 'dsh-dl-detailfieldk' }, field.k),
-            h('span', { className: 'dsh-dl-detailfieldv', title: field.v }, field.v),
-          )),
-        ),
-        h(
-          'div',
-          { className: 'dsh-dl-detailprev' },
-          h(
-            'div',
-            { className: 'dsh-dl-detailsechead' },
-            h('span', null, '预览'),
-            previewMeta ? h('span', null, previewMeta) : null,
+                onClick: () => props.onAddToTask(doc),
+              },
+              '添加到任务',
+            ),
           ),
-          h('div', { className: 'dsh-dl-detailbody', 'data-raw': full ? 'true' : 'false' }, body),
         ),
       )
     }
@@ -897,9 +870,11 @@ window.__ModuleLoader__.load({
     const FILTERS = [
       { id: 'all', label: '全部类型' },
       { id: 'doc', label: '文档' },
+      { id: 'sheet', label: '表格' },
+      { id: 'web', label: '网站' },
       { id: 'code', label: '代码' },
-      { id: 'file', label: '文件' },
       { id: 'image', label: '图片' },
+      { id: 'file', label: '文件' },
     ]
 
     function DocLibraryPanel() {
@@ -1033,21 +1008,6 @@ window.__ModuleLoader__.load({
         setActiveDoc(null)
       }, [])
 
-      const openDocSession = React.useCallback((doc) => {
-        if (!doc || !doc.sessionId) return
-        const workspace = service('uiWorkspace')
-        if (!workspace || typeof workspace.openSession !== 'function') {
-          flash('无法定位这篇文档的会话')
-          return
-        }
-        try {
-          workspace.openSession(doc.sessionId)
-          revealConversation()
-        } catch {
-          flash('打开原会话失败')
-        }
-      }, [flash])
-
       const runSearch = React.useCallback(
         async (event) => {
           if (event) event.preventDefault()
@@ -1111,8 +1071,7 @@ window.__ModuleLoader__.load({
 
       // ---- "add to task" ---------------------------------------------------
 
-      const addToTask = React.useCallback(() => {
-        const chosen = flatDocuments().filter((doc) => selection.has(doc.key))
+      const addDocumentsToTask = React.useCallback((chosen) => {
         if (!chosen.length) return
         // Native shape first: one atomic `@` chip per document. The codec
         // expands them at submit, so the composer is not flooded with text.
@@ -1145,7 +1104,17 @@ window.__ModuleLoader__.load({
         } else {
           flash('添加失败：请先在对话里打开一个会话，再回来重试')
         }
-      }, [selection, flash])
+      }, [flash])
+
+      const addToTask = React.useCallback(() => {
+        const chosen = flatDocuments().filter((doc) => selection.has(doc.key))
+        addDocumentsToTask(chosen)
+      }, [selection, addDocumentsToTask])
+
+      const addActiveDocToTask = React.useCallback((doc) => {
+        setActiveDoc(null)
+        addDocumentsToTask([doc])
+      }, [addDocumentsToTask])
 
       /**
        * Returns 'inserted' | 'copied' | 'failed'. Tries the Host's composer
@@ -1474,10 +1443,7 @@ window.__ModuleLoader__.load({
 
       return h(
         'div',
-        {
-          className: 'dsh-dl-root',
-          'data-detail': activeDoc ? 'open' : 'closed',
-        },
+        { className: 'dsh-dl-root' },
         h('style', null, CSS),
         h(
           'div',
@@ -1590,22 +1556,14 @@ window.__ModuleLoader__.load({
                 : '把选中的文档写成一段引用，便于粘贴到对话',
             }),
           ),
-          activeDoc
-            ? h(DocumentDetail, {
-                doc: activeDoc,
-                onClose: () => setActiveDoc(null),
-                onCopy: (text) => {
-                  try {
-                    navigator.clipboard.writeText(text)
-                    flash('引用已复制')
-                  } catch {
-                    flash('复制失败')
-                  }
-                },
-                onOpenSession: openDocSession,
-              })
-            : null,
         ),
+        activeDoc
+          ? h(DocumentDialog, {
+              doc: activeDoc,
+              onClose: () => setActiveDoc(null),
+              onAddToTask: addActiveDocToTask,
+            })
+          : null,
         toast ? h('div', { className: 'dsh-dl-toast' }, toast) : null,
       )
     }
