@@ -83,6 +83,8 @@ window.__ModuleLoader__.load({
     const SHEET_EXT = new Set(['.xlsx', '.xls', '.csv', '.tsv'])
     const PPT_EXT = new Set(['.pptx', '.ppt'])
     const WEB_EXT = new Set(['.html', '.htm'])
+    const IMG_EXT = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg', '.bmp', '.avif'])
+    const AV_EXT = new Set(['.mp3', '.mp4', '.wav', '.m4a', '.mov', '.ogg', '.flac', '.aac', '.webm'])
 
     function extensionOf(doc) {
       if (!doc) return ''
@@ -102,6 +104,8 @@ window.__ModuleLoader__.load({
       if (WEB_EXT.has(ext)) return { label: '网站', tone: 'web', glyph: 'WEB' }
       if (PPT_EXT.has(ext)) return { label: '文档', tone: 'doc', glyph: 'PPT' }
       if (ext === '.pdf') return { label: '文档', tone: 'doc', glyph: 'PDF' }
+      if (IMG_EXT.has(ext)) return { label: '图片', tone: 'image', glyph: '▣' }
+      if (AV_EXT.has(ext)) return { label: '音视频', tone: 'av', glyph: 'AV' }
       if (DOC_EXT.has(ext)) return { label: '文档', tone: 'doc', glyph: 'M' }
       return { label: '文件', tone: 'file', glyph: '?' }
     }
@@ -114,6 +118,47 @@ window.__ModuleLoader__.load({
     /** The folder-source pseudo workspace is not a session artifact and stays out of the library. */
     function isFolderWorkspace(workspace) {
       return Boolean(workspace) && String(workspace.id) === 'folder'
+    }
+
+    const FAVORITES_KEY = 'dsh-doclib-favorites'
+
+    /** Favorite keys survive reloads in this browser; the index itself stays read-only. */
+    function readFavorites() {
+      try {
+        const raw = globalThis.localStorage && globalThis.localStorage.getItem(FAVORITES_KEY)
+        const parsed = raw ? JSON.parse(raw) : []
+        return new Set(Array.isArray(parsed) ? parsed.filter((value) => typeof value === 'string') : [])
+      } catch {
+        return new Set()
+      }
+    }
+
+    /** Product-facing labels for the local-artifact table: Excel / Word / PPT, not just 文档. */
+    function localTypeLabel(doc) {
+      const ext = extensionOf(doc)
+      if (SHEET_EXT.has(ext)) return 'Excel'
+      if (WEB_EXT.has(ext)) return '网站'
+      if (PPT_EXT.has(ext)) return 'PPT'
+      if (ext === '.pdf') return 'PDF'
+      if (ext === '.doc' || ext === '.docx') return 'Word'
+      if (CODE_EXT.has(ext)) return '代码'
+      if ((doc && doc.kind === 'image') || IMG_EXT.has(ext)) return '图片'
+      if (AV_EXT.has(ext)) return '音频'
+      if (DOC_EXT.has(ext)) return '文档'
+      return '文件'
+    }
+
+    function localGlyph(doc) {
+      const ext = extensionOf(doc)
+      if (SHEET_EXT.has(ext)) return ext === '.csv' || ext === '.tsv' ? 'CSV' : 'XLS'
+      if (WEB_EXT.has(ext)) return 'WEB'
+      if (PPT_EXT.has(ext)) return 'PPT'
+      if (ext === '.pdf') return 'PDF'
+      if (ext === '.doc' || ext === '.docx') return 'W'
+      if (CODE_EXT.has(ext)) return '</>'
+      if ((doc && doc.kind === 'image') || IMG_EXT.has(ext)) return '▣'
+      if (AV_EXT.has(ext)) return 'AV'
+      return classify(doc).glyph
     }
 
     /** One flat view per document, carrying the workspace/session it belongs to. */
@@ -874,6 +919,7 @@ window.__ModuleLoader__.load({
       { id: 'web', label: '网站' },
       { id: 'code', label: '代码' },
       { id: 'image', label: '图片' },
+      { id: 'av', label: '音视频' },
       { id: 'file', label: '文件' },
     ]
 
@@ -887,6 +933,11 @@ window.__ModuleLoader__.load({
       const [expanded, setExpanded] = React.useState({})
       const [node, setNode] = React.useState('recent')
       const [activeDoc, setActiveDoc] = React.useState(null)
+      const [localFilter, setLocalFilter] = React.useState('all')
+      const [localQuery, setLocalQuery] = React.useState('')
+      const [starOnly, setStarOnly] = React.useState(false)
+      const [favorites, setFavorites] = React.useState(readFavorites)
+      const [localCollapsed, setLocalCollapsed] = React.useState({})
       const [busy, setBusy] = React.useState(false)
       const [error, setError] = React.useState(null)
       const [toast, setToast] = React.useState(null)
@@ -964,6 +1015,7 @@ window.__ModuleLoader__.load({
           pendingSessionFocus = null
           setNode('production')
           setActiveDoc(null)
+          setLocalCollapsed({})
           setResults(null)
           setFilter('all')
           setExpanded((current) => ({ ...current, [`w:${workspaceEntry.id}`]: true, [`s:${sessionId}`]: true }))
@@ -1007,6 +1059,38 @@ window.__ModuleLoader__.load({
         setQuery('')
         setActiveDoc(null)
       }, [])
+
+      const toggleLocal = React.useCallback((key) => {
+        setLocalCollapsed((current) => ({ ...current, [key]: !current[key] }))
+      }, [])
+
+      const toggleFavorite = React.useCallback((key) => {
+        setFavorites((current) => {
+          const next = new Set(current)
+          if (next.has(key)) next.delete(key)
+          else next.add(key)
+          try {
+            globalThis.localStorage.setItem(FAVORITES_KEY, JSON.stringify([...next]))
+          } catch {
+            // A full or blocked localStorage keeps the in-memory state.
+          }
+          return next
+        })
+      }, [])
+
+      const backToLibrary = React.useCallback(() => {
+        setLocalQuery('')
+        setLocalFilter('all')
+        setStarOnly(false)
+        setLocalCollapsed({})
+        selectNode('recent')
+      }, [selectNode])
+
+      // A filter or keyword change expands every group so matches cannot hide.
+      React.useEffect(() => {
+        if (!localQuery.trim() && localFilter === 'all' && !starOnly) return
+        setLocalCollapsed({})
+      }, [localQuery, localFilter, starOnly])
 
       const runSearch = React.useCallback(
         async (event) => {
@@ -1226,6 +1310,255 @@ window.__ModuleLoader__.load({
       const allDocs = React.useMemo(() => allDocuments().filter(visible), [tree, results, filter])
       const visibleKeys = allDocs.map((doc) => doc.key)
       const allSelected = visibleKeys.length > 0 && visibleKeys.every((key) => selection.has(key))
+      const localFiltering = Boolean(localQuery.trim()) || localFilter !== 'all' || starOnly
+      const localGroups = React.useMemo(() => {
+        const needle = localQuery.trim().toLowerCase()
+        const groups = []
+        for (const workspace of (tree && tree.workspaces) || []) {
+          if (isFolderWorkspace(workspace)) continue
+          const sessions = []
+          for (const session of workspace.sessions || []) {
+            const docs = []
+            for (const doc of session.documents || []) {
+              if (localFilter !== 'all' && classify(doc).tone !== localFilter) continue
+              if (starOnly && !favorites.has(doc.key)) continue
+              if (needle) {
+                const hay = `${doc.name} ${doc.rel || ''} ${workspace.title} ${session.title}`.toLowerCase()
+                if (!hay.includes(needle)) continue
+              }
+              docs.push({
+                ...doc,
+                workspace: workspace.title,
+                workspaceId: workspace.id,
+                session: session.title,
+                sessionId: session.id,
+              })
+            }
+            if (docs.length) sessions.push({ session, docs })
+          }
+          if (!sessions.length) continue
+          groups.push({
+            workspace,
+            sessions,
+            tasks: sessions.length,
+            files: sessions.reduce((total, entry) => total + entry.docs.length, 0),
+          })
+        }
+        return groups
+      }, [tree, localFilter, localQuery, starOnly, favorites])
+      const localFileCount = React.useMemo(
+        () => localGroups.reduce((total, group) => total + group.files, 0),
+        [localGroups],
+      )
+
+      function localRow(doc) {
+        const isSelected = selection.has(doc.key)
+        const type = classify(doc)
+        const fav = favorites.has(doc.key)
+        return h(
+          'div',
+          {
+            key: doc.key,
+            className: 'dsh-dl-localrow',
+            'data-selected': isSelected ? 'true' : 'false',
+            title: doc.rel || doc.name,
+            onClick: () => setActiveDoc(doc),
+          },
+          h(
+            'div',
+            { className: 'dsh-dl-check' },
+            h('input', {
+              type: 'checkbox',
+              checked: isSelected,
+              'aria-label': `选择 ${doc.name}`,
+              onClick: (event) => event.stopPropagation(),
+              onChange: () => toggleOne(doc.key),
+            }),
+          ),
+          h(
+            'div',
+            { className: 'dsh-dl-locname' },
+            h(DocIcon, { tone: type.tone, glyph: localGlyph(doc) }),
+            h('span', { className: 'dsh-dl-fname' }, doc.name),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'dsh-dl-fav',
+                'data-on': fav ? 'true' : 'false',
+                title: fav ? '取消收藏' : '收藏',
+                'aria-label': fav ? '取消收藏' : '收藏',
+                onClick: (event) => {
+                  event.stopPropagation()
+                  toggleFavorite(doc.key)
+                },
+              },
+              '★',
+            ),
+          ),
+          h('div', { className: 'dsh-dl-loccell' }, localTypeLabel(doc)),
+          h('div', { className: 'dsh-dl-loccell' }, '本机'),
+          h('div', { className: 'dsh-dl-loccell' }, relativeTime(doc.updatedAt) || '—'),
+          h('div', { className: 'dsh-dl-loccell' }, formatSize(doc.size)),
+        )
+      }
+
+      function localTaskBlock(entry) {
+        const key = `s:${entry.session.id}`
+        const open = !localCollapsed[key]
+        return h(
+          'div',
+          { key: entry.session.id, 'data-doclib-session': entry.session.id },
+          h(
+            'div',
+            { className: 'dsh-dl-localtask' },
+            h(FolderIcon),
+            h('span', { className: 'dsh-dl-localtaskname' }, entry.session.title),
+            h('span', { className: 'dsh-dl-pill' }, `${entry.docs.length} 个文件`),
+            h(
+              'button',
+              {
+                type: 'button',
+                className: 'dsh-dl-tasktoggle',
+                title: open ? '收起文件' : '展开文件',
+                onClick: () => toggleLocal(key),
+              },
+              h(Caret, { open }),
+            ),
+          ),
+          open ? entry.docs.map(localRow) : null,
+        )
+      }
+
+      function localWorkspaceBlock(group) {
+        const key = `w:${group.workspace.id}`
+        const open = !localCollapsed[key]
+        return h(
+          'div',
+          { key: group.workspace.id, className: 'dsh-dl-localgroup' },
+          h(
+            'div',
+            {
+              className: 'dsh-dl-localws',
+              role: 'button',
+              tabIndex: 0,
+              onClick: () => toggleLocal(key),
+            },
+            h(Caret, { open }),
+            h('span', { className: 'dsh-dl-localtitle' }, group.workspace.title),
+            h('span', { className: 'dsh-dl-pill' }, `${group.tasks} 个任务 · ${group.files} 个文件`),
+          ),
+          open ? group.sessions.map(localTaskBlock) : null,
+        )
+      }
+
+      if (node === 'production') {
+        return h(
+          'div',
+          { className: 'dsh-dl-root' },
+          h('style', null, CSS),
+          h(
+            'div',
+            { className: 'dsh-dl-local' },
+            h(
+              'div',
+              { className: 'dsh-dl-localbar' },
+              h(
+                'button',
+                {
+                  type: 'button',
+                  className: 'dsh-dl-btn dsh-dl-back',
+                  'aria-label': '返回文档库',
+                  onClick: backToLibrary,
+                },
+                '← 返回文档库',
+              ),
+            ),
+            h(
+              'div',
+              { className: 'dsh-dl-localtoolbar' },
+              h(
+                'select',
+                {
+                  className: 'dsh-dl-select',
+                  value: localFilter,
+                  onChange: (event) => setLocalFilter(event.target.value),
+                  'aria-label': '按类型筛选',
+                },
+                FILTERS.map((item) => h('option', { key: item.id, value: item.id }, item.label)),
+              ),
+              h(
+                'label',
+                { className: 'dsh-dl-localsearch' },
+                h(SearchIcon),
+                h('input', {
+                  type: 'search',
+                  placeholder: '搜索文件、任务或工作空间',
+                  value: localQuery,
+                  onChange: (event) => setLocalQuery(event.target.value),
+                }),
+              ),
+              h(
+                'label',
+                { className: 'dsh-dl-checkline' },
+                h('input', {
+                  type: 'checkbox',
+                  checked: starOnly,
+                  onChange: (event) => setStarOnly(event.target.checked),
+                }),
+                '我的收藏',
+              ),
+              h('span', { className: 'dsh-dl-localcount' }, `${localFileCount} 个文件`),
+            ),
+            error ? h('div', { className: 'dsh-dl-error' }, error) : null,
+            h(
+              'div',
+              { className: 'dsh-dl-localframe' },
+              h(
+                'div',
+                { className: 'dsh-dl-localhead' },
+                h('div', null, ''),
+                h('div', null, '名称'),
+                h('div', null, '类型'),
+                h('div', null, '更新人'),
+                h('div', null, '更新时间'),
+                h('div', null, '大小'),
+              ),
+              h(
+                'div',
+                { className: 'dsh-dl-localscroll' },
+                localGroups.length
+                  ? localGroups.map(localWorkspaceBlock)
+                  : h(
+                      'div',
+                      { className: 'dsh-dl-empty' },
+                      !tree
+                        ? '正在载入…'
+                        : localFiltering
+                          ? '没有匹配的文档'
+                          : '这个文档库还没有内容。文档来自会话生成、修改或上传的文件。',
+                    ),
+              ),
+            ),
+            h(SelectionBar, {
+              count: selection.size,
+              onAdd: addToTask,
+              onClear: () => setSelection(new Set()),
+              targetHint: composerState.sessionId
+                ? '把选中的文档作为 @ 引用加入当前对话的输入框'
+                : '把选中的文档写成一段引用，便于粘贴到对话',
+            }),
+          ),
+          activeDoc
+            ? h(DocumentDialog, {
+                doc: activeDoc,
+                onClose: () => setActiveDoc(null),
+                onAddToTask: addActiveDocToTask,
+              })
+            : null,
+          toast ? h('div', { className: 'dsh-dl-toast' }, toast) : null,
+        )
+      }
 
       function documentRow(doc, extraKey) {
         const isSelected = selection.has(doc.key)

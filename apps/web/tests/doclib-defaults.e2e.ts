@@ -45,9 +45,9 @@ it('indexes recorded session documents through the bundled document library', as
   expect(response.status()).toBe(200)
   expect(await response.json()).toMatchObject({ error: null, sessions: 1, generated: 3 })
   await productionNode.click()
-  await expect.poll(() => productionNode.getAttribute('aria-pressed')).toBe('true')
+  await page.getByRole('button', { name: '返回文档库', exact: true }).waitFor()
   await page.getByText('intro.md', { exact: true }).waitFor()
-  await recentNode.click()
+  await page.getByRole('button', { name: '返回文档库', exact: true }).click()
   await expect.poll(() => recentNode.getAttribute('aria-pressed')).toBe('true')
   await page.getByPlaceholder('搜索文件、任务或工作区').fill('项目说明')
   await page.getByRole('button', { name: '搜索', exact: true }).click()
@@ -99,10 +99,7 @@ it('opens the library at the Session whose 文档 tab was clicked', async () => 
   await page.getByRole('button', { name: '重建索引', exact: true }).click()
   const block = page.locator(`[data-doclib-session="${TAB_TARGET_ID}"]`)
   await block.waitFor({ timeout: 30_000 })
-  await expect.poll(
-    () => page.getByRole('button', { name: '本地产物', exact: true }).getAttribute('aria-pressed'),
-    { timeout: 30_000 },
-  ).toBe('true')
+  await page.getByRole('button', { name: '返回文档库', exact: true }).waitFor({ timeout: 30_000 })
   await expect.poll(() => block.locator('.dsh-dl-caret').textContent(), { timeout: 10_000 }).toBe('▾')
   await block.getByText('intro.md', { exact: true }).waitFor({ timeout: 15_000 })
 
