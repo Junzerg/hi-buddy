@@ -94,6 +94,30 @@ describe('WorkbenchTopbar', () => {
     expect(screen.queryByText('季度报告')).toBeNull()
   })
 
+  it('keeps a single AgentDeck link after a web launch attempt', () => {
+    mount()
+    const launch = screen.getByRole('link', { name: 'AgentDeck ↗' })
+    expect(launch.getAttribute('href')).toBe('agentdeck://open?from=hibuddy&theme=haier&focus=1')
+    launch.addEventListener('click', (event) => { event.preventDefault() }, { once: true })
+    fireEvent.click(launch)
+    expect(screen.getAllByRole('link', { name: /AgentDeck/ })).toEqual([launch])
+  })
+
+  it('opens AgentDeck from the button immediately after the sidebar toggle', async () => {
+    vi.stubGlobal('dshDesktop', { openAgentDeck: vi.fn().mockResolvedValue('download') })
+    try {
+      mount()
+      const buttons = screen.getAllByRole('button')
+      const toggle = screen.getByRole('button', { name: '展开侧栏' })
+      const launch = screen.getByRole('button', { name: 'AgentDeck ↗' })
+      expect(buttons[buttons.indexOf(toggle) + 1]).toBe(launch)
+      fireEvent.click(launch)
+      expect(await screen.findByText(zh['topbar.agentDeckDownload'])).toBeTruthy()
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
+
   it('hides unfinished search and toggles the right sidebar', () => {
     const { openSession, toggleRightbar } = mount()
     expect(screen.queryByRole('button', { name: '搜索' })).toBeNull()

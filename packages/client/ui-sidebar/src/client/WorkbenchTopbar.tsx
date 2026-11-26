@@ -1,7 +1,7 @@
 /** Global page titles and shared task navigation for the workbench and conversation header. */
 import { useState } from 'react'
 import {
-  IconPanelLeftOutlineRegular, IconQueueOutlineRegular, Menu, Tooltip,
+  IconPanelLeftOutlineRegular, IconQueueOutlineRegular, Menu, Toast, Tooltip,
 } from '@deepseek-ai/dsh-client-ui-primitives'
 import type { ObservableSnapshot } from '@deepseek-ai/dsh-client-store'
 import type { ShortcutCatalogEntry } from '@deepseek-ai/dsh-client-shortcuts/client'
@@ -107,6 +107,23 @@ function WorkbenchActions({
   const toggle = useShortcuts(entries => entries.find(entry => entry.id === 'sidebar.right.toggle'))
   const visibleTasks = tasks.filter(task => !archived.includes(task.id))
   const [tasksOpen, setTasksOpen] = useState(false)
+  const openAgentDeck = (window as Window & {
+    dshDesktop?: { openAgentDeck?: () => Promise<'opened' | 'download'> }
+  }).dshDesktop?.openAgentDeck
+  const [opening, setOpening] = useState(false)
+  const [notice, setNotice] = useState('')
+  async function launchAgentDeck() {
+    if (!openAgentDeck || opening) return
+    setOpening(true)
+    setNotice('')
+    try {
+      if (await openAgentDeck() === 'download') setNotice(t('topbar.agentDeckDownload'))
+    } catch {
+      setNotice(t('topbar.agentDeckError'))
+    } finally {
+      setOpening(false)
+    }
+  }
   const rightbarLabel = t(rightbarShown ? 'topbar.collapse' : 'topbar.expand')
   return (
     <div className={css.actions}>
@@ -147,6 +164,11 @@ function WorkbenchActions({
           <span className={css.buttonLabel}>{rightbarLabel}</span>
         </button>
       </Tooltip>
+      {openAgentDeck ? <button type="button" className={css.button} disabled={opening}
+        onClick={() => { void launchAgentDeck() }}>AgentDeck ↗</button> : (
+        <a className={css.button} href="agentdeck://open?from=hibuddy&theme=haier&focus=1">AgentDeck ↗</a>
+      )}
+      {notice && <Toast text={notice} onDone={() => { setNotice('') }} />}
     </div>
   )
 }
