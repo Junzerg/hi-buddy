@@ -6,7 +6,7 @@
   "notes": "Windows x64 packaging for the AgentDeck workbench entry. Mac build deferred.",
   "targets": {
     "win-x64": {
-      "status": "built",
+      "status": "failed",
       "signing": "unsigned",
       "buildCommit": "5463d61cbf2dd338708d4657d06f1ef00d434815",
       "buildDirty": false,
@@ -17,7 +17,7 @@
       "archiveSha256": "7233e274c2e3c3fd753cfa617e543d01db1b52becd3f4f139850fa68bacb8f79",
       "signingVerified": false,
       "installationVerified": false,
-      "acceptance": "pending: fresh installation and upgrade, startup and restart persistence, company login and authorized models, text and image conversation, intranet search/fetch, Office preview and Standard-mode process folding. In Claude, resume a native session, run two sessions concurrently in one project, queue a follow-up while a reply is streaming, verify the follow-up appears once after delivery, and recover undelivered text to the draft after stopping. Verify the single AgentDeck entry opens the download site when absent, starts a custom-directory installation and focuses an existing instance.",
+      "acceptance": "Failed Windows installation acceptance: the download page opened after about 10 seconds without visible progress. The recorded buildCommit also differs from sourceCommit; the installed binary source is unconfirmed. Retain artifact evidence and retest with the .2 build.",
       "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261126.1-win-x64-unsigned.exe",
       "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261126.1.tar.gz"
     },

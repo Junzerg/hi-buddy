@@ -1,0 +1,93 @@
+{
+  "version": "0.2.2-rc.1.20261126.2",
+  "sourceCommit": "01cf38992be62e19da30496a8241a3a594cbd01c",
+  "sourceBranch": "dev/junzerg",
+  "status": "prepared",
+  "notes": "Windows x64 rebuild for immediate AgentDeck launch feedback. Mac build deferred.",
+  "targets": {
+    "win-x64": {
+      "status": "pending",
+      "signing": "unsigned",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: fresh installation and upgrade, startup and restart persistence, company login and authorized models, text and image conversation, intranet search/fetch, Office preview and Standard-mode process folding. In Claude, resume a native session, run two sessions concurrently in one project, queue a follow-up while a reply is streaming, verify the follow-up appears once after delivery, and recover undelivered text to the draft after stopping. Verify the single AgentDeck entry opens the download site when absent, starts a custom-directory installation and focuses an existing instance. Check the packaged dshBuildCommit against sourceCommit and dshBuildDirty is false. On click, verify immediate progress on the same disabled button, no duplicate launch and restoration after completion.",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261126.2-win-x64-unsigned.exe",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261126.2.tar.gz"
+    },
+    "mac-arm64": {
+      "status": "pending",
+      "signing": "signed-notarized",
+      "buildCommit": null,
+      "buildDirty": null,
+      "installer": null,
+      "bytes": null,
+      "sha256": null,
+      "archive": null,
+      "archiveSha256": null,
+      "signingVerified": false,
+      "installationVerified": false,
+      "acceptance": "pending: fresh installation and upgrade, startup and restart persistence, company login and authorized models, text and image conversation, intranet search/fetch, Office preview and Standard-mode process folding. In Claude, resume a native session, run two sessions concurrently in one project, queue a follow-up while a reply is streaming, verify the follow-up appears once after delivery, and recover undelivered text to the draft after stopping.",
+      "expectedInstaller": "HiBuddy-0.2.2-rc.1.20261126.2-mac-arm64.dmg",
+      "expectedArchive": "lingxi-office-release-0.2.2-rc.1.20261126.2-mac-arm64.tar.gz"
+    }
+  },
+  "plugins": {
+    "hi-buddy-claude-kit": {
+      "version": "0.1.0-alpha.20",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/hi-buddy-claude-kit-0.1.0-alpha.20.tgz",
+      "sha256": "665dc387665e792e71c58b41f9cbe627db9ef5a2a0f0161e5e5a583ccf5362f0",
+      "sourceCommit": "6a55eddc7bd3b40001a7e4e7f79a1cd6c033a361"
+    },
+    "hi-buddy-glossary-kit": {
+      "version": "0.3.0-rc.2",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/hi-buddy-glossary-kit-0.3.0-rc.2.tgz",
+      "sha256": "416139ca33e84373325d55139fc1214ccf4999d99ee9364f0e4f6640ba72e3cb",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "hi-buddy-session-pool-kit": {
+      "version": "0.2.2",
+      "enabled": false,
+      "archive": "haiercash/builtin-plugins/hi-buddy-session-pool-kit-0.2.2.tgz",
+      "sha256": "a9c6c149df06c33148a463cf16c973ecf7f1268c10c278c4347b56b24f7d0abd",
+      "sourceCommit": "9774aceeb5698def4948230b812850d53a0a87a2"
+    },
+    "@local/dsh-plugin-doclib": {
+      "version": "0.1.1",
+      "enabled": true,
+      "archive": "haiercash/builtin-plugins/local-dsh-plugin-doclib-0.1.1.tgz",
+      "sha256": "c3ccedc42d8479be5d4b43e60505d3f26eabbc491d22c18388c23dd28e0695f7",
+      "sourceCommit": "a23716228e456d34cdd59f768bf1428801c8d311"
+    }
+  },
+  "checks": {
+    "agentDeck": "passed: 30 topbar and desktop preload tests; five typecheck gates",
+    "targetNetwork": "pending: installed Windows client acceptance"
+  },
+  "serverPrerequisites": {
+    "companyLogin": {
+      "status": "pending",
+      "sourceCommit": "01cf38992be62e19da30496a8241a3a594cbd01c",
+      "requirement": "Intranet operator verifies the existing company-login exchange serves authorized model metadata. Both installed clients must sign in, discover models, and send text and images."
+    }
+  },
+  "publication": {
+    "mode": "together",
+    "requiredTargets": [
+      "win-x64",
+      "mac-arm64"
+    ],
+    "status": "pending",
+    "requireBothInstallationsVerified": true,
+    "cutoverVerified": false
+  },
+  "published": false
+}
