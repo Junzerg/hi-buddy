@@ -1,5 +1,5 @@
 /** Global page titles and shared task navigation for the workbench and conversation header. */
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
   IconPanelLeftOutlineRegular, IconQueueOutlineRegular, Menu, Toast, Tooltip,
 } from '@deepseek-ai/dsh-client-ui-primitives'
@@ -124,6 +124,33 @@ function WorkbenchActions({
       setOpening(false)
     }
   }
+  const cancelWebFallback = useRef<() => void>(() => {})
+  useEffect(() => () => { cancelWebFallback.current() }, [])
+  function scheduleDownloadPage() {
+    cancelWebFallback.current()
+    const cancel = () => {
+      window.clearTimeout(timer)
+      document.removeEventListener('visibilitychange', visibilityChanged)
+      window.removeEventListener('pagehide', cancel)
+    }
+    const visibilityChanged = () => {
+      if (document.hidden) cancel()
+    }
+    const timer = window.setTimeout(() => {
+      cancel()
+      // A delayed popup can be blocked. Preserve access to the download in that case.
+      const tab = window.open('about:blank', '_blank')
+      if (tab) {
+        tab.opener = null
+        tab.location.replace('https://agentdeck.haierxj.cn/')
+      } else {
+        window.location.assign('https://agentdeck.haierxj.cn/')
+      }
+    }, 2000)
+    document.addEventListener('visibilitychange', visibilityChanged)
+    window.addEventListener('pagehide', cancel)
+    cancelWebFallback.current = cancel
+  }
   const rightbarLabel = t(rightbarShown ? 'topbar.collapse' : 'topbar.expand')
   return (
     <div className={css.actions}>
@@ -164,9 +191,11 @@ function WorkbenchActions({
           <span className={css.buttonLabel}>{rightbarLabel}</span>
         </button>
       </Tooltip>
-      {openAgentDeck ? <button type="button" className={css.button} disabled={opening}
-        onClick={() => { void launchAgentDeck() }}>AgentDeck ↗</button> : (
-        <a className={css.button} href="agentdeck://open?from=hibuddy&theme=haier&focus=1">AgentDeck ↗</a>
+      {openAgentDeck ? <button type="button" className={css.button} disabled={opening} aria-busy={opening}
+        onClick={() => { void launchAgentDeck() }}>
+        {opening ? t('topbar.agentDeckOpening') : 'AgentDeck ↗'}
+      </button> : (
+        <a className={css.button} href="agentdeck://open?from=hibuddy&theme=haier&focus=1" onClick={scheduleDownloadPage}>AgentDeck ↗</a>
       )}
       {notice && <Toast text={notice} onDone={() => { setNotice('') }} />}
     </div>

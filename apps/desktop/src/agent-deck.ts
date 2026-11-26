@@ -28,8 +28,16 @@ CheckExe (Join-Path $env:LOCALAPPDATA 'Programs\AgentDeck\AgentDeck.exe')
 export async function openAgentDeck(openExternal: (url: string) => Promise<void>): Promise<'opened' | 'download'> {
   if (process.platform !== 'win32' || !process.env.SystemRoot) throw new Error('Windows required')
   const powershell = join(process.env.SystemRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe')
-  const { stdout } = await promisify(execFile)(powershell, ['-NoProfile', '-NonInteractive', '-Command', detect], { windowsHide: true, timeout: 15000 })
-  const exe = stdout.trim()
+  let exe = ''
+  try {
+    const command = Buffer.from(detect, 'utf16le').toString('base64')
+    const { stdout } = await promisify(execFile)(powershell, ['-NoProfile', '-NonInteractive', '-EncodedCommand', command], {
+      windowsHide: true, timeout: 15000,
+    })
+    exe = stdout.trim()
+  } catch {
+    // Managed Windows installations may restrict PowerShell. The download site still works.
+  }
   if (!exe) {
     await openExternal('https://agentdeck.haierxj.cn/')
     return 'download'
