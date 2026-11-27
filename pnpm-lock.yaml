@@ -23561,7 +23561,7 @@ packages:
       '@deepseek-ai/dsh-typert-protocol': '>=0.2.2-rc.1 <0.2.2-rc.2'
 
   hi-buddy-connector-kit@file:haiercash/builtin-plugins/hi-buddy-connector-kit-0.1.0.tgz:
-    resolution: {integrity: sha512-faCjTMoldl0JePJrSbNbnV0gjS3gMgDgF+tthOORZwKzByB91W0Xkx0VukHFlv/tugpGpTdLsE1AFhTC336ALg==, tarball: file:haiercash/builtin-plugins/hi-buddy-connector-kit-0.1.0.tgz}
+    resolution: {integrity: sha512-0v9vTyXJCmWi6XIeqNPjD3c7YOzC17OpUWLNXtfk48BUYv7yN1a9H5ODrSoQqstAVQXIaJeRYMXpduMAP0QXOg==, tarball: file:haiercash/builtin-plugins/hi-buddy-connector-kit-0.1.0.tgz}
     version: 0.1.0
     engines: {node: '>=20'}
     peerDependencies:
