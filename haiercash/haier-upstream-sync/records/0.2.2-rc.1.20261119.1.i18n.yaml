@@ -1,0 +1,19 @@
+# Bilingual-pair consistency record for 0.2.2-rc.1.20261119.1.md (docs/i18n/README.md): per heading
+# section, a hash of its English and Chinese blocks outside code blocks and generated regions.
+# After editing either side, bring the other along and re-record with:
+#   pnpm run verify-translation-pairing --write haiercash/haier-upstream-sync/records/0.2.2-rc.1.20261119.1.md
+/:
+  en: e0622881ec5d854d
+  zh: e7276d57edf5f508
+/hibuddy-0-2-2-rc-1-20261119-1:
+  en: 66e281b4314f7376
+  zh: e0681fde24573cf6
+/hibuddy-0-2-2-rc-1-20261119-1/summary:
+  en: 7e000d143ec8e804
+  zh: dbb103aa6f8578b3
+/hibuddy-0-2-2-rc-1-20261119-1/login-button-deep-brand-blue:
+  en: 345ab2290ba4c588
+  zh: 0decde41a91d2b0a
+/hibuddy-0-2-2-rc-1-20261119-1/platform-acceptance-and-publication:
+  en: f371a3a5ba860fe6
+  zh: 6005228300340f73

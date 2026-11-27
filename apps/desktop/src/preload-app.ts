@@ -32,6 +32,9 @@ function createProductApi(): DshDesktopProductApi {
         // Main-process shutdown also releases every prepared file.
       }) },
     },
+    ...(process.platform === 'win32' ? {
+      openAgentDeck: () => ipcRenderer.invoke(DESKTOP_IPC.agentDeckOpen) as Promise<'opened' | 'download'>,
+    } : {}),
     deviceInfo: () => ipcRenderer.invoke(DESKTOP_IPC.deviceInfo) as Promise<string>,
     keyboard: {
       closeWindow: revision => ipcRenderer.invoke(DESKTOP_IPC.shortcutsCloseWindow, revision) as Promise<void>,

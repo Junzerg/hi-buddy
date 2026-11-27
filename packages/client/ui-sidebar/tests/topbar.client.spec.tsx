@@ -94,6 +94,55 @@ describe('WorkbenchTopbar', () => {
     expect(screen.queryByText('季度报告')).toBeNull()
   })
 
+  it('keeps a single AgentDeck link after a web launch attempt', () => {
+    mount()
+    const launch = screen.getByRole('link', { name: 'AgentDeck ↗' })
+    expect(launch.getAttribute('href')).toBe('agentdeck://open?from=hibuddy&theme=haier&focus=1')
+    launch.addEventListener('click', (event) => { event.preventDefault() }, { once: true })
+    fireEvent.click(launch)
+    expect(screen.getAllByRole('link', { name: /AgentDeck/ })).toEqual([launch])
+  })
+
+  it('opens the official download page when the web launch leaves the page visible', () => {
+    vi.useFakeTimers()
+    const replace = vi.fn()
+    const open = vi.spyOn(window, 'open').mockReturnValue({ location: { replace } } as unknown as Window)
+    try {
+      mount()
+      const launch = screen.getByRole('link', { name: 'AgentDeck ↗' })
+      launch.addEventListener('click', (event) => { event.preventDefault() }, { once: true })
+      fireEvent.click(launch)
+      vi.advanceTimersByTime(2000)
+      expect(replace).toHaveBeenCalledWith('https://agentdeck.haierxj.cn/')
+    } finally {
+      open.mockRestore()
+      vi.useRealTimers()
+    }
+  })
+
+  it('opens AgentDeck from the button immediately after the sidebar toggle', async () => {
+    const pending = Promise.withResolvers<'download'>()
+    const openAgentDeck = vi.fn(() => pending.promise)
+    vi.stubGlobal('dshDesktop', { openAgentDeck })
+    try {
+      mount()
+      const buttons = screen.getAllByRole('button')
+      const toggle = screen.getByRole('button', { name: '展开侧栏' })
+      const launch = screen.getByRole('button', { name: 'AgentDeck ↗' })
+      expect(buttons[buttons.indexOf(toggle) + 1]).toBe(launch)
+      fireEvent.click(launch)
+      const busy = screen.getByRole('button', { name: zh['topbar.agentDeckOpening'] })
+      expect(busy.hasAttribute('disabled')).toBe(true)
+      fireEvent.click(busy)
+      expect(openAgentDeck).toHaveBeenCalledOnce()
+      pending.resolve('download')
+      expect(await screen.findByText(zh['topbar.agentDeckDownload'])).toBeTruthy()
+      expect(screen.getByRole('button', { name: 'AgentDeck ↗' }).hasAttribute('disabled')).toBe(false)
+    } finally {
+      vi.unstubAllGlobals()
+    }
+  })
+
   it('hides unfinished search and toggles the right sidebar', () => {
     const { openSession, toggleRightbar } = mount()
     expect(screen.queryByRole('button', { name: '搜索' })).toBeNull()

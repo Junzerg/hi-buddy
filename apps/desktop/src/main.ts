@@ -1,3 +1,4 @@
+import { openAgentDeck } from './agent-deck.ts'
 import { installFileActions } from './file-actions.ts'
 import type { ProductEventMap, ProductEvent } from '@deepseek-ai/dsh-client-product-analytics/types'
 import { WINDOWS_TITLEBAR_HEIGHT } from './windows-layout.ts'
@@ -872,6 +873,10 @@ async function main(): Promise<void> {
   ipcMain.handle(DESKTOP_IPC.updatesStatus, (event) => {
     assertProductSender(event)
     return presentDesktopUpdate(updates.state)
+  })
+  ipcMain.handle(DESKTOP_IPC.agentDeckOpen, (event) => {
+    assertProductSender(event)
+    return openAgentDeck(url => shell.openExternal(url))
   })
   ipcMain.handle(DESKTOP_IPC.deviceInfo, (event) => {
     assertProductSender(event)
